@@ -1,0 +1,1 @@
+This project is a final full-stack project for the course Developing client-side in Android Environment 2
