@@ -47,6 +47,12 @@ app.post('/api/users',async(req,res) =>{
                     return res.status(404).json({message:'user not found'})
                 }
                 return res.json({message:'user deleted'})
+            case 'signin':
+                return res.json({message: `${data.email}`,user:data})
+            case 'signup':
+                return res.json({message: `${data.email}`,user:data})
+            default:
+                return res.status(500).json({message: "no command was dound"})
         }
     }catch(error){
         console.error(error.message)

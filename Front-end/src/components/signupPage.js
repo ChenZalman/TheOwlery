@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import axios from "axios";
+import { useState, useEffect } from 'react';
+import { UseSignInUp } from '../Hooks/UseSignInUp';
 
 const backGroundImage = 'images/backGroundImage.jpg'
 export default function SignUpPage() {
+
+  const {singInUp,isLoading,error} = UseSignInUp()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,14 +21,15 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try{
-        const response = await axios.post("http://localhost:5000/api/users",{
-            data: formData
-        })
-    }catch(err){
-        alert(err.message)
-    }
-    console.log('Form submitted:', formData);
+    await singInUp(formData,"signup")
+    // try{
+    //     const response = await axios.post("http://localhost:5000/api/users",{
+    //         data: formData
+    //     })
+    // }catch(err){
+    //     alert(err.message)
+    // }
+    // console.log('Form submitted:', formData);
   };
 
   useEffect(() => {
