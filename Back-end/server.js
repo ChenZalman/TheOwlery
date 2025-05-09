@@ -2,6 +2,9 @@ const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const bodyParser = require('body-parser')
+const userRouter = require('./routes/userRoutes')
+const userSchema = require('./models/userSchema')
+
 require('dotenv').config();
 
 const port = process.env.PORT
@@ -13,51 +16,9 @@ app.use(bodyParser.json())
 
 mongoose.connect(url)
 
-const userSchema = mongoose.Schema({
-    name:String,
-    email:String,
-    password:String,
-    userId:String
-})
-
 const User = mongoose.model('User',userSchema)
 
-app.post('/api/users',async(req,res) =>{
-    const {command,data} = req.body;
-    try{
-        switch(command){
-            case 'insert':
-                const newUser = new User({name:data.name,email:data.email,password:data.password,userId:data.userId})
-                await newUser.save()
-                return res.json({message:'user insert',user:newUser})
-            case 'select':
-                const users = await User.find()
-                //console.log(users)
-                return res.json({message: 'users fetched',users:users})
-            case 'update':
-                const updateUser = await User.updateOne({userId:data.userId},{email:data.email,name:data.name,password:data.password
-                },{new:true})
-                if(!updateUser){
-                    return res.status(404).json({message:'user not found'})
-                }
-                return res.json({message:'user updated',user:updateUser})
-            case 'delete':
-                const deleteUser = await User.deleteOne({userId:data.userId})
-                if(!deleteUser){
-                    return res.status(404).json({message:'user not found'})
-                }
-                return res.json({message:'user deleted'})
-            case 'signin':
-                return res.json({message: `${data.email}`,user:data})
-            case 'signup':
-                return res.json({message: `${data.email}`,user:data})
-            default:
-                return res.status(500).json({message: "no command was dound"})
-        }
-    }catch(error){
-        console.error(error.message)
-    }
-})
+app.use('/api/users',userRouter)
 
 app.get('/',async(req,res) => {res.status(200).json({message:"Welcome!"})})
 

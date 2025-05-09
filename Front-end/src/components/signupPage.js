@@ -4,6 +4,7 @@ import { UseSignInUp } from '../Hooks/UseSignInUp';
 const backGroundImage = 'images/backGroundImage.jpg'
 export default function SignUpPage() {
 
+  const [visible,setVisible] = useState(false)
   const {singInUp,isLoading,error} = UseSignInUp()
   const [formData, setFormData] = useState({
     name: '',
@@ -79,14 +80,16 @@ export default function SignUpPage() {
             </div>
             <div style={{ marginBottom: '1rem' }}>
             <label style={{color:"#ffffff" }}>Password:</label>
+            <div style={{display:'flex', position:'relative'}}>
             <input
-                type="password"
+                type={visible ? 'text': 'password'}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 required
                 style={{ width: '100%', padding: '0.5rem', border:'solid', borderWidth:1, borderColor: "#112211" }}
-            />
+            /><img src={visible ? "images/img_eye_on.svg" : "images/img_eye_off.svg"} alt="Eye" className="h-[24px] w-[24px]"  onClick={() => {setVisible(!visible)}}/>
+            </div>
             </div>
 
             <div style={{ 
