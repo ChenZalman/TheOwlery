@@ -34,17 +34,23 @@ router.post('/',async(req,res) =>{
                 return res.json({message:'user deleted'})
             }
             case 'signin':{
-                return res.json({message: `${data.email}`,user:data})
+                var newUserDB = await User.findOne({email:data.email,password:data.password})
+                newUserDB = newUserDB.toJSON()
+                Object.assign(newUserDB,{userId:newUserDB._id.toString()})
+                delete newUserDB['_id']
+                delete newUserDB['__v']
+                console.log(newUserDB)
+                return res.json({message: `${data.email}`,user:newUserDB})
             }
             case 'signup':{
                 var newUser = new User({name:data.name,email:data.email,password:data.password,friendsId:data.friendsId,gender:data.gender,birthDate:data.birthDate})
-                await newUser.save().then(doc =>{
-                    var newUserDB = doc.toJSON()
-                    Object.assign(newUserDB,{userId:newUserDB._id.toString()})
-                    delete newUserDB['_id','__v']
-                    console.log(newUserDB) 
-                })
-                return res.json({message:'user insert',user:newUser})
+                const doc = await newUser.save()
+                var newUserDB = doc.toJSON()
+                Object.assign(newUserDB,{userId:newUserDB._id.toString()})
+                delete newUserDB['_id']
+                delete newUserDB['__v']
+                console.log(newUserDB)
+                return res.json({message:'user insert',user:newUserDB})
             }
             default:{
                 return res.status(500).json({message: "no command was dound"})
@@ -52,6 +58,7 @@ router.post('/',async(req,res) =>{
         }
     }catch(error){
         console.error(error.message)
+        return res.status(500).json({message: error.message})
     }
 })
 
