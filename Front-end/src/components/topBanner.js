@@ -23,6 +23,9 @@ export default function TopBanner() {
             <Link to="/notFoundPage">
                 Vanish to nowhere
             </Link>
+            <Link to="/post">
+                See a post demo
+            </Link>
             {user && <button onClick={handleClick} style={{border:`solid`, height:`50px`}}>sign out</button>}
     </div>
     </div>
