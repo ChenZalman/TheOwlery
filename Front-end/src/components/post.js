@@ -1,8 +1,9 @@
 import { useState } from "react";
 
-const Post = ({ userName, textContent, mediaUrl, mediaType }) => {
+const Post = ({ userName, profilePicture , textContent, mediaUrl, mediaType }) => {
   const [likes, setLikes] = useState(0);
-
+  profilePicture = `https://cdn.pixabay.com/photo/2012/04/18/23/36/boy-38262_1280.png`
+  
   const handleLike = () => {
     //Here needs to update the DataBase
     setLikes((prev) => prev + 1);
@@ -22,7 +23,19 @@ const Post = ({ userName, textContent, mediaUrl, mediaType }) => {
         fontFamily: "Arial, sans-serif",
       }}
     >
+    <div style={{display:`flex`, gap: "10px"}}>
+    <img src={profilePicture} alt="picture" style={{
+                // width: "100%",
+                // maxHight: "50px",
+                width:"50px",
+                height:"50px",
+                objectFit: "cover",
+                borderRadius: "12px",
+                borderColor:"#c1c1c1",
+                border:"solid"
+              }}/>
       <h2 style={{ fontSize: "20px", marginBottom: "0.75rem" }}>{userName}</h2>
+      </div>
       <p style={{ fontSize: "16px", marginBottom: "1rem", color: "#333" }}>
         {textContent}
       </p>

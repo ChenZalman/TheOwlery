@@ -5,8 +5,8 @@ export default function Feed() {
     {
       id: 1,
       userName: "john_doe",
-      textContent: "Check out this amazing sunset 🌅",
-      mediaUrl: "https://source.unsplash.com/400x300/?sunset",
+      textContent: "Can't wait for subbmitting this project!",
+      // mediaUrl: "https://source.unsplash.com/400x300/?sunset",
       mediaType: "image",
     },
     {
@@ -20,7 +20,7 @@ export default function Feed() {
       id: 3,
       userName: "tech_guy",
       textContent: "Building a new PC today 🛠️",
-      mediaUrl: "https://source.unsplash.com/400x300/?computer",
+      mediaUrl: "https://cdn.pixabay.com/photo/2025/04/23/01/35/bird-9551361_1280.jpg",
       mediaType: "image",
     },
   ];
