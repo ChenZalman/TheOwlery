@@ -25,7 +25,7 @@ export const UseSignInUp = () => {
             const json = await response.data.user
             console.log(`user returned` , json)
             //save the user to local storage
-            localStorage.setItem("user", JSON.stringify(json.email))
+            localStorage.setItem("user", JSON.stringify(json))
 
             //update Authcontact
             dispatch({type: 'LOGIN', payload: json})

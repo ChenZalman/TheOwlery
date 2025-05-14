@@ -23,7 +23,6 @@ export const AuthContextProvider = ({ children }) => {
   //This useEffect keeps the user signedin if he closes the browser
 useEffect(() => {
   const user = JSON.parse(localStorage.getItem('user'))
-
   if(user){
     dispatch({type: 'LOGIN', payload:user})
   }
