@@ -13,16 +13,19 @@ export default function Feed({posts}) {
         gap: "20px",
       }}
     >
-      {posts.map((post) => (
+      {posts ? posts.map((post) => (
         <Post
           key = {post.id}
-        user = {
+        post = {
           {userName:post.userName,
+          profilePicture:post.profilePicture,
           textContent:post.textContent,
           mediaUrl:post.mediaUrl,
           mediaType:post.mediaType}}
         />
-      ))}
+      )) :
+        <Post post={{textContent:"nothing to show create a post to share!"}}/>
+      }
     </div>
   );
 }

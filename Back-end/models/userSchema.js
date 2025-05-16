@@ -8,7 +8,8 @@ const userSchema = mongoose.Schema({
     userId:String,
     gender:String,
     birthDate:String,
-    friendsId:[]
+    friendsId:[],
+    postsId:[]
 })
 
 module.exports = userSchema

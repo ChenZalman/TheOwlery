@@ -1,8 +1,9 @@
 import { useState } from "react";
 
-const Post = ({user}) => {
-  const { userName, profilePicture , textContent, mediaUrl, mediaType } = user
+const Post = ({post}) => {
+  const { userName, profilePicture , textContent, mediaUrl, mediaType } = post
   const [likes, setLikes] = useState(0);
+  const [comments, setComments] = useState(0);
   
   
   const handleLike = () => {
@@ -76,6 +77,7 @@ const Post = ({user}) => {
         }}
       >
         <span style={{ fontSize: "14px", color: "#666" }}>{likes} Likes</span>
+        <span style={{ fontSize: "14px", color: "#666" }}>{comments} comments</span>
         <button
           onClick={handleLike}
           style={{
