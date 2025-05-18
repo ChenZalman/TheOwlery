@@ -8,16 +8,6 @@ router.post('/',async(req,res) =>{
     const {command,data} = req.body;
     try{
         switch(command){
-            // case 'insert':{
-            //     const newUser = new User({name:data.name,email:data.email,password:data.password,userId:data.userId})
-            //     await newUser.save()
-            //     return res.json({message:'user insert',user:newUser})
-            // }
-            // case 'select':{
-            //     const users = await User.find()
-            //     //console.log(users)
-            //     return res.json({message: 'users fetched',users:users})
-            // }
             case 'update':{
                 Object.assign(data,{_id:data.userId})
                 delete data['userId']

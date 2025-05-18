@@ -3,6 +3,7 @@ import testPosts from "./testPosts.js";
 import { useSignout } from "../Hooks/UseSignout.js"
 import {UseSignInUp} from "../Hooks/UseSignInUp.js"
 import { useNavigate, Link } from "react-router-dom";
+import PostCreator from "./postCreator.js";
 
 const ProfilePage = ({user}) => {
     const {signOut} = useSignout()
@@ -18,6 +19,7 @@ const ProfilePage = ({user}) => {
 
   return (
     <div style={{ maxWidth: '800px', margin: '2rem auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <PostCreator/>
       <div style={{
         padding: '1.5rem',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
