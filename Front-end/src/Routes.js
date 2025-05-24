@@ -6,6 +6,7 @@ import HomePage from "./components/homePage";
 import NotFoundPage from "./components/notFoundPage";
 import ProfilePage from "./components/profilePage";
 import EditProfilePage from "./components/editProfilePage";
+import Chat from "./components/chatPage";
 
 
 const ProjectRoutes = () => {
@@ -18,6 +19,7 @@ const ProjectRoutes = () => {
     { path: "/signuppage", element:<> {loading ? <div>Loading...</div> : !user ?  <SignUpPage />  : <Navigate to="/post"/>}</>},  //In this line element gets a component that return a page to get a user info if a user isn't signed
     { path: "/post", element:<> {loading ? <div>Loading...</div> : user ?  <ProfilePage user = {user}/>  : <Navigate to="/signinpage"/>}</>},
     { path: "/editprofile", element:<> {loading ? <div>Loading...</div> : user ?  <EditProfilePage user = {user}/>  : <Navigate to="/editnotfound"/>}</>},
+     { path: "/chat", element:<> {loading ? <div>Loading...</div> : user ?  <Chat user = {user}/>  : <Navigate to="/chat"/>}</>},
   ]);
 
   return element;

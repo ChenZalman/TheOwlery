@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuthContext } from "../Hooks/UseAuthContext";
 import { useSignout } from "../Hooks/UseSignout";
+import TelegramIcon from '@mui/icons-material/Telegram';
 
 export default function TopBanner() {
   const { user } = useAuthContext();
@@ -43,6 +44,14 @@ export default function TopBanner() {
         >
           See a Post Demo
         </Link>
+        
+       <Link
+  to="/chat"
+  className="flex items-center hover:text-yellow-300 transition duration-300 hover:underline text-2xl"
+  title="Owlery Chat"
+>
+  <TelegramIcon fontSize="inherit" />
+</Link>
         {user && (
           <button
             onClick={handleClick}
