@@ -7,13 +7,13 @@ import PostCreator from "./postCreator.js";
 
 const ProfilePage = ({user}) => {
     const {signOut} = useSignout()
-    const {singInUp,isLoading,error} = UseSignInUp()
+    const {signInUp,isLoading,error} = UseSignInUp()
 
     Object.assign(user,{posts: testPosts, profilePicture : `https://cdn.pixabay.com/photo/2012/04/18/23/36/boy-38262_1280.png`})
     user.posts.map((post) => Object.assign(post,{profilePicture: `https://cdn.pixabay.com/photo/2012/04/18/23/36/boy-38262_1280.png`}))
 
     const handleClick = async () =>{      
-      await singInUp(user,"delete")
+      await signInUp(user,"delete")
        signOut()
     }
 

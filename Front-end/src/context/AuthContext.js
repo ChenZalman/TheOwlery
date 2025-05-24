@@ -24,13 +24,20 @@ export const AuthContextProvider = ({ children }) => {
   })
 
   //This useEffect keeps the user signedin if he closes the browser
+  
 useEffect(() => {
   const user = JSON.parse(localStorage.getItem('user'))
-  if(user){
-    dispatch({type: 'LOGIN', payload:user})
-    dispatch({ type: 'AUTH_READY', payload: user })
+
+  if (user) {
+    dispatch({ type: 'LOGIN', payload: user })
   }
+  //add timeout 10 seconds 
+  dispatch({ type: 'AUTH_READY', payload: user })
+ setTimeout(() => {
+    dispatch({ type: 'AUTH_READY', payload: user })
+  }, 5000)
 }, [])
+
 
     if(state.user)
         {console.log('AuthContext state:', state)}

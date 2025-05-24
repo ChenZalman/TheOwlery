@@ -6,6 +6,7 @@ const User = mongoose.model('User',userSchema)
 
 router.post('/',async(req,res) =>{
     const {command,data} = req.body;
+    console.log(`command is: ${command} and data is: ${JSON.stringify(data)}`)
     try{
         switch(command){
             case 'update':{
@@ -45,8 +46,79 @@ router.post('/',async(req,res) =>{
                 delete newUserDB['__v']
                 return res.json({message:'user insert',user:newUserDB})
             }
+           case 'likePost': {
+    const { userId, postId } = data;
+     console.log(`userId: ${userId}, postId: ${postId}`);
+    if (!userId || !postId) {
+        return res.status(400).json({ message: "Missing userId or postId" });
+    }
+
+    try {
+       
+        const objectId = mongoose.Types.ObjectId.isValid(userId) 
+            ? new mongoose.Types.ObjectId(userId) 
+            : userId;
+
+        const user = await User.findById(objectId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+       
+        if (!user.likedPosts.includes(postId)) {
+            user.likedPosts.push(postId);
+            await user.save();
+        }
+
+        const updatedUser = user.toObject();
+        Object.assign(updatedUser, { userId: updatedUser._id.toString() });
+        delete updatedUser._id;
+        delete updatedUser.__v;
+
+        return res.json({ message: "Post liked", user: updatedUser });
+    } catch (error) {
+        console.error("Error in likePost:", error);
+        return res.status(500).json({ message: "Error processing likeeeeeeeeeee: " + error.message });
+    }
+}
+case 'unlikePost': {
+    const { userId, postId } = data;
+    console.log(`userId: ${userId}, postId: ${postId}`);
+    if (!userId || !postId) {
+        return res.status(400).json({ message: "Missing userId or postId" });
+    }
+
+    try {
+        const objectId = mongoose.Types.ObjectId.isValid(userId)
+            ? new mongoose.Types.ObjectId(userId)
+            : userId;
+
+        const user = await User.findById(objectId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Remove postId if it exists in likedPosts
+        const index = user.likedPosts.indexOf(postId);
+        if (index > -1) {
+            user.likedPosts.splice(index, 1);
+            await user.save();
+        }
+
+        const updatedUser = user.toObject();
+        Object.assign(updatedUser, { userId: updatedUser._id.toString() });
+        delete updatedUser._id;
+        delete updatedUser.__v;
+
+        return res.json({ message: "Post unliked", user: updatedUser });
+    } catch (error) {
+        console.error("Error in unlikePost:", error);
+        return res.status(500).json({ message: "Error processing unlike: " + error.message });
+    }
+}
+
             default:{
-                return res.status(500).json({message: "no command was dound"})
+                return res.status(500).json({message: "no command was found"})
             }
         }
     }catch(error){

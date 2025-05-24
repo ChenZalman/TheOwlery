@@ -21,7 +21,10 @@ export default function Feed({posts}) {
           profilePicture:post.profilePicture,
           textContent:post.textContent,
           mediaUrl:post.mediaUrl,
-          mediaType:post.mediaType}}
+          mediaType:post.mediaType,
+         postId: post.id || post._id}}///DIDNT WORK WITHOUT _id
+         
+          
         />
       )) :
         <Post post={{textContent:"nothing to show create a post to share!"}}/>

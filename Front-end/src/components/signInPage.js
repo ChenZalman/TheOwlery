@@ -6,7 +6,7 @@ const backGroundImage = 'images/backGroundImage.jpg'
 export default function SignInPage() {
 
   const [visible,setVisible] = useState(false)
-  const {singInUp,isLoading,error} = UseSignInUp()
+  const {signInUp,isLoading,error} = UseSignInUp()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -23,7 +23,7 @@ export default function SignInPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await singInUp(formData,"signin")
+    await signInUp(formData,"signin")
     // try{
     //     const response = await axios.post("http://localhost:5000/api/users",{
     //         data: formData

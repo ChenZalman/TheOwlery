@@ -10,13 +10,14 @@ export const UseSignInUp = () => {
     const address = process.env.REACT_APP_ADDRESS;
     const port = process.env.REACT_APP_PORT;
 
-    const singInUp = async (formData,command) => {
+    const signInUp = async (formData,command) => {
         setIsLoading(true)
         setError(null)
 
         try{
-            console.log('Form submitted:', formData);
-            // console.log(`address is: ${address} and the port is: ${port}`)
+            console.log('Form submitted :', formData);
+            debugger;
+             console.log(`address is: ${address} and the port is: ${port}`)
             const response = await axios.post(`http://${address}:${port}/api/users`,{
                 command:command,
                 data: formData
@@ -39,5 +40,5 @@ export const UseSignInUp = () => {
             alert(err.message)
         }
     } 
-    return {singInUp,isLoading,error}
+    return {signInUp,isLoading,error}
 }

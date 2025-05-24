@@ -1,15 +1,39 @@
 import { useState } from "react";
-
+import axios from "axios";
+import { useAuthContext } from "../Hooks/UseAuthContext";
 const Post = ({post}) => {
-  const { userName, profilePicture , textContent, mediaUrl, mediaType } = post
+  const { userName, profilePicture , textContent, mediaUrl, mediaType,postId } = post
   const [likes, setLikes] = useState(0);
   const [comments, setComments] = useState(0);
-  
-  
-  const handleLike = () => {
-    //Here needs to update the DataBase
-    setLikes((prev) => prev + 1);
-  };
+  const [isLiked,setIsLiked] = useState(false);
+    const address = process.env.REACT_APP_ADDRESS;
+   const port = process.env.REACT_APP_PORT;
+  const { user } = useAuthContext();
+
+  const handleLike = async () => {
+  console.log("user id:", user.userId);
+  console.log("POST id:", postId);
+  try {
+    const command = isLiked ? 'unlikePost' : 'likePost';
+    const res = await axios.post(`http://${address}:${port}/api/users`, {
+      command: command,
+      data: {
+        userId: user.userId,
+        postId: postId,
+      }
+    });
+
+    if (res.status !== 200) {
+      console.error("Error:", res.data.message);
+    } else {
+      console.log(`${command} success:`, res.data);
+      setIsLiked((prev) => !prev);
+      setLikes((prev) => prev + (isLiked ? -1 : 1));
+    }
+  } catch (err) {
+    console.error("Network error:", err);
+  }
+};
 
   return (
     <div
@@ -81,16 +105,25 @@ const Post = ({post}) => {
         <button
           onClick={handleLike}
           style={{
-            backgroundColor: "#2563eb",
-            color: "#fff",
-            padding: "6px 16px",
+            background: "none",
             border: "none",
-            borderRadius: "10px",
             cursor: "pointer",
-            fontWeight: "bold",
+            padding: 0,
           }}
+          aria-label="Like"
         >
-          Like
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill={isLiked ? "red" : "none"}
+            stroke="red"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
         </button>
       </div>
     </div>

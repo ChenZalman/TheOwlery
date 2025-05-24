@@ -5,6 +5,7 @@ const postSchema = require('../models/postSchema')
 const Post = mongoose.model('Post',postSchema)
 
 router.post('/',async(req,res) =>{
+    console.log('post route')
     const {command,data} = req.body;
     try{
         switch(command){
@@ -15,6 +16,7 @@ router.post('/',async(req,res) =>{
 
             }
             case 'get':{
+                ////add fetch posts tht user x can see
 
             }
             case 'create':{
@@ -28,7 +30,7 @@ router.post('/',async(req,res) =>{
                 return res.json({message:'post created',post:newPostDB})
             }
             default:{
-                return res.status(500).json({message: "no command was dound"})
+                return res.status(500).json({message: "no command was dounaaaad"})
             }
         }
     }catch(error){

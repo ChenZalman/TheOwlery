@@ -2,6 +2,7 @@ import './App.css';
 import Routes from "./Routes"
 import TopBanner from "./components/topBanner"
 import { BrowserRouter as Router } from "react-router-dom";
+import HomePage from "./components/homePage";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <TopBanner/>
       <Routes />
     </Router>
+    <HomePage/>
     </div>
   );
 }

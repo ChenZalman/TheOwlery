@@ -7,7 +7,7 @@ import { UseSignInUp } from "../Hooks/UseSignInUp";
 const PostCreator = () =>{
     const {post,isLoading,error} = UsePost()
     const {user,loading} = useAuthContext()
-    const {singInUp} = UseSignInUp()
+    const {signInUp} = UseSignInUp()
     const [formData, setFormData] = useState({
         text: ''
     });
@@ -25,7 +25,7 @@ const PostCreator = () =>{
         Object.assign(user,{postsId:[...user.postsId,json.id]})
         else
         Object.assign(user,{postsId:[json.id]})
-        singInUp({...user},'update')
+        signInUp({...user},'update')
     }
 
     return(

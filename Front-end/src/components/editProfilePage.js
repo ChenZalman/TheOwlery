@@ -3,7 +3,7 @@ import Feed from "./feed";
 import { UseSignInUp } from "../Hooks/UseSignInUp";
 
 export default function EditProfilePage({user}) {
-  const {singInUp,isLoading,error} = UseSignInUp()
+  const {signInUp,isLoading,error} = UseSignInUp()
   const [formData, setFormData] = useState(user);
   const [visible,setVisible] = useState(false)
   const handleChange = (e) => {
@@ -17,7 +17,7 @@ export default function EditProfilePage({user}) {
     const postsId = user.posts.map((post) => post.id)
     Object.assign(user,{postsId:postsId})
     console.log("Updated profile:", user);
-    await singInUp({...user},"update")
+    await signInUp({...user},"update")
   };
 
  return (

@@ -9,7 +9,9 @@ const userSchema = mongoose.Schema({
     gender:String,
     birthDate:String,
     friendsId:[],
-    postsId:[]
+    postsId:[],
+    //likedPosts:[]
+      likedPosts: { type: [String], default: [] }
 })
 
 module.exports = userSchema

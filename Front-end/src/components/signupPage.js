@@ -5,7 +5,7 @@ const backGroundImage = 'images/backGroundImage.jpg'
 export default function SignUpPage() {
 
   const [visible,setVisible] = useState(false)
-  const {singInUp,isLoading,error} = UseSignInUp()
+  const {signInUp,isLoading,error} = UseSignInUp()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -22,7 +22,7 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await singInUp(formData,"signup")
+    await signInUp(formData,"signup")
     // try{
     //     const response = await axios.post("http://localhost:5000/api/users",{
     //         data: formData
@@ -101,7 +101,7 @@ export default function SignUpPage() {
                 <label style={{color:"#ffffff" }}>Gender:</label>
                     <select
                     name="gender"
-                    value={formData.gender1}
+                    value={formData.gender}
                     onChange={handleChange}
                     required
                     defaultValue={formData.gender}
