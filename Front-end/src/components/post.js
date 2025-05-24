@@ -1,8 +1,10 @@
 import { useState } from "react";
 
-const Post = ({ userName, profilePicture , textContent, mediaUrl, mediaType }) => {
+const Post = ({post}) => {
+  const { userName, profilePicture , textContent, mediaUrl, mediaType } = post
   const [likes, setLikes] = useState(0);
-  profilePicture = `https://cdn.pixabay.com/photo/2012/04/18/23/36/boy-38262_1280.png`
+  const [comments, setComments] = useState(0);
+  
   
   const handleLike = () => {
     //Here needs to update the DataBase
@@ -12,7 +14,7 @@ const Post = ({ userName, profilePicture , textContent, mediaUrl, mediaType }) =
   return (
     <div
       style={{
-        maxWidth: "400px",
+        width: "480px",
         margin: "0 auto",
         padding: "2rem",
         transform: "translateY(-5px)",
@@ -24,9 +26,7 @@ const Post = ({ userName, profilePicture , textContent, mediaUrl, mediaType }) =
       }}
     >
     <div style={{display:`flex`, gap: "10px"}}>
-    <img src={profilePicture} alt="picture" style={{
-                // width: "100%",
-                // maxHight: "50px",
+    <img src={profilePicture} alt="not found" style={{
                 width:"50px",
                 height:"50px",
                 objectFit: "cover",
@@ -77,6 +77,7 @@ const Post = ({ userName, profilePicture , textContent, mediaUrl, mediaType }) =
         }}
       >
         <span style={{ fontSize: "14px", color: "#666" }}>{likes} Likes</span>
+        <span style={{ fontSize: "14px", color: "#666" }}>{comments} comments</span>
         <button
           onClick={handleLike}
           style={{

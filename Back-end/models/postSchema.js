@@ -2,9 +2,9 @@ const mongoose = require('mongoose')
 
 
 const postSchema = mongoose.Schema({
-    Id:String,
+    id:String,
     text:String,
-    userID:String,
+    userId:String,
     likes: mongoose.Schema.Types.Int32,
     images:[],
     videos:[],

@@ -1,36 +1,34 @@
 import { useState } from "react";
-import { useAuthContext } from "./UseAuthContext";
 import axios from "axios";
+import { usePostContext } from "./UsePostContext";
 
 
-export const UseSignInUp = () => {
+
+export const UsePost = () => {
     const [error, setError] = useState(null)
     const [isLoading, setIsLoading] = useState(null)
-    const {dispatch} = useAuthContext()
+    const {dispatch} = usePostContext()
     const address = process.env.REACT_APP_ADDRESS;
     const port = process.env.REACT_APP_PORT;
 
-    const singInUp = async (formData,command) => {
+    const post = async (formData,command) => {
         setIsLoading(true)
         setError(null)
 
         try{
             console.log('Form submitted:', formData);
             // console.log(`address is: ${address} and the port is: ${port}`)
-            const response = await axios.post(`http://${address}:${port}/api/users`,{
+            const response = await axios.post(`http://${address}:${port}/api/posts`,{
                 command:command,
                 data: formData
             })
 
-            const json = await response.data.user
-            console.log(`user returned` , json)
-            //save the user to local storage
-            localStorage.setItem("user", JSON.stringify(json))
-
-            //update Authcontact
-            dispatch({type: 'LOGIN', payload: json})
+            const json = await response.data.post
+            console.log(`post returned` , json)
+            dispatch({type: 'GET', payload: json})
 
             setIsLoading(false)
+            return json
         }catch(err){
             setIsLoading(false)
             if (err.response && err.response.data && err.response.data.error) {
@@ -39,5 +37,5 @@ export const UseSignInUp = () => {
             alert(err.message)
         }
     } 
-    return {singInUp,isLoading,error}
+    return {post,isLoading,error}
 }
