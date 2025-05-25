@@ -10,6 +10,7 @@ const userSchema = mongoose.Schema({
     birthDate:String,
     friendsId:[],
     postsId:[],
+    profilePictures: String,
     //likedPosts:[]
       likedPosts: { type: [String], default: [] }
 })

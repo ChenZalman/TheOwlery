@@ -33,7 +33,15 @@ router.post('/',async(req,res) =>{
 }
          case 'create': {
     console.log(data.userId)
-    var newPost = new Post({text:data.text,userId:data.userId,likes:0,createdAt:Date.now()})
+    const newPost = new Post({
+        text: data.text,
+        userId: data.userId,
+        likes: 0,
+        images: data.images || [],
+        videos: data.videos || [],
+        comments: [],
+        createdAt: Date.now()
+    });
     const doc = await newPost.save()
     var newPostDB = doc.toJSON()
     Object.assign(newPostDB, { id: newPostDB._id.toString() })

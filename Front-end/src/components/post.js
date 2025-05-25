@@ -1,39 +1,61 @@
 import { useState } from "react";
 import axios from "axios";
 import { useAuthContext } from "../Hooks/UseAuthContext";
-const Post = ({post}) => {
-  const { userName, profilePicture , textContent, mediaUrl, mediaType,postId } = post
+
+const CLOUDINARY_NAME = process.env.REACT_APP_CLOUDINARY_NAME;
+
+// Helper to build Cloudinary URL from public_id
+function getCloudinaryUrl(publicId, resourceType = "image", format = "jpg") {
+  if (!publicId) return null;
+  return `https://res.cloudinary.com/${CLOUDINARY_NAME}/${resourceType}/upload/${publicId}.${format}`;
+}
+
+const Post = ({ post }) => {
+
+  const {
+    userName,
+    profilePicture,
+    textContent,
+    imagePublicId,
+    videoPublicId,
+    postId,
+  } = post;
+
   const [likes, setLikes] = useState(0);
   const [comments, setComments] = useState(0);
-  const [isLiked,setIsLiked] = useState(false);
-    const address = process.env.REACT_APP_ADDRESS;
-   const port = process.env.REACT_APP_PORT;
+  const [isLiked, setIsLiked] = useState(false);
+  const address = process.env.REACT_APP_ADDRESS;
+  const port = process.env.REACT_APP_PORT;
   const { user } = useAuthContext();
 
   const handleLike = async () => {
-  console.log("user id:", user.userId);
-  console.log("POST id:", postId);
-  try {
-    const command = isLiked ? 'unlikePost' : 'likePost';
-    const res = await axios.post(`http://${address}:${port}/api/users`, {
-      command: command,
-      data: {
-        userId: user.userId,
-        postId: postId,
-      }
-    });
+    console.log("user id:", user.userId);
+    console.log("POST id:", postId);
+    try {
+      const command = isLiked ? "unlikePost" : "likePost";
+      const res = await axios.post(`http://${address}:${port}/api/users`, {
+        command: command,
+        data: {
+          userId: user.userId,
+          postId: postId,
+        },
+      });
 
-    if (res.status !== 200) {
-      console.error("Error:", res.data.message);
-    } else {
-      console.log(`${command} success:`, res.data);
-      setIsLiked((prev) => !prev);
-      setLikes((prev) => prev + (isLiked ? -1 : 1));
+      if (res.status !== 200) {
+        console.error("Error:", res.data.message);
+      } else {
+        console.log(`${command} success:`, res.data);
+        setIsLiked((prev) => !prev);
+        setLikes((prev) => prev + (isLiked ? -1 : 1));
+      }
+    } catch (err) {
+      console.error("Network error:", err);
     }
-  } catch (err) {
-    console.error("Network error:", err);
-  }
-};
+  };
+
+  const imageUrl = getCloudinaryUrl(imagePublicId, "image", "jpg");
+  const videoUrl = getCloudinaryUrl(videoPublicId, "video", "mp4");
+   const ProfileUrl = getCloudinaryUrl(imagePublicId, "image", "jpg");
 
   return (
     <div
@@ -49,47 +71,53 @@ const Post = ({post}) => {
         fontFamily: "Arial, sans-serif",
       }}
     >
-    <div style={{display:`flex`, gap: "10px"}}>
-    <img src={profilePicture} alt="not found" style={{
-                width:"50px",
-                height:"50px",
-                objectFit: "cover",
-                borderRadius: "12px",
-                borderColor:"#c1c1c1",
-                border:"solid"
-              }}/>
-      <h2 style={{ fontSize: "20px", marginBottom: "0.75rem" }}>{userName}</h2>
+      <div style={{ display: `flex`, gap: "10px" }}>
+        <img
+          src={profilePicture}
+          alt="not found"
+          style={{
+            width: "50px",
+            height: "50px",
+            objectFit: "cover",
+            borderRadius: "12px",
+            borderColor: "#c1c1c1",
+            border: "solid",
+          }}
+        />
+        <h2 style={{ fontSize: "20px", marginBottom: "0.75rem" }}>{userName}</h2>
       </div>
       <p style={{ fontSize: "16px", marginBottom: "1rem", color: "#333" }}>
         {textContent}
       </p>
 
-      {mediaUrl && (
+      {imageUrl && (
         <div style={{ marginBottom: "1rem" }}>
-          {mediaType === "image" ? (
-            <img
-              src={mediaUrl}
-              alt="Post media"
-              style={{
-                width: "100%",
-                maxHeight: "300px",
-                objectFit: "cover",
-                borderRadius: "12px",
-              }}
-            />
-          ) : mediaType === "video" ? (
-            <video
-              controls
-              style={{
-                width: "100%",
-                maxHeight: "300px",
-                borderRadius: "12px",
-              }}
-            >
-              <source src={mediaUrl} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          ) : null}
+          <img
+            src={imageUrl}
+            alt="Post media"
+            style={{
+              width: "100%",
+              maxHeight: "300px",
+              objectFit: "cover",
+              borderRadius: "12px",
+            }}
+          />
+        </div>
+      )}
+
+      {videoUrl && (
+        <div style={{ marginBottom: "1rem" }}>
+          <video
+            controls
+            style={{
+              width: "100%",
+              maxHeight: "300px",
+              borderRadius: "12px",
+            }}
+          >
+            <source src={videoUrl} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </div>
       )}
 

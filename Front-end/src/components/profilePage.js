@@ -11,8 +11,15 @@ const ProfilePage = ({ user }) => {
   const { signInUp, isLoading, error } = UseSignInUp();
   const [posts, setPosts] = useState([]);
   const [profilePicture, setProfilePicture] = useState(user.profilePicture || `https://cdn.pixabay.com/photo/2012/04/18/23/36/boy-38262_1280.png`);
-    const address = process.env.REACT_APP_ADDRESS;
-   const port = process.env.REACT_APP_PORT;
+  const address = process.env.REACT_APP_ADDRESS;
+  const port = process.env.REACT_APP_PORT;
+
+  // For fade-in animation
+  const [isVisible, setIsVisible] = useState(false);
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   useEffect(() => {
     const fetchPosts = async () => {
       if (!user?.userId) return;
@@ -31,37 +38,126 @@ const ProfilePage = ({ user }) => {
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '2rem auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <PostCreator />
-      <div style={{
-        padding: '1.5rem',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        borderRadius: '1rem',
-        border: '1px solid #ccc',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '1.5rem'
-      }}>
-        <img
-          src={profilePicture}
-          alt="Profile"
-          style={{ width: '96px', height: '96px', borderRadius: '50%', objectFit: 'cover' }}
-        />
-        <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>{user.name || `Annonymus user`}</h1>
-          <p style={{ color: 'gray', marginTop: '0.25rem' }}>{user.bio || `Bio - comming soon`}</p>
-        </div>
-        <Link to={'/editprofile'}>edit user</Link>
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-gold relative overflow-hidden font-serif">
+      <link
+        href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=IM+Fell+English+SC&display=swap"
+        rel="stylesheet"
+      />
+
+      {/* Floating particles */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {[...Array(15)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-gold rounded-full opacity-30"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 2}s`,
+              boxShadow: "0 0 10px #e6c47a",
+            }}
+          ></div>
+        ))}
       </div>
 
-      <div style={{
-        padding: '1rem',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        borderRadius: '1rem',
-        border: '1px solid #ccc'
-      }}>
-        <Feed posts={posts} />
+      {/* Magical sparkles */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={`sparkle-${i}`}
+            className="absolute text-gold text-xs opacity-60"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animation: `sparkle ${2 + Math.random() * 3}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 2}s`,
+            }}
+          >
+            ✨
+          </div>
+        ))}
       </div>
+
+      {/* Main content */}
+      <div
+        className={`relative z-10 flex flex-col items-center justify-center min-h-screen px-6 max-w-3xl mx-auto transition-all duration-1000 transform ${
+          isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+        }`}
+      >
+        <div style={{
+          maxWidth: '800px',
+          margin: '2rem auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.5rem',
+          width: '100%',
+        }}>
+          <PostCreator />
+          <div style={{
+            padding: '1.5rem',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            borderRadius: '1rem',
+            border: '1px solid #ccc',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1.5rem',
+            background: 'rgba(255,255,255,0.04)',
+          }}>
+            <img
+              src={profilePicture}
+              alt="Profile"
+              style={{ width: '96px', height: '96px', borderRadius: '50%', objectFit: 'cover' }}
+            />
+            <div>
+              <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>{user.name || `Annonymus user`}</h1>
+              <p style={{ color: 'gray', marginTop: '0.25rem' }}>{user.bio || `Bio - comming soon`}</p>
+            </div>
+            <Link to={'/editprofile'}>edit user</Link>
+          </div>
+
+          <div style={{
+            padding: '1rem',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            borderRadius: '1rem',
+            border: '1px solid #ccc',
+            background: 'rgba(255,255,255,0.04)',
+          }}>
+           
+          <Feed posts={posts} profileImage={user.profileImage} />
+          </div>
+        </div>
+      </div>
+
+      {/* Styles */}
+      <style jsx>{`
+        @keyframes float {
+          0%,
+          100% {
+            transform: translateY(0px) translateX(0px);
+          }
+          25% {
+            transform: translateY(-15px) translateX(8px);
+          }
+          50% {
+            transform: translateY(-8px) translateX(-5px);
+          }
+          75% {
+            transform: translateY(-20px) translateX(3px);
+          }
+        }
+        @keyframes sparkle {
+          0%,
+          100% {
+            opacity: 0.3;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.2);
+          }
+        }
+      `}</style>
     </div>
   );
 };
