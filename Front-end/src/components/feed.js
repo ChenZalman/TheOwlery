@@ -13,22 +13,21 @@ export default function Feed({posts}) {
         gap: "20px",
       }}
     >
-      {posts ? posts.map((post) => (
+      {posts && posts.length > 0 ? posts.map((post) => (
         <Post
-          key = {post.id}
-        post = {
-          {userName:post.userName,
-          profilePicture:post.profilePicture,
-          textContent:post.textContent,
-          mediaUrl:post.mediaUrl,
-          mediaType:post.mediaType,
-         postId: post.id || post._id}}///DIDNT WORK WITHOUT _id
-         
-          
+          key={post.id || post._id}
+          post={{
+            userName: post.userName,  
+            profilePicture: post.profilePicture,  
+            textContent: post.text || post.textContent,
+            mediaUrl: post.mediaUrl,
+            mediaType: post.mediaType,
+            postId: post.id || post._id,
+          }}
         />
-      )) :
-        <Post post={{textContent:"nothing to show create a post to share!"}}/>
-      }
+      )) : (
+        <Post post={{ textContent: "Nothing to show. Create a post to share!" }} />
+      )}
     </div>
   );
 }

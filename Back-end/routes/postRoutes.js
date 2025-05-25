@@ -15,10 +15,22 @@ router.post('/',async(req,res) =>{
             case 'delete':{
 
             }
-            case 'get':{
-                ////add fetch posts tht user x can see
-
-            }
+         case 'get': {
+    if (!data.userId) {
+        return res.status(400).json({ message: "Missing userId" });
+    }
+    // Get the user and their friends
+    const User = mongoose.model('User');
+    const user = await User.findById(data.userId);
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+    // Build array of user IDs: self + friends
+    const allowedUserIds = [user._id.toString(), ...(user.friendsId || [])];
+    
+    const posts = await Post.find({ userId: { $in: allowedUserIds } }).sort({ createdAt: -1 });
+    return res.json({ posts });
+}
          case 'create': {
     console.log(data.userId)
     var newPost = new Post({text:data.text,userId:data.userId,likes:0,createdAt:Date.now()})

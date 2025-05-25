@@ -11,7 +11,7 @@ function App() {
       <TopBanner/>
       <Routes />
     </Router>
-    <HomePage/>
+    
     </div>
   );
 }

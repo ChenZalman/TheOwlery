@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useAuthContext } from "../Hooks/UseAuthContext";
 import { useSignout } from "../Hooks/UseSignout";
 import TelegramIcon from '@mui/icons-material/Telegram';
-
+import GroupsIcon from '@mui/icons-material/Groups';
 export default function TopBanner() {
   const { user } = useAuthContext();
   const { signOut } = useSignout();
@@ -51,6 +51,13 @@ export default function TopBanner() {
   title="Owlery Chat"
 >
   <TelegramIcon fontSize="inherit" />
+</Link>
+   <Link
+  to="/groups"
+  className="flex items-center hover:text-yellow-300 transition duration-300 hover:underline text-2xl"
+  title="Owlery Chat"
+>
+  <GroupsIcon fontSize="inherit" />
 </Link>
         {user && (
           <button
