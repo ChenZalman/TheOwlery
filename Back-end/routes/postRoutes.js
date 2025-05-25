@@ -19,18 +19,25 @@ router.post('/',async(req,res) =>{
                 ////add fetch posts tht user x can see
 
             }
-            case 'create':{
-                console.log(data.userId)
-                var newPost = new Post({text:data.text,userId:data.userId,likes:0,createdAt:Date.now()})
-                const doc = await newPost.save()
-                var newPostDB = doc.toJSON()
-                Object.assign(newPostDB,{id:newPostDB._id.toString()})
-                delete newPostDB['_id']
-                delete newPostDB['__v']
-                return res.json({message:'post created',post:newPostDB})
-            }
+         case 'create': {
+    console.log(data.userId)
+    var newPost = new Post({text:data.text,userId:data.userId,likes:0,createdAt:Date.now()})
+    const doc = await newPost.save()
+    var newPostDB = doc.toJSON()
+    Object.assign(newPostDB, { id: newPostDB._id.toString() })
+    delete newPostDB['_id']
+    delete newPostDB['__v']
+
+    // Update the user's postsId array  after creating the post
+    await mongoose.model('User').findByIdAndUpdate(
+      data.userId,
+      { $push: { postsId: newPostDB.id } }
+    );
+
+    return res.json({message:'post created', post: newPostDB})
+}
             default:{
-                return res.status(500).json({message: "no command was dounaaaad"})
+                return res.status(500).json({message: "no command was founaaaad"})
             }
         }
     }catch(error){

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useAuthContext } from "../Hooks/UseAuthContext";
 const address = process.env.REACT_APP_ADDRESS;
     const port = process.env.REACT_APP_PORT;
+    //const socket = io("http://localhost:5000");
 const mockMessages = [
   { id: 1, sender: "Hedwig", text: "Welcome to the Owlery chat! 🦉" },
   { id: 2, sender: "You", text: "Hi Hedwig! Who's delivering the mail today?" },
