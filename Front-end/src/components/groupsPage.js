@@ -1,15 +1,23 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import { useAuthContext } from "../Hooks/UseAuthContext"; 
 const GroupsPage = () => {
+  const { user } = useAuthContext();  
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Example: Fetch groups from backend (adjust endpoint as needed)
     const fetchGroups = async () => {
+      if (!user?.userId) {
+        setGroups([]);
+        setLoading(false);
+        return;
+      }
       try {
-        const res = await axios.get("/api/groups"); // Adjust if your route is different
+        const res = await axios.post("/api/groups", {
+          command: "getUserGroups",
+          data: { userId: user.userId }
+        });
         setGroups(res.data.groups || []);
       } catch (err) {
         setGroups([]);
@@ -18,11 +26,11 @@ const GroupsPage = () => {
       }
     };
     fetchGroups();
-  }, []);
+  }, [user]);
 
   return (
     <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg border border-gray-200">
-      <h2 className="text-2xl font-bold mb-6 text-purple-900">Groups</h2>
+      <h2 className="text-2xl font-bold mb-6 text-purple-900">Your Groups</h2>
       {loading ? (
         <div className="text-gray-500">Loading groups...</div>
       ) : groups.length === 0 ? (
@@ -36,7 +44,6 @@ const GroupsPage = () => {
             >
               <span className="font-semibold text-lg text-purple-800">{group.name}</span>
               <span className="text-gray-600">{group.description}</span>
-              {/* Add more group info here if needed */}
             </li>
           ))}
         </ul>

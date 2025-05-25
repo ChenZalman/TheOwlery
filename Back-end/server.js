@@ -4,6 +4,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const userRouter = require('./routes/userRoutes')
 const postRouter = require('./routes/postRoutes')
+const groupRouter = require('./routes/groupRoutes')
 const userSchema = require('./models/userSchema')
 
 require('dotenv').config();
@@ -21,6 +22,7 @@ const User = mongoose.model('User',userSchema)
 
 app.use('/api/users',userRouter)
 app.use('/api/posts',postRouter)
+app.use('/api/groups',groupRouter)
 
 app.get('/',async(req,res) => {res.status(200).json({message:"Welcome!"})})
 
