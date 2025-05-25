@@ -5,7 +5,8 @@ const GroupsPage = () => {
   const { user } = useAuthContext();  
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
-
+ const address = process.env.REACT_APP_ADDRESS;
+    const port = process.env.REACT_APP_PORT;
   useEffect(() => {
     const fetchGroups = async () => {
       if (!user?.userId) {
@@ -14,7 +15,7 @@ const GroupsPage = () => {
         return;
       }
       try {
-        const res = await axios.post("/api/groups", {
+        const res = await axios.post(`http://${address}:${port}/api/groups`,{
           command: "getUserGroups",
           data: { userId: user.userId }
         });
