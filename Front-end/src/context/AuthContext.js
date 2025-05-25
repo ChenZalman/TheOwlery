@@ -32,8 +32,8 @@ useEffect(() => {
     dispatch({ type: 'LOGIN', payload: user })
   }
   //add timeout 10 seconds 
-  dispatch({ type: 'AUTH_READY', payload: user })
- setTimeout(() => {
+  //dispatch({ type: 'AUTH_READY', payload: user })
+  setTimeout(() => {
     dispatch({ type: 'AUTH_READY', payload: user })
   }, 5000)
 }, [])
