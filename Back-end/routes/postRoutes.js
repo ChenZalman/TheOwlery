@@ -13,7 +13,7 @@ router.post('/',async(req,res) =>{
 
             }
             case 'delete':{
-
+                const post = await Post.findById(data.postId)
             }
          case 'get': {
     if (!data.userId) {

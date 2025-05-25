@@ -14,8 +14,8 @@ export default function EditProfilePage({user}) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     Object.assign(user,{...formData})
-    const postsId = user.posts.map((post) => post.id)
-    Object.assign(user,{postsId:postsId})
+    // const postsId = user.posts.map((post) => post.id)
+    // Object.assign(user,{postsId:postsId})
     console.log("Updated profile:", user);
     await signInUp({...user},"update")
   };

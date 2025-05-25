@@ -20,12 +20,13 @@ const PostCreator = () => {
     e.preventDefault();
     Object.assign(formData, { userId: user.userId });
     const json = await post(formData, "create");
-    const newPostId = json?.post?.id;
+    const newPostId = json.id;
     if (newPostId) {
       if (user.postsId)
         Object.assign(user, { postsId: [...user.postsId, newPostId] });
       else Object.assign(user, { postsId: [newPostId] });
       signInUp({ ...user }, "update");
+      console.log("post added successfully")
       setFormData({ text: "" }); // Clear input after post
     }
   };

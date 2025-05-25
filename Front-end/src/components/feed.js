@@ -17,7 +17,7 @@ export default function Feed({posts}) {
         <Post
           key={post.id || post._id}
           post={{
-            userName: post.userName,  
+            userId: post.userId,  
             profilePicture: post.profilePicture,  
             textContent: post.text || post.textContent,
             mediaUrl: post.mediaUrl,

@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useAuthContext } from "../Hooks/UseAuthContext";
 const Post = ({post}) => {
-  const { userName, profilePicture , textContent, mediaUrl, mediaType,postId } = post
+  const { userId, profilePicture , textContent, mediaUrl, mediaType,postId } = post
   const [likes, setLikes] = useState(0);
   const [comments, setComments] = useState(0);
   const [isLiked,setIsLiked] = useState(false);
@@ -58,7 +58,8 @@ const Post = ({post}) => {
                 borderColor:"#c1c1c1",
                 border:"solid"
               }}/>
-      <h2 style={{ fontSize: "20px", marginBottom: "0.75rem" }}>{userName}</h2>
+      <h2 style={{ fontSize: "20px", marginBottom: "0.75rem" }}>{userId}</h2>
+      <img src="./images/delete.svg"/>
       </div>
       <p style={{ fontSize: "16px", marginBottom: "1rem", color: "#333" }}>
         {textContent}

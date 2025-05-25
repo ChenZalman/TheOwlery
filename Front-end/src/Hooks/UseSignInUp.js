@@ -16,7 +16,7 @@ export const UseSignInUp = () => {
 
         try{
             console.log('Form submitted :', formData);
-            debugger;
+            // debugger;
              console.log(`address is: ${address} and the port is: ${port}`)
             const response = await axios.post(`http://${address}:${port}/api/users`,{
                 command:command,
