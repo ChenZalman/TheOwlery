@@ -75,51 +75,15 @@ useEffect(() => {
     </div>
       {/* Header with Illustration */}
       <div className="relative h-64 bg-gradient-to-r from-orange-400 via-pink-400 to-purple-500 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900/20">
+         <img
+    src={`https://res.cloudinary.com/${process.env.REACT_APP_CLOUDINARY_NAME}/image/upload/${group.coverImage}.jpg`}
+    alt="Group Cover"
+    className="w-full h-64 object-cover"
+  />
         
-        {/* Illustrated Scene */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative w-full h-full flex items-center justify-around px-8">
-            {/* Person with easel */}
-            <div className="flex flex-col items-center">
-              <div className="w-16 h-16 bg-blue-600 rounded-full mb-2 flex items-center justify-center">
-                <div className="w-8 h-8 bg-orange-300 rounded-full"></div>
-              </div>
-              <div className="w-12 h-8 bg-yellow-400 transform rotate-12"></div>
-            </div>
-
-            {/* Tree/Plant */}
-            <div className="flex flex-col items-center">
-              <div className="w-4 h-16 bg-orange-600 rounded"></div>
-              <div className="w-12 h-12 bg-blue-500 rounded-full -mt-8 relative">
-                <div className="absolute -top-2 -left-2 w-4 h-4 bg-pink-400 rounded-full"></div>
-                <div className="absolute -top-1 -right-2 w-3 h-3 bg-yellow-400 rounded-full"></div>
-              </div>
-            </div>
-
-            {/* Person gardening */}
-            <div className="flex flex-col items-center">
-              <div className="w-14 h-14 bg-white rounded-full mb-2 flex items-center justify-center">
-                <div className="w-6 h-6 bg-blue-600 rounded-full"></div>
-              </div>
-              <div className="w-3 h-8 bg-orange-700"></div>
-            </div>
-
-            {/* Another tree */}
-            <div className="flex flex-col items-center">
-              <div className="w-3 h-12 bg-orange-600"></div>
-              <div className="w-10 h-10 bg-blue-600 rounded-full -mt-6 relative">
-                <div className="absolute -top-1 left-1 w-3 h-3 bg-pink-500 rounded-full"></div>
-              </div>
-            </div>
-
-            {/* Person with tools */}
-            <div className="flex flex-col items-center">
-              <div className="w-14 h-14 bg-blue-700 rounded-full mb-2"></div>
-              <div className="w-2 h-6 bg-yellow-600"></div>
-            </div>
-          </div>
         </div>
+       
 
         {/* Edit button */}
         <button className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm hover:bg-white/30 transition-colors">
@@ -352,14 +316,27 @@ useEffect(() => {
   
   </div>
 )}
-{showCoverPicker&& (
+{showCoverPicker && (
   <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
     <AddCoverPhotoModal
-      userId={user?.userId}
       onClose={() => setShowCoverPicker(false)}
+      onSave={async (url, publicId) => {
+        // Update group with new coverImage publicId
+        try {
+          const address = process.env.REACT_APP_ADDRESS;
+          const port = process.env.REACT_APP_PORT;
+          await axios.post(`http://${address}:${port}/api/groups`, {
+            command: "updateCoverImage",
+            data: { groupId, coverImage: publicId }
+          });
+          // Optionally update local state to reflect the new cover image
+          setGroup((prev) => ({ ...prev, coverImage: publicId }));
+        } catch (err) {
+          alert("Failed to update group cover image.");
+        }
+        setShowCoverPicker(false);
+      }}
     />
-    
-  
   </div>
 )}
     </div>

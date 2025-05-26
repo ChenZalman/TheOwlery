@@ -8,6 +8,7 @@ const postSchema = mongoose.Schema({
     postsId: [String],    
     adminIds: [String], 
     blockedIds: [String],
+    coverImage: String,
     createdAt: Date,
 })
 

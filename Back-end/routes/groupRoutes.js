@@ -51,6 +51,20 @@ router.post('/', async (req, res) => {
   delete groupObj.__v;
   return res.status(200).json({ group: groupObj });
 }
+case 'updateCoverImage': {
+  if (!data.groupId || !data.coverImage) {
+    return res.status(400).json({ message: "Missing groupId or coverImage" });
+  }
+  const group = await Group.findByIdAndUpdate(
+    data.groupId,
+    { coverImage: data.coverImage },
+    { new: true }
+  );
+  if (!group) {
+    return res.status(404).json({ message: "Group not found" });
+  }
+  return res.status(200).json({ group });
+}
       default: {
         return res.status(400).json({ message: "No valid command was found" });
       }
