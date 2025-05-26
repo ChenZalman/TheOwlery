@@ -35,8 +35,8 @@ const AddCoverPhoto = ({ onClose, onSave }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" >
+      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative" style={{backgroundColor:" #1C1E21"}}>
         <button
           className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl"
           onClick={onClose}
@@ -44,7 +44,7 @@ const AddCoverPhoto = ({ onClose, onSave }) => {
           ×
         </button>
         <h2 className="text-xl font-bold mb-4 text-purple-900">Upload Cover Photo</h2>
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center" style={{backgroundColor:" #1C1E21"}}>
           {previewUrl ? (
             <img
               src={previewUrl}
@@ -52,7 +52,7 @@ const AddCoverPhoto = ({ onClose, onSave }) => {
               className="w-full max-h-60 object-cover rounded mb-4"
             />
           ) : (
-            <div className="w-full h-40 bg-gray-100 flex items-center justify-center rounded mb-4 text-gray-400">
+            <div className="w-full h-40 bg-gray-100 flex items-center justify-center rounded mb-4 text-gray-400" style={{backgroundColor:" #1C1E21"}}>
               No photo selected
             </div>
           )}

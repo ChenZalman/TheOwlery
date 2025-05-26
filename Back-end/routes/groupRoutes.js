@@ -52,12 +52,24 @@ router.post('/', async (req, res) => {
   return res.status(200).json({ group: groupObj });
 }
 case 'updateCoverImage': {
-  if (!data.groupId || !data.coverImage) {
-    return res.status(400).json({ message: "Missing groupId or coverImage" });
-  }
+
   const group = await Group.findByIdAndUpdate(
     data.groupId,
     { coverImage: data.coverImage },
+    { new: true }
+  );
+  if (!group) {
+    return res.status(404).json({ message: "Group not found" });
+  }
+  return res.status(200).json({ group });
+}
+case 'updateDescription': {
+  if (!data.groupId || typeof data.description !== "string") {
+    return res.status(400).json({ message: "Missing groupId or description" });
+  }
+  const group = await Group.findByIdAndUpdate(
+    data.groupId,
+    { description: data.description },
     { new: true }
   );
   if (!group) {

@@ -4,7 +4,8 @@ import { Users, Share2, Search, MoreHorizontal, Heart, MessageCircle, Camera, Us
 import { useParams } from "react-router-dom";
 import InviteFriendsModal from "./popups/groupPage/invitePeopleToGroup";
 import AddCoverPhotoModal from "./popups/groupPage/addCoverPhoto";
-import { useAuthContext } from "../Hooks/UseAuthContext";  
+import { useAuthContext } from "../Hooks/UseAuthContext"; 
+import DescriptionModal from "./popups/groupPage/description"; 
 import axios from "axios";
 const GroupPage = () => {
 const { groupId } = useParams();
@@ -13,6 +14,7 @@ const [activeTab, setActiveTab] = useState('Discussion');  const [showSetupPanel
 const [liked, setLiked] = useState(false);
 const [showInviteModal, setShowInviteModal] = useState(false);
 const [showCoverPicker,setShowCoverPicker] = useState(false);
+const [showDescriptionModal, setShowDescriptionModal] = useState(false);
 const { user } = useAuthContext();  
 const tabs = ['Discussion', 'Events', 'Media', 'Files', 'People'];
 useEffect(() => {
@@ -40,58 +42,58 @@ useEffect(() => {
   }
 
   return (
-  <div className="min-h-screen text-white relative overflow-hidden" style={{ backgroundColor: "#1c1e21" }}>
-    {/* Sparkle and Particle Effects */}
-    <div className="absolute inset-0 pointer-events-none z-0">
-      {[...Array(15)].map((_, i) => (
-        <div
-          key={i}
-          className="absolute w-2 h-2 bg-yellow-300 rounded-full opacity-30"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 2}s`,
-            boxShadow: "0 0 10px #e6c47a",
-          }}
-        ></div>
-      ))}
-    </div>
-    <div className="absolute inset-0 pointer-events-none z-0">
-      {[...Array(8)].map((_, i) => (
-        <div
-          key={`sparkle-${i}`}
-          className="absolute text-yellow-200 text-xs opacity-60"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animation: `sparkle ${2 + Math.random() * 3}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 2}s`,
-          }}
-        >
-          ✨
-        </div>
-      ))}
-    </div>
+    <div className="min-h-screen text-white relative overflow-hidden" style={{ backgroundColor: "#1c1e21" }}>
+      {/* Sparkle and Particle Effects */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {[...Array(15)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-yellow-300 rounded-full opacity-30"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 2}s`,
+              boxShadow: "0 0 10px #e6c47a",
+            }}
+          ></div>
+        ))}
+      </div>
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={`sparkle-${i}`}
+            className="absolute text-yellow-200 text-xs opacity-60"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animation: `sparkle ${2 + Math.random() * 3}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 2}s`,
+            }}
+          >
+            ✨
+          </div>
+        ))}
+      </div>
       {/* Header with Illustration */}
       <div className="relative h-64 bg-gradient-to-r from-orange-400 via-pink-400 to-purple-500 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900/20">
-         <img
-    src={`https://res.cloudinary.com/${process.env.REACT_APP_CLOUDINARY_NAME}/image/upload/${group.coverImage}.jpg`}
-    alt="Group Cover"
-    className="w-full h-64 object-cover"
-  />
-        
+          <img
+            src={`https://res.cloudinary.com/${process.env.REACT_APP_CLOUDINARY_NAME}/image/upload/${group.coverImage}.jpg`}
+            alt="Group Cover"
+            className="w-full h-64 object-cover"
+          />
         </div>
-       
-
         {/* Edit button */}
-        <button className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm hover:bg-white/30 transition-colors">
+        <button
+          className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm hover:bg-white/30 transition-colors"
+          onClick={() => setShowCoverPicker(true)}
+        >
           ✏️ Edit
         </button>
       </div>
 
-          {/* Group Info */}
+      {/* Group Info */}
       <div className="px-6 py-4 border-b border-gray-700">
         <div className="flex items-center justify-between">
           <div>
@@ -110,10 +112,7 @@ useEffect(() => {
               <UserPlus className="w-4 h-4" />
               <span>Invite</span>
             </button>
-            <button className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
-              <Share2 className="w-4 h-4" />
-              <span>Share</span>
-            </button>
+             
           </div>
         </div>
       </div>
@@ -232,7 +231,7 @@ useEffect(() => {
         {showSetupPanel && (
           <div className="w-80 p-6 bg-gray-800 border-l border-gray-700">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold">Finish setting up your group</h3>
+               
               <button 
                 onClick={() => setShowSetupPanel(false)}
                 className="text-gray-400 hover:text-gray-300"
@@ -250,30 +249,31 @@ useEffect(() => {
             <div className="space-y-4">
               <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors">
                 <UserPlus className="w-5 h-5 text-gray-400" />
-               <button
-  className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-  onClick={() => setShowInviteModal(true)}
->
-  <UserPlus className="w-4 h-4" />
-  <span>Invite people To Join</span>
-</button>
+                <button
+                  className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                  onClick={() => setShowInviteModal(true)}
+                >
+                  <UserPlus className="w-4 h-4" />
+                  <span>Invite people To Join</span>
+                </button>
               </div>
               <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors">
                 <Camera className="w-5 h-5 text-gray-400" />
                 <button
-                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-                onClick={() => setShowCoverPicker(true)}
-                
-                
+                  className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                  onClick={() => setShowCoverPicker(true)}
                 >
-                
-  <          span>Choose cover</span>
+                  <span>Choose cover</span>
                 </button>
-
               </div>
               <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors">
                 <FileText className="w-5 h-5 text-gray-400" />
-                <span>Add a description</span>
+                <button
+                  className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                  onClick={() => setShowDescriptionModal(true)}
+                >
+                  <span>Add A description</span>
+                </button>
               </div>
               <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors">
                 <Plus className="w-5 h-5 text-gray-400" />
@@ -307,38 +307,69 @@ useEffect(() => {
         )}
       </div>
       {showInviteModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <InviteFriendsModal
+            userId={user?.userId}
+            onClose={() => setShowInviteModal(false)}
+          />
+        </div>
+      )}
+      {showCoverPicker && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <AddCoverPhotoModal
+            onClose={() => setShowCoverPicker(false)}
+            onSave={async (url, publicId) => {
+              try {
+                const address = process.env.REACT_APP_ADDRESS;
+                const port = process.env.REACT_APP_PORT;
+                await axios.post(`http://${address}:${port}/api/groups`, {
+                  command: "updateCoverImage",
+                  data: { groupId, coverImage: publicId }
+                });
+                setGroup((prev) => ({ ...prev, coverImage: publicId }));
+              } catch (err) {
+                alert("Failed to update group cover image.");
+              }
+              setShowCoverPicker(false);
+            }}
+          />
+        </div>
+      )}
+     {showDescriptionModal && (
   <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <InviteFriendsModal
-      userId={user?.userId}
-      onClose={() => setShowInviteModal(false)}
-    />
-    
-  
-  </div>
-)}
-{showCoverPicker && (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <AddCoverPhotoModal
-      onClose={() => setShowCoverPicker(false)}
-      onSave={async (url, publicId) => {
-        // Update group with new coverImage publicId
+    <DescriptionModal
+      initialValue={group.description}
+      onClose={() => setShowDescriptionModal(false)}
+      onSave={async (newDescription) => {
         try {
           const address = process.env.REACT_APP_ADDRESS;
           const port = process.env.REACT_APP_PORT;
           await axios.post(`http://${address}:${port}/api/groups`, {
-            command: "updateCoverImage",
-            data: { groupId, coverImage: publicId }
+            command: "updateDescription",
+            data: { groupId, description: newDescription }
           });
-          // Optionally update local state to reflect the new cover image
-          setGroup((prev) => ({ ...prev, coverImage: publicId }));
+          setGroup((prev) => ({ ...prev, description: newDescription }));
         } catch (err) {
-          alert("Failed to update group cover image.");
+          alert("Failed to update group description.");
         }
-        setShowCoverPicker(false);
+        setShowDescriptionModal(false);
       }}
     />
   </div>
 )}
+      {/* Keyframes for sparkles */}
+      <style jsx="true">{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) translateX(0px);}
+          25% { transform: translateY(-15px) translateX(8px);}
+          50% { transform: translateY(-8px) translateX(-5px);}
+          75% { transform: translateY(-20px) translateX(3px);}
+        }
+        @keyframes sparkle {
+          0%, 100% { opacity: 0.3; transform: scale(1);}
+          50% { opacity: 1; transform: scale(1.2);}
+        }
+      `}</style>
     </div>
   );
 };

@@ -110,7 +110,10 @@ router.post('/', async (req, res) => {
                 }
                 post.likes = (post.likes || 0) + 1;
                 await post.save();
-                return res.json({ message: "Post liked", post });
+                await User.findByIdAndUpdate(userId, { $addToSet: { likedPosts: postId } });
+
+             return res.json({ message: "Post liked", post });
+                
             }
 
             case 'unlikePost': {
@@ -124,6 +127,7 @@ router.post('/', async (req, res) => {
                 }
                 post.likes = Math.max(0, (post.likes || 0) - 1);
                 await post.save();
+                await User.findByIdAndUpdate(userId, { $pull: { likedPosts: postId } });
                 return res.json({ message: "Post unliked", post });
             }
 

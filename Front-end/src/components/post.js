@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 import axios from "axios";
 import { useAuthContext } from "../Hooks/UseAuthContext";
 
@@ -27,7 +27,30 @@ const Post = ({ post }) => {
   const address = process.env.REACT_APP_ADDRESS;
   const port = process.env.REACT_APP_PORT;
   const { user } = useAuthContext();
-
+ useEffect(() => {
+  if (user && Array.isArray(user.likedPosts)) {
+    setIsLiked(user.likedPosts.includes(postId));
+  }
+}, [user, postId]);
+ 
+  useEffect(() => {
+    const fetchLikes = async () => {
+      try {
+        const res = await axios.post(`http://${address}:${port}/api/posts`, {
+          command: "getPostById",
+          data: { postId }
+        });
+        if (res.data && res.data.post && typeof res.data.post.likes === "number") {
+          setLikes(res.data.post.likes);
+        }
+      } catch (err) {
+        console.error("Failed to fetch likes:", err);
+        console.log(" number of likes:", likes);
+      }
+    };
+    fetchLikes();
+  }, [postId]);
+  
   const handleLike = async () => {
     try {
       const command = isLiked ? "unlikePost" : "likePost";

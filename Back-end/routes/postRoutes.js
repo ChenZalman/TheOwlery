@@ -56,6 +56,21 @@ router.post('/',async(req,res) =>{
 
     return res.json({message:'post created', post: newPostDB})
 }
+case 'getPostById':{
+    if(!data.postId){
+        return res.status(400).json({message: "Missing postId"})
+    }
+    const post=await Post.findById(data.postId);
+     if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+    }
+       const postObj = post.toObject();
+    postObj.id = postObj._id.toString();
+    delete postObj._id;
+    delete postObj.__v;
+    return res.status(200).json({ post: postObj });
+
+}
             default:{
                 return res.status(500).json({message: "no command was founaaaad"})
             }
