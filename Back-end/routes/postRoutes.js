@@ -3,7 +3,10 @@ const router = express.Router()
 const mongoose = require('mongoose')
 const postSchema = require('../models/postSchema')
 const Post = mongoose.model('Post',postSchema)
-
+const userSchema = require('../models/userSchema');
+const User = mongoose.model('User', userSchema);
+const commentSchema = require('../models/commentSchema');
+const Comment = mongoose.model('Comment', commentSchema);
 router.post('/',async(req,res) =>{
     console.log('post route')
     const {command,data} = req.body;
@@ -19,7 +22,7 @@ router.post('/',async(req,res) =>{
     if (!data.userId) {
         return res.status(400).json({ message: "Missing userId" });
     }
-    // Get the user and their friends
+    
     const User = mongoose.model('User');
     const user = await User.findById(data.userId);
     if (!user) {
@@ -81,6 +84,46 @@ case 'getGroupPosts': {
   }
   const posts = await Post.find({ _id: { $in: group.postsId } }).sort({ createdAt: -1 });
   return res.json({ posts });
+}
+case "addComment": {
+    const { postId, userId, text } = req.body.data;
+    if (!postId || !userId || !text) {
+        return res.status(400).json({ message: "Missing data" });
+    }
+
+   
+    const comment = await Comment.create({
+        postId,
+        userId,
+        text,
+        createdAt: new Date(),
+    });
+
+     
+    await Post.findByIdAndUpdate(
+        postId,
+        { $push: { commentsId: comment._id } }
+    );
+
+    
+    await User.findByIdAndUpdate(
+        userId,
+        { $push: { commentsId: comment._id } }
+    );
+
+    return res.status(201).json({ comment });
+}
+case 'getCommentsByPostId': {
+    if (!data.postId) {
+        return res.status(400).json({ message: "Missing postId" });
+    }
+    const post = await Post.findById(data.postId);
+    if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+    }
+    // Populate comments by their IDs
+    const comments = await Comment.find({ _id: { $in: post.commentsId } }).sort({ createdAt: -1 });
+    return res.status(200).json({ comments });
 }
             default:{
                 return res.status(500).json({message: "no command was founaaaad"})

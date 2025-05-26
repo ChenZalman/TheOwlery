@@ -1,7 +1,7 @@
 import { useState ,useEffect} from "react";
 import axios from "axios";
 import { useAuthContext } from "../Hooks/UseAuthContext";
-
+import Comment from "./comment";
 const CLOUDINARY_NAME = process.env.REACT_APP_CLOUDINARY_NAME;
 
 // Helper to build Cloudinary URL from public_id
@@ -27,6 +27,9 @@ const Post = ({ post }) => {
   const address = process.env.REACT_APP_ADDRESS;
   const port = process.env.REACT_APP_PORT;
   const { user } = useAuthContext();
+  const [showCommentInput, setShowCommentInput] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const [commentsList, setCommentsList] = useState([]);
  useEffect(() => {
   if (user && Array.isArray(user.likedPosts)) {
     setIsLiked(user.likedPosts.includes(postId));
@@ -75,7 +78,41 @@ const Post = ({ post }) => {
       console.error("Network error:", err);
     }
   };
-
+ const handleComment = async () => {
+    if (!commentText.trim()) return;
+    try {
+      await axios.post(`http://${address}:${port}/api/posts`, {
+        command: "addComment",
+        data: {
+          postId,
+          userId: user.userId,
+          text: commentText,
+        },
+      });
+      setCommentText("");
+      setShowCommentInput(false);
+    
+    } catch (err) {
+      alert("Failed to add comment");
+    }
+  };
+  useEffect(() => {
+  const fetchComments = async () => {
+    try {
+      const res = await axios.post(`http://${address}:${port}/api/posts`, {
+        command: "getCommentsByPostId",
+        data: { postId }
+      });
+      if (res.data && Array.isArray(res.data.comments)) {
+        setCommentsList(res.data.comments);
+        setComments(res.data.comments.length);
+      }
+    } catch (err) {
+      console.error("Failed to fetch comments:", err);
+    }
+  };
+  fetchComments();
+}, [postId]);
   const imageUrl = getCloudinaryUrl(imagePublicId, "image", "jpg");
   const videoUrl = getCloudinaryUrl(videoPublicId, "video", "mp4");
   console.log("Image URL:", imageUrl);
@@ -84,79 +121,96 @@ const Post = ({ post }) => {
   const profileUrl = getCloudinaryUrl(profilePicture, "image", "jpg");
   console.log("Profile URL dudeeeeeeeeeeeee:", profileUrl);
 
-  return (
-    <div
-      style={{
-        width: "480px",
-        margin: "0 auto",
-        padding: "2rem",
-        transform: "translateY(-5px)",
-        backgroundColor: "#fff",
-        border: "1px solid #ccc",
-        borderRadius: "16px",
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
-      <div style={{ display: "flex", gap: "10px" }}>
+return (
+  <div
+    style={{
+      width: "480px",
+      margin: "0 auto",
+      padding: "2rem",
+      transform: "translateY(-5px)",
+      backgroundColor: "#23272a",
+      border: "1px solid #374151",
+      borderRadius: "16px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+      fontFamily: "Arial, sans-serif",
+      color: "#e5e7eb",
+    }}
+  >
+    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+      <img
+        src={profileUrl}
+        alt="Profile"
+        style={{
+          width: "50px",
+          height: "50px",
+          objectFit: "cover",
+          borderRadius: "9999px",
+          background: "#4b5563",
+        }}
+      />
+      <h2 style={{ fontSize: "20px", marginBottom: "0.75rem", color: "#fff" }}>{userName}</h2>
+    </div>
+    <p style={{ fontSize: "16px", marginBottom: "1rem", color: "#d1d5db" }}>
+      {textContent}
+    </p>
+
+    {imageUrl && (
+      <div style={{ marginBottom: "1rem" }}>
         <img
-          src={profileUrl}
-          alt="Profile"
+          src={imageUrl}
+          alt="Post media"
           style={{
-            width: "50px",
-            height: "50px",
+            width: "100%",
+            maxHeight: "300px",
             objectFit: "cover",
             borderRadius: "12px",
-            borderColor: "#c1c1c1",
-            border: "solid",
           }}
         />
-        <h2 style={{ fontSize: "20px", marginBottom: "0.75rem" }}>{userName}</h2>
       </div>
-      <p style={{ fontSize: "16px", marginBottom: "1rem", color: "#333" }}>
-        {textContent}
-      </p>
+    )}
 
-      {imageUrl && (
-        <div style={{ marginBottom: "1rem" }}>
-          <img
-            src={imageUrl}
-            alt="Post media"
-            style={{
-              width: "100%",
-              maxHeight: "300px",
-              objectFit: "cover",
-              borderRadius: "12px",
-            }}
-          />
-        </div>
-      )}
+    {videoUrl && (
+      <div style={{ marginBottom: "1rem" }}>
+        <video
+          controls
+          style={{
+            width: "100%",
+            maxHeight: "300px",
+            borderRadius: "12px",
+          }}
+        >
+          <source src={videoUrl} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    )}
 
-      {videoUrl && (
-        <div style={{ marginBottom: "1rem" }}>
-          <video
-            controls
-            style={{
-              width: "100%",
-              maxHeight: "300px",
-              borderRadius: "12px",
-            }}
-          >
-            <source src={videoUrl} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        </div>
-      )}
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <span style={{ fontSize: "14px", color: "#666" }}>{likes} Likes</span>
-        <span style={{ fontSize: "14px", color: "#666" }}>{comments} comments</span>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginTop: "1rem",
+      }}
+    >
+      <span style={{ fontSize: "14px", color: "#9ca3af" }}>{likes} Likes</span>
+      <span style={{ fontSize: "14px", color: "#9ca3af", display: "flex", alignItems: "center", gap: "4px" }}>
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#9ca3af"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ marginRight: "4px" }}
+        >
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+        {comments} comments
+      </span>
+      <div style={{ display: "flex", gap: "8px" }}>
         <button
           onClick={handleLike}
           style={{
@@ -180,9 +234,63 @@ const Post = ({ post }) => {
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
         </button>
+        <button
+          onClick={() => setShowCommentInput((prev) => !prev)}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            color: "#60a5fa",
+            fontSize: "16px",
+          }}
+          aria-label="Comment"
+        >
+        Comment
+        </button>
       </div>
     </div>
-  );
-};
- 
+        {showCommentInput && (
+      <div style={{ marginTop: "1rem" }}>
+        <input
+          type="text"
+          value={commentText}
+          onChange={e => setCommentText(e.target.value)}
+          placeholder="Write a comment..."
+          style={{
+            width: "80%",
+            padding: "8px",
+            borderRadius: "8px",
+            border: "1px solid #374151",
+            background: "#1f2937",
+            color: "#e5e7eb",
+            marginRight: "8px",
+          }}
+        />
+        <button
+          onClick={handleComment}
+          style={{
+            background: "#2563eb",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            padding: "8px 16px",
+            cursor: "pointer",
+          }}
+        >
+          Post
+        </button>
+      </div>
+    )}
+
+    {/* Always show comments below the post */}
+    {commentsList.length > 0 && (
+      <div style={{ marginTop: "1.5rem" }}>
+        {commentsList.map((comment) => (
+          <Comment key={comment._id} comment={comment} />
+        ))}
+      </div>
+    )}
+  </div>
+);
+}
 export default Post;

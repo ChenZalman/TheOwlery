@@ -10,6 +10,7 @@ const postSchema = mongoose.Schema({
     videos:[],
     comments:[],
     createdAt: Date,
+    commentsId: [String],  
 })
 
 module.exports = postSchema

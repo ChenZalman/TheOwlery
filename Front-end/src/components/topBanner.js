@@ -12,7 +12,7 @@ export default function TopBanner() {
   };
 
   return (
-    <div className="relative z-20 w-full bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-800 border-b-2 border-gold/50 shadow-lg">
+  <div className="relative z-20 w-full border-b-2 border-gold/50 shadow-lg" style={{ backgroundColor: "#1D1E22" }}>
       <div className="flex items-center justify-center gap-8 px-6 py-4 text-gold font-serif text-lg">
         <Link
           to="/"

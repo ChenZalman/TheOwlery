@@ -12,7 +12,8 @@ const userSchema = mongoose.Schema({
     postsId:[],
     profileImage: String,
     //likedPosts:[]
-      likedPosts: { type: [String], default: [] }
+      likedPosts: { type: [String], default: [] },
+      commentsId: { type: [String], default: [] }
 })
 
 module.exports = userSchema

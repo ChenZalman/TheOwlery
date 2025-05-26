@@ -28,7 +28,7 @@ console.log("userId:", userId);
     return (
         <div style={{
             padding: "20px",
-            backgroundColor: "#f2f2f2",
+            backgroundColor: "#23272A",
             minHeight: "100vh",
             display: "flex",
             flexDirection: "column",

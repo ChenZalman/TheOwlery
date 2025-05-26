@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
+import AboutUs from "./homePage/aboutUs";  
 
 const HomePage = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [aboutUsOpen, setAboutUsOpen] = useState(false);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-gold relative overflow-hidden font-serif" style={{backgroundColor:"#1c1e21"}}>
+    <div className="min-h-screen text-gold relative overflow-hidden font-serif" style={{backgroundColor:"#1D1E22"}}>
       <link
         href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=IM+Fell+English+SC&display=swap"
         rel="stylesheet"
@@ -60,7 +62,7 @@ const HomePage = () => {
           {/* Owl with glowing circle behind */}
           <div className="relative w-[28rem] h-[28rem] flex items-center justify-center">
             {/* Glowing circle */}
-            <div className="absolute w-[22rem] h-[22rem] bg-amber-100 rounded-full opacity-20 animate-pulse"></div>
+             {/*<div className="absolute w-[22rem] h-[22rem] bg-amber-100 rounded-full opacity-20 animate-pulse"></div>
 
             {/* Owl */}
             <img
@@ -98,11 +100,14 @@ const HomePage = () => {
 
         {/* CTA */}
         <div className="text-center space-y-6">
-          <button className="group px-12 py-5 bg-gradient-to-r from-purple-700 to-indigo-700 text-gold font-bold text-xl rounded-full border-2 border-gold/50 hover:border-gold hover:scale-110 hover:shadow-[0_0_30px_#e6c47a] transition-all duration-500 transform hover:-translate-y-1">
-            <span className="flex items-center gap-3">
-              Cast a Message <span className="text-2xl group-hover:animate-spin">✨</span>
-            </span>
-          </button>
+        <button
+        className="group px-12 py-5 bg-gradient-to-r from-yellow-700 to-silver-700 text-gold font-bold text-xl rounded-full border-2 border-gold/50 hover:border-gold hover:scale-110 hover:shadow-[0_0_30px_#e6c47a] transition-all duration-500 transform hover:-translate-y-1"
+        onClick={() => setAboutUsOpen(true)}
+        >
+      <span className="flex items-center gap-3">
+      About Us <span className="text-2xl group-hover:animate-spin">✨</span>
+    </span>
+   </button>
 
           <p className="text-gold/70 text-lg italic animate-pulse">
             Ready your quills and parchment
@@ -116,12 +121,12 @@ const HomePage = () => {
               📜
             </span>
             <span className="animate-bounce" style={{ animationDelay: "0.4s" }}>
-              🦉
+              
             </span>
           </div>
         </div>
       </div>
-
+{aboutUsOpen && <AboutUs onClose={() => setAboutUsOpen(false)} />}
       {/* Styles */}
       <style jsx>{`
         @keyframes float {
