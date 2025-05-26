@@ -3,6 +3,7 @@ import { Users, Share2, Search, MoreHorizontal, Heart, MessageCircle, Camera, Us
  import React, { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import InviteFriendsModal from "./popups/groupPage/invitePeopleToGroup";
+import AddCoverPhotoModal from "./popups/groupPage/addCoverPhoto";
 import { useAuthContext } from "../Hooks/UseAuthContext";  
 import axios from "axios";
 const GroupPage = () => {
@@ -11,6 +12,7 @@ const [group, setGroup] = useState(null);
 const [activeTab, setActiveTab] = useState('Discussion');  const [showSetupPanel, setShowSetupPanel] = useState(true);
 const [liked, setLiked] = useState(false);
 const [showInviteModal, setShowInviteModal] = useState(false);
+const [showCoverPicker,setShowCoverPicker] = useState(false);
 const { user } = useAuthContext();  
 const tabs = ['Discussion', 'Events', 'Media', 'Files', 'People'];
 useEffect(() => {
@@ -294,7 +296,16 @@ useEffect(() => {
               </div>
               <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors">
                 <Camera className="w-5 h-5 text-gray-400" />
-                <span>Add a cover photo</span>
+                <button
+                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                onClick={() => setShowCoverPicker(true)}
+                
+                
+                >
+                
+  <          span>Choose cover</span>
+                </button>
+
               </div>
               <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors">
                 <FileText className="w-5 h-5 text-gray-400" />
@@ -337,19 +348,18 @@ useEffect(() => {
       userId={user?.userId}
       onClose={() => setShowInviteModal(false)}
     />
-     {/* Sparkle/Particle Styles */}
-      <style jsx="true">{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) translateX(0px);}
-          25% { transform: translateY(-15px) translateX(8px);}
-          50% { transform: translateY(-8px) translateX(-5px);}
-          75% { transform: translateY(-20px) translateX(3px);}
-        }
-        @keyframes sparkle {
-          0%, 100% { opacity: 0.3; transform: scale(1);}
-          50% { opacity: 1; transform: scale(1.2);}
-        }
-      `}</style>
+    
+  
+  </div>
+)}
+{showCoverPicker&& (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <AddCoverPhotoModal
+      userId={user?.userId}
+      onClose={() => setShowCoverPicker(false)}
+    />
+    
+  
   </div>
 )}
     </div>
