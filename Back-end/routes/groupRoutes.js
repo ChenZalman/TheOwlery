@@ -77,6 +77,38 @@ case 'updateDescription': {
   }
   return res.status(200).json({ group });
 }
+case 'createGroupPost': {
+  const { text, userId, groupId, images = [], videos = [] } = data;
+  if (!text || !userId || !groupId) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+  
+  const Post = mongoose.model('Post');
+  const User = mongoose.model('User');
+  const Group = mongoose.model('Group');
+  const newPost = new Post({
+    text,
+    userId,
+    likes: 0,
+    images,
+    videos,
+    comments: [],
+    createdAt: Date.now()
+  });
+  const savedPost = await newPost.save();
+
+
+  await User.findByIdAndUpdate(userId, { $push: { postsId: savedPost._id.toString() } });
+
+  await Group.findByIdAndUpdate(groupId, { $push: { postsId: savedPost._id.toString() } });
+
+  const postObj = savedPost.toObject();
+  postObj.id = postObj._id.toString();
+  delete postObj._id;
+  delete postObj.__v;
+
+  return res.status(201).json({ message: "Post created", post: postObj });
+}
       default: {
         return res.status(400).json({ message: "No valid command was found" });
       }

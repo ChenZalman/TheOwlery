@@ -71,6 +71,17 @@ case 'getPostById':{
     return res.status(200).json({ post: postObj });
 
 }
+case 'getGroupPosts': {
+  if (!data.groupId) {
+    return res.status(400).json({ message: "Missing groupId" });
+  }
+  const group = await mongoose.model('Group').findById(data.groupId);
+  if (!group) {
+    return res.status(404).json({ message: "Group not found" });
+  }
+  const posts = await Post.find({ _id: { $in: group.postsId } }).sort({ createdAt: -1 });
+  return res.json({ posts });
+}
             default:{
                 return res.status(500).json({message: "no command was founaaaad"})
             }

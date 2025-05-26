@@ -6,6 +6,7 @@ import InviteFriendsModal from "./popups/groupPage/invitePeopleToGroup";
 import AddCoverPhotoModal from "./popups/groupPage/addCoverPhoto";
 import { useAuthContext } from "../Hooks/UseAuthContext"; 
 import DescriptionModal from "./popups/groupPage/description"; 
+import Post from "./post";  
 import axios from "axios";
 const GroupPage = () => {
 const { groupId } = useParams();
@@ -16,23 +17,59 @@ const [showInviteModal, setShowInviteModal] = useState(false);
 const [showCoverPicker,setShowCoverPicker] = useState(false);
 const [showDescriptionModal, setShowDescriptionModal] = useState(false);
 const { user } = useAuthContext();  
-const tabs = ['Discussion', 'Events', 'Media', 'Files', 'People'];
-useEffect(() => {
-   const fetchGroup = async () => {
+
+const [postText, setPostText] = useState("");
+  const [posts, setPosts] = useState([]);
+  
+  useEffect(() => {
+  const fetchGroup = async () => {
     try {
-       const address = process.env.REACT_APP_ADDRESS;
-       const port = process.env.REACT_APP_PORT;
-       const res = await axios.post(`http://${address}:${port}/api/groups`, {
-         command: "getGroupById",
-          data: { groupId }
-       });
+      const address = process.env.REACT_APP_ADDRESS;
+      const port = process.env.REACT_APP_PORT;
+      const res = await axios.post(`http://${address}:${port}/api/groups`, {
+        command: "getGroupById",
+        data: { groupId }
+      });
+      console.log("Group fetch response:", res.data);
       setGroup(res.data.group);
-     } catch (err) {
-        setGroup(null);
+
+      // Fetch posts for this group
+      const postsRes = await axios.post(`http://${address}:${port}/api/posts`, {
+        command: "getGroupPosts",
+        data: { groupId }
+      });
+      setPosts(postsRes.data.posts || []);
+    } catch (err) {
+      console.log("Fetch group error:", err);
+      setGroup(null);
+      setPosts([]);
+    }
+  };
+  fetchGroup();
+}, [groupId]);
+const tabs = ['Discussion', 'Events', 'Media', 'Files', 'People'];
+const handleCreatePost = async () => {
+  if (!postText.trim()) return;
+  try {
+    const address = process.env.REACT_APP_ADDRESS;
+    const port = process.env.REACT_APP_PORT;
+    const res = await axios.post(`http://${address}:${port}/api/groups`, {
+      command: "createGroupPost",
+      data: {
+        text: postText,
+        userId: user.userId,
+        groupId: groupId,
+        images: [], 
+        videos: []  
       }
-    };
-    fetchGroup();
- }, [groupId]);
+    });
+    setPostText("");
+    alert("Post created!");
+  } catch (err) {
+    alert("Failed to create post.");
+  }
+};
+
  if (!group) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-400">
@@ -40,6 +77,9 @@ useEffect(() => {
       </div>
     );
   }
+
+ 
+
 
   return (
     <div className="min-h-screen text-white relative overflow-hidden" style={{ backgroundColor: "#1c1e21" }}>
@@ -150,11 +190,22 @@ useEffect(() => {
             <div className="flex space-x-3">
               <div className="w-10 h-10 bg-gray-600 rounded-full flex-shrink-0"></div>
               <div className="flex-1">
-                <textarea
-                  placeholder="Write something..."
-                  className="w-full bg-gray-800 rounded-lg p-3 resize-none text-gray-300 placeholder-gray-500 border border-gray-700 focus:border-blue-500 focus:outline-none"
-                  rows="3"
-                />
+               <textarea
+       placeholder="Write something..."
+        className="w-full bg-gray-800 rounded-lg p-3 resize-none text-gray-300 placeholder-gray-500 border border-gray-700 focus:border-blue-500 focus:outline-none"
+       rows="3"
+       value={postText}
+       onChange={e => setPostText(e.target.value)}
+     />
+    <div className="flex justify-end mt-2">
+    <button
+     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+     onClick={handleCreatePost}
+     disabled={!postText.trim()}
+  >
+    Post
+  </button>
+</div>
                 <div className="flex justify-between items-center mt-3">
                   <div className="flex space-x-4">
                     <button className="flex items-center space-x-2 text-blue-400 hover:text-blue-300">
@@ -226,7 +277,31 @@ useEffect(() => {
             </div>
           </div>
         </div>
-
+{/* Group Posts */}
+<div className="p-6">
+  <h3 className="font-semibold mb-4">Posts</h3>
+  {posts && posts.length > 0 ? (
+    posts.map((post) => (
+      <div key={post.id || post._id} className="mb-6 flex justify-center">
+        <Post
+          post={{
+            userName: post.userName,
+            profilePicture: post.profilePicture,
+            textContent: post.text || post.textContent,
+            imagePublicId: post.images && post.images.length > 0 ? post.images[0] : null,
+            videoPublicId: post.videos && post.videos.length > 0 ? post.videos[0] : null,
+            postId: post.id || post._id,
+            likes: post.likes,
+        
+          }}
+        />
+      </div>
+    ))
+  ) : (
+    <div className="text-gray-400">No posts yet.</div>
+  )}
+</div>
+ 
         {/* Setup Panel */}
         {showSetupPanel && (
           <div className="w-80 p-6 bg-gray-800 border-l border-gray-700">
@@ -240,12 +315,9 @@ useEffect(() => {
               </button>
             </div>
             <div className="text-sm text-gray-400 mb-4">
-              <span className="text-orange-400 font-semibold">0 of 4</span> steps completed
+              
             </div>
-            <p className="text-gray-400 text-sm mb-6">
-              Continue adding key details and start engaging with your community.
-            </p>
-
+         
             <div className="space-y-4">
               <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors">
                 <UserPlus className="w-5 h-5 text-gray-400" />
