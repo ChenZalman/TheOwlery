@@ -16,6 +16,7 @@
     "axios": "^1.9.0",
     "emoji-mart": "^5.6.0",
     "lottie-react": "^2.4.1",
+    "lucide-react": "^0.511.0",
     "postcss": "^8.5.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

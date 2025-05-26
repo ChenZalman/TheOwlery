@@ -37,6 +37,20 @@ router.post('/', async (req, res) => {
         const groups = await Group.find({ membersIds: data.userId });
         return res.status(200).json({ groups });
       }
+      case 'getGroupById': {
+  if (!data.groupId) {
+    return res.status(400).json({ message: "Missing groupId" });
+  }
+  const group = await Group.findById(data.groupId);
+  if (!group) {
+    return res.status(404).json({ message: "Group not found" });
+  }
+  const groupObj = group.toObject();
+  groupObj.id = groupObj._id.toString();
+  delete groupObj._id;
+  delete groupObj.__v;
+  return res.status(200).json({ group: groupObj });
+}
       default: {
         return res.status(400).json({ message: "No valid command was found" });
       }

@@ -8,7 +8,7 @@ import ProfilePage from "./components/profilePage";
 import EditProfilePage from "./components/editProfilePage";
 import Chat from "./components/chatPage";
 import  GroupsPage from "./components/groupsPage";
-
+import GroupPage from "./components/group";
 const ProjectRoutes = () => {
   const {user, loading} = useAuthContext();
 
@@ -19,9 +19,9 @@ const ProjectRoutes = () => {
     { path: "/signuppage", element:<> {loading ? <div>Loading...</div> : !user ?  <SignUpPage />  : <Navigate to="/signinpage"/>}</>},  //In this line element gets a component that return a page to get a user info if a user isn't signed
     { path: "/post", element:<> {loading ? <div>Loading...</div> : user ?  <ProfilePage user = {user}/>  : <Navigate to="/signinpage"/>}</>},
     { path: "/editprofile", element:<> {loading ? <div>Loading...</div> : user ?  <EditProfilePage user = {user}/>  : <Navigate to="/editnotfound"/>}</>},
-     { path: "/chat", element:<> {loading ? <div>Loading...</div> : user ?  <Chat user = {user}/>  : <Navigate to="/chat"/>}</>},
-     { path: "/groups", element:<> {loading ? <div>Loading...</div> : user ?  <GroupsPage user = {user}/>  : <Navigate to="/chat"/>}</>},
-
+    { path: "/chat", element:<> {loading ? <div>Loading...</div> : user ?  <Chat user = {user}/>  : <Navigate to="/chat"/>}</>},
+    { path: "/groups", element:<> {loading ? <div>Loading...</div> : user ?  <GroupsPage user = {user}/>  : <Navigate to="/chat"/>}</>},
+    { path: "/groups/:groupId", element: <GroupPage /> },
   ]);
 
   return element;

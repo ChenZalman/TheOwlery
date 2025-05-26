@@ -124,7 +124,7 @@ const ProfilePage = ({ user }) => {
             background: 'rgba(255,255,255,0.04)',
           }}>
            
-          <Feed posts={posts} profileImage={user.profileImage} />
+          <Feed posts={posts} profileImage={user.profileImage} userId={user.userId} />
           </div>
         </div>
       </div>

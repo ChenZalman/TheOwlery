@@ -21,7 +21,7 @@ const Post = ({ post }) => {
     postId,
   } = post;
 
-  const [likes, setLikes] = useState(0);
+  const [likes, setLikes] = useState(post.likes || 0);
   const [comments, setComments] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const address = process.env.REACT_APP_ADDRESS;
@@ -29,8 +29,6 @@ const Post = ({ post }) => {
   const { user } = useAuthContext();
 
   const handleLike = async () => {
-    console.log("user id:", user.userId);
-    console.log("POST id:", postId);
     try {
       const command = isLiked ? "unlikePost" : "likePost";
       const res = await axios.post(`http://${address}:${port}/api/users`, {
@@ -44,9 +42,11 @@ const Post = ({ post }) => {
       if (res.status !== 200) {
         console.error("Error:", res.data.message);
       } else {
-        console.log(`${command} success:`, res.data);
         setIsLiked((prev) => !prev);
-        setLikes((prev) => prev + (isLiked ? -1 : 1));
+        // Update likes from backend response
+        if (res.data && res.data.post && typeof res.data.post.likes === "number") {
+          setLikes(res.data.post.likes);
+        }
       }
     } catch (err) {
       console.error("Network error:", err);
@@ -55,7 +55,11 @@ const Post = ({ post }) => {
 
   const imageUrl = getCloudinaryUrl(imagePublicId, "image", "jpg");
   const videoUrl = getCloudinaryUrl(videoPublicId, "video", "mp4");
-   const ProfileUrl = getCloudinaryUrl(imagePublicId, "image", "jpg");
+  console.log("Image URL:", imageUrl);
+  console.log("IMAGE PUBLIC ID DUDEEEEEEEEEEE:", imagePublicId);
+  console.log("PROFILE PUBLIC ID DUDEEEEEEEEEEE:", profilePicture);
+  const profileUrl = getCloudinaryUrl(profilePicture, "image", "jpg");
+  console.log("Profile URL dudeeeeeeeeeeeee:", profileUrl);
 
   return (
     <div
@@ -71,10 +75,10 @@ const Post = ({ post }) => {
         fontFamily: "Arial, sans-serif",
       }}
     >
-      <div style={{ display: `flex`, gap: "10px" }}>
+      <div style={{ display: "flex", gap: "10px" }}>
         <img
-          src={profilePicture}
-          alt="not found"
+          src={profileUrl}
+          alt="Profile"
           style={{
             width: "50px",
             height: "50px",
@@ -157,5 +161,5 @@ const Post = ({ post }) => {
     </div>
   );
 };
-
+ 
 export default Post;

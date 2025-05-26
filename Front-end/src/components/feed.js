@@ -4,22 +4,27 @@ import axios from "axios";
  const address = process.env.REACT_APP_ADDRESS;
     const port = process.env.REACT_APP_PORT;
 export default function Feed({ posts, userId }) {
-    const [profilePicture, setProfilePicture] = useState("https://www.gravatar.com/avatar/");
+    const [profileImage, setProfileImage] = useState("noProfile_lswfza");//default fron cloudinary
 
     useEffect(() => {
-        const fetchProfilePicture = async () => {
+        const fetchProfileImage = async () => {
             if (!userId) return;
             const res =await axios.post(`http://${address}:${port}/api/users`,{
                 command: "getProfilePicture",
                 data: { userId }
             });
             if (res.data && res.data.profilePicture) {
-                setProfilePicture(res.data.profilePicture);
+                setProfileImage(res.data.profilePicture);
+                console.log("Pdata:",res.data.profilePicture);
+              
             }
         };
-        fetchProfilePicture();
+        fetchProfileImage();
     }, [userId]);
-
+console.log("Profile Image:", profileImage); 
+ 
+console.log("userId:", userId);
+  
     return (
         <div style={{
             padding: "20px",
@@ -34,7 +39,7 @@ export default function Feed({ posts, userId }) {
                     key={post.id || post._id}
                     post={{
                         userName: post.userName,
-                        profilePicture: profilePicture,
+                        profilePicture: profileImage,
                         textContent: post.text || post.textContent,
                         imagePublicId: post.images && post.images.length > 0 ? post.images[0] : null,
                         videoPublicId: post.videos && post.videos.length > 0 ? post.videos[0] : null,
