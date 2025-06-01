@@ -44,6 +44,12 @@ export default function TopBanner() {
         >
           See a Post Demo
         </Link>
+        <Link
+          to="/analyticsPage"
+          className="hover:text-yellow-300 transition duration-300 hover:underline"
+        >
+          See analytics
+        </Link>
         
        <Link
   to="/chat"
