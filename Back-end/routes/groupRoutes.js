@@ -109,6 +109,51 @@ case 'createGroupPost': {
 
   return res.status(201).json({ message: "Post created", post: postObj });
 }
+// ...existing code...
+case 'inviteToGroup': {
+  // data: { groupId, userIds: [ ... ] }
+  const { groupId, userIds } = data;
+  if (!groupId || !Array.isArray(userIds)) {
+    return res.status(400).json({ message: "Missing groupId or userIds" });
+  }
+  // Store pending invites in group (add a new field if not exists)
+  const group = await Group.findById(groupId);
+  if (!group) return res.status(404).json({ message: "Group not found" });
+  group.pendingInvites = group.pendingInvites || [];
+  userIds.forEach(uid => {
+    if (!group.pendingInvites.includes(uid) && !group.membersIds.includes(uid)) {
+      group.pendingInvites.push(uid);
+    }
+  });
+  await group.save();
+  return res.json({ message: "Invites sent", group });
+}
+
+case 'approveGroupInvite': {
+  // data: { groupId, userId }
+  const { groupId, userId } = data;
+  if (!groupId || !userId) {
+    return res.status(400).json({ message: "Missing groupId or userId" });
+  }
+  const group = await Group.findById(groupId);
+  if (!group) return res.status(404).json({ message: "Group not found" });
+  group.membersIds = group.membersIds || [];
+  group.pendingInvites = group.pendingInvites || [];
+  if (!group.membersIds.includes(userId)) {
+    group.membersIds.push(userId);
+  }
+  group.pendingInvites = group.pendingInvites.filter(uid => uid !== userId);
+  await group.save();
+  return res.json({ message: "User added to group", group });
+}
+ 
+case 'getUserInvites': {
+  const { userId } = data;
+  if (!userId) return res.status(400).json({ message: "Missing userId" });
+  const groups = await Group.find({ pendingInvites: userId });
+  return res.json({ groups });
+}
+ 
       default: {
         return res.status(400).json({ message: "No valid command was found" });
       }

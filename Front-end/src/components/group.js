@@ -378,14 +378,15 @@ const handleCreatePost = async () => {
           </div>
         )}
       </div>
-      {showInviteModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <InviteFriendsModal
-            userId={user?.userId}
-            onClose={() => setShowInviteModal(false)}
-          />
-        </div>
-      )}
+   {showInviteModal && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <InviteFriendsModal
+      userId={user?.userId}
+      groupId={groupId}
+      onClose={() => setShowInviteModal(false)}
+    />
+  </div>
+)}
       {showCoverPicker && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <AddCoverPhotoModal

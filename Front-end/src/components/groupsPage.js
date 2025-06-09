@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useAuthContext } from "../Hooks/UseAuthContext"; 
+import { useAuthContext } from "../Hooks/UseAuthContext";
 import { useNavigate } from "react-router-dom";
 
-
 const GroupsPage = () => {
-  const { user } = useAuthContext();  
+  const { user } = useAuthContext();
   const [groups, setGroups] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingRequests, setLoadingRequests] = useState(true);
   const navigate = useNavigate();
   const address = process.env.REACT_APP_ADDRESS;
   const port = process.env.REACT_APP_PORT;
 
+  // Fetch user's groups
   useEffect(() => {
     const fetchGroups = async () => {
       if (!user?.userId) {
@@ -25,7 +27,6 @@ const GroupsPage = () => {
           data: { userId: user.userId }
         });
         setGroups(res.data.groups || []);
-        
       } catch (err) {
         setGroups([]);
       } finally {
@@ -33,15 +34,89 @@ const GroupsPage = () => {
       }
     };
     fetchGroups();
-  }, [user]);
+  }, [user, address, port]);
+
+  // Fetch group invites (requests)
+  useEffect(() => {
+    const fetchRequests = async () => {
+      if (!user?.userId) {
+        setRequests([]);
+        setLoadingRequests(false);
+        return;
+      }
+      try {
+        const res = await axios.post(`http://${address}:${port}/api/groups`, {
+          command: "getUserInvites",
+          data: { userId: user.userId }
+        });
+        setRequests(res.data.groups || []);
+      } catch (err) {
+        setRequests([]);
+      } finally {
+        setLoadingRequests(false);
+      }
+    };
+    fetchRequests();
+  }, [user, address, port]);
 
   const handleGroupClick = (groupId) => {
     navigate(`/groups/${groupId}`);
   };
 
+  const handleApprove = async (groupId) => {
+    try {
+      await axios.post(`http://${address}:${port}/api/groups`, {
+        command: "approveGroupInvite",
+        data: { groupId, userId: user.userId }
+      });
+      // Refresh groups and requests after approval
+      // Fetch groups
+      const resGroups = await axios.post(`http://${address}:${port}/api/groups`, {
+        command: "getUserGroups",
+        data: { userId: user.userId }
+      });
+      setGroups(resGroups.data.groups || []);
+      // Fetch requests
+      const resRequests = await axios.post(`http://${address}:${port}/api/groups`, {
+        command: "getUserInvites",
+        data: { userId: user.userId }
+      });
+      setRequests(resRequests.data.groups || []);
+    } catch (err) {
+      alert("Failed to approve invite.");
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg border border-gray-200">
       <h2 className="text-2xl font-bold mb-6 text-purple-900">Your Groups</h2>
+
+      {/* Requests Section */}
+      {loadingRequests ? (
+        <div className="text-gray-500 mb-4">Loading requests...</div>
+      ) : requests.length > 0 && (
+        <div className="mb-6">
+          <h3 className="font-bold text-purple-900 mb-2">Requests</h3>
+          <ul className="space-y-2">
+            {requests.map((group) => (
+              <li key={group._id || group.id} className="flex justify-between items-center bg-purple-50 p-3 rounded">
+                <span>{group.name}</span>
+                <div>
+                  <button
+                    className="bg-green-500 text-white px-3 py-1 rounded mr-2"
+                    onClick={() => handleApprove(group._id || group.id)}
+                  >
+                    Approve
+                  </button>
+                  {/* Optionally add Disapprove button here */}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Groups Section */}
       {loading ? (
         <div className="text-gray-500">Loading groups...</div>
       ) : groups.length === 0 ? (

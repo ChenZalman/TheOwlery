@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export default function InviteFriendsModal({ userId, onClose }) {
+export default function InviteFriendsModal({ userId, onClose , groupId }) {
   const [friends, setFriends] = useState([]);
   const [selected, setSelected] = useState([]);
   const [search, setSearch] = useState('');
@@ -37,7 +37,24 @@ export default function InviteFriendsModal({ userId, onClose }) {
   const filteredFriends = friends.filter((friend) =>
     friend.name.toLowerCase().includes(search.toLowerCase())
   );
-
+ const handleSendInvites = async () => {
+    if (selected.length === 0) return;
+    try {
+      const address = process.env.REACT_APP_ADDRESS;
+      const port = process.env.REACT_APP_PORT;
+      await fetch(`http://${address}:${port}/api/groups`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          command: "inviteToGroup",
+          data: { groupId, userIds: selected }
+        })
+      });
+      onClose();
+    } catch (err) {
+      alert("Failed to send invites");
+    }
+  };
   return (
     <div className="w-[600px] h-[700px] bg-[#1c1e21] text-white rounded-lg shadow-lg flex flex-col overflow-hidden">
       <div className="p-4 border-b border-gray-700 flex justify-between items-center">
@@ -96,14 +113,13 @@ export default function InviteFriendsModal({ userId, onClose }) {
         </div>
         <div className="flex gap-3">
           <button className="text-gray-400 hover:text-white" onClick={onClose}>Cancel</button>
-          <button
-            className={`px-4 py-2 rounded bg-blue-600 text-white ${
-              selected.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-            disabled={selected.length === 0}
-          >
-            Send invites
-          </button>
+   <button
+    className={`px-4 py-2 rounded bg-blue-600 text-white ${selected.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+    disabled={selected.length === 0}
+    onClick={handleSendInvites}
+  >
+    Send invites
+  </button>
         </div>
       </div>
     </div>

@@ -61,14 +61,11 @@ const HomePage = () => {
         <div className="flex flex-col md:flex-row items-center justify-center mb-8 relative gap-8">
           {/* Owl with glowing circle behind */}
           <div className="relative w-[28rem] h-[28rem] flex items-center justify-center">
-            {/* Glowing circle */}
-             {/*<div className="absolute w-[22rem] h-[22rem] bg-amber-100 rounded-full opacity-20 animate-pulse"></div>
-
+           
             {/* Owl */}
             <img
               src="/images/owl.png"
-              alt="Flying Owl"
-              className="w-[24rem] h-[24rem] animate-fly-loop drop-shadow-lg"
+             
               style={{
                 transformOrigin: "center",
                 filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))",
