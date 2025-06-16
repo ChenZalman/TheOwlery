@@ -10,6 +10,8 @@ import Chat from "./components/chatPage";
 import  GroupsPage from "./components/groupsPage";
 import GroupPage from "./components/group";
 import AnalyticsPage from "./components/graphs/analyticsPage";
+import MainFeed from "./components/MainFeed";
+
 const ProjectRoutes = () => {
   const {user, loading} = useAuthContext();
 
@@ -24,6 +26,7 @@ const ProjectRoutes = () => {
     { path: "/chat", element:<> {loading ? <div>Loading...</div> : user ?  <Chat user = {user}/>  : <Navigate to="/chat"/>}</>},
     { path: "/groups", element:<> {loading ? <div>Loading...</div> : user ?  <GroupsPage user = {user}/>  : <Navigate to="/chat"/>}</>},
     { path: "/groups/:groupId", element: <GroupPage /> },
+    { path: "/mainFeed", element:<> {loading ? <div>Loading...</div> : user ?  <MainFeed user = {user}/>  : <Navigate to="/signinpage"/>}</>},
   ]);
 
   return element;

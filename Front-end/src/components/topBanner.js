@@ -20,23 +20,27 @@ export default function TopBanner() {
         >
           Back to Main Station
         </Link>
+        {!user && (
         <Link
           to="/signinpage"
           className="hover:text-yellow-300 transition duration-300 hover:underline"
         >
           Welcome Wizard
         </Link>
+        )}
+        {!user && (
         <Link
           to="/signuppage"
           className="hover:text-yellow-300 transition duration-300 hover:underline"
         >
           Become a Wizard
         </Link>
+         )}
         <Link
-          to="/notFoundPage"
+          to="/mainFeed"
           className="hover:text-yellow-300 transition duration-300 hover:underline"
         >
-          Vanish to Nowhere
+          Main Feed
         </Link>
         <Link
           to="/post"
