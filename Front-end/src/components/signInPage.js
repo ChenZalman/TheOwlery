@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
-import { UseSignInUp } from '../Hooks/UseSignInUp';
+import { useEffect, useMemo, useState } from "react";
+import { UseSignInUp } from "../Hooks/UseSignInUp";
 
 export default function SignInPage() {
   const [visible, setVisible] = useState(false);
   const { signInUp, isLoading, error } = UseSignInUp();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    gender: '',
-    birthDate: ''
+    name: "",
+    email: "",
+    password: "",
+    gender: "",
+    birthDate: "",
   });
 
   // For fade-in animation
@@ -28,19 +28,13 @@ export default function SignInPage() {
     await signInUp(formData, "signin");
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-gold relative overflow-hidden font-serif">
-      <link
-        href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=IM+Fell+English+SC&display=swap"
-        rel="stylesheet"
-      />
-
-      {/* Floating particles */}
-      <div className="absolute inset-0 pointer-events-none z-0">
+  const floatingParticles = useMemo(
+    () => (
+      <div className='absolute inset-0 pointer-events-none z-0'>
         {[...Array(15)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-2 h-2 bg-gold rounded-full opacity-30"
+            className='absolute w-2 h-2 bg-gold rounded-full opacity-30'
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -51,13 +45,17 @@ export default function SignInPage() {
           ></div>
         ))}
       </div>
+    ),
+    []
+  );
 
-      {/* Magical sparkles */}
-      <div className="absolute inset-0 pointer-events-none z-0">
+  const magicalSparkles = useMemo(
+    () => (
+      <div className='absolute inset-0 pointer-events-none z-0'>
         {[...Array(8)].map((_, i) => (
           <div
             key={`sparkle-${i}`}
-            className="absolute text-gold text-xs opacity-60"
+            className='absolute text-gold text-xs opacity-60'
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -69,6 +67,19 @@ export default function SignInPage() {
           </div>
         ))}
       </div>
+    ),
+    []
+  );
+
+  return (
+    <div className='min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-gold relative overflow-hidden font-serif'>
+      <link
+        href='https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=IM+Fell+English+SC&display=swap'
+        rel='stylesheet'
+      />
+
+      {magicalSparkles}
+      {floatingParticles}
 
       {/* Main content */}
       <div
@@ -76,81 +87,87 @@ export default function SignInPage() {
           isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
         }`}
       >
-        <div style={{
-          maxWidth: '400px',
-          margin: '0 auto',
-          padding: '2rem',
-          background: 'rgba(30, 22, 60, 0.85)',
-          borderRadius: '1.5rem',
-          boxShadow: '0 4px 24px 0 #0008',
-          border: '1.5px solid #e6c47a',
-          backdropFilter: 'blur(2px)',
-        }}>
-          <h1 style={{
-            color: "#e6c47a",
-            fontFamily: "'IM Fell English SC', serif",
-            fontSize: "2.5rem",
-            textAlign: "center",
-            marginBottom: "1.5rem",
-            textShadow: "0 2px 8px #000a"
-          }}>
-            Sign Up
+        <div
+          style={{
+            maxWidth: "400px",
+            margin: "0 auto",
+            padding: "2rem",
+            background: "rgba(30, 22, 60, 0.85)",
+            borderRadius: "1.5rem",
+            boxShadow: "0 4px 24px 0 #0008",
+            border: "1.5px solid #e6c47a",
+            backdropFilter: "blur(2px)",
+          }}
+        >
+          <h1
+            style={{
+              color: "#e6c47a",
+              fontFamily: "'IM Fell English SC', serif",
+              fontSize: "2.5rem",
+              textAlign: "center",
+              marginBottom: "1.5rem",
+              textShadow: "0 2px 8px #000a",
+            }}
+          >
+            Sign In
           </h1>
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '1rem' }}>
+            <div style={{ marginBottom: "1rem" }}>
               <label style={{ color: "#e6c47a" }}>Email:</label>
               <input
-                type="email"
-                name="email"
+                type='email'
+                name='email'
                 value={formData.email}
                 onChange={handleChange}
                 required
                 style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  border: 'solid 1px #e6c47a',
-                  borderRadius: '8px',
-                  background: '#2e2150',
-                  color: '#fff'
+                  width: "100%",
+                  padding: "0.5rem",
+                  border: "solid 1px #e6c47a",
+                  borderRadius: "8px",
+                  background: "#2e2150",
+                  color: "#fff",
                 }}
               />
             </div>
-            <div style={{ marginBottom: '1rem' }}>
+            <div style={{ marginBottom: "1rem" }}>
               <label style={{ color: "#e6c47a" }}>Password:</label>
-              <div style={{ display: 'flex', position: 'relative' }}>
+              <div style={{ display: "flex", position: "relative" }}>
                 <input
-                  type={visible ? 'text' : 'password'}
-                  name="password"
+                  type={visible ? "text" : "password"}
+                  name='password'
                   value={formData.password}
                   onChange={handleChange}
                   required
                   style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: 'solid 1px #e6c47a',
-                    borderRadius: '8px',
-                    background: '#2e2150',
-                    color: '#fff'
+                    width: "100%",
+                    padding: "0.5rem",
+                    border: "solid 1px #e6c47a",
+                    borderRadius: "8px",
+                    background: "#2e2150",
+                    color: "#fff",
                   }}
                 />
                 <img
                   src={visible ? "images/img_eye_on.svg" : "images/img_eye_off.svg"}
-                  alt="Eye"
-                  className="h-[24px] w-[24px]"
+                  alt='Eye'
+                  className='h-[24px] w-[24px]'
                   style={{
                     position: "absolute",
                     right: "8px",
                     top: "50%",
                     transform: "translateY(-50%)",
-                    cursor: "pointer"
+                    cursor: "pointer",
                   }}
-                  onClick={() => { setVisible(!visible) }}
+                  onClick={() => {
+                    setVisible(!visible);
+                  }}
                 />
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '0.5rem 1rem' }}>
+            <div style={{ display: "flex", justifyContent: "center", padding: "0.5rem 1rem" }}>
               <button
-                type="submit"
+                type='submit'
                 style={{
                   color: "#fff",
                   background: "linear-gradient(90deg, #a78bfa 0%, #fbbf24 100%)",
@@ -168,11 +185,7 @@ export default function SignInPage() {
                 Welcome old wizard
               </button>
             </div>
-            {error && (
-              <div style={{ color: "#ffb4b4", marginTop: "1rem", textAlign: "center" }}>
-                {error}
-              </div>
-            )}
+            {error && <div style={{ color: "#ffb4b4", marginTop: "1rem", textAlign: "center" }}>{error}</div>}
           </form>
         </div>
       </div>

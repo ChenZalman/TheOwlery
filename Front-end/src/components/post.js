@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useAuthContext } from "../Hooks/UseAuthContext";
 import Comment from "./comment";
 const CLOUDINARY_NAME = process.env.REACT_APP_CLOUDINARY_NAME;
@@ -11,14 +11,7 @@ function getCloudinaryUrl(publicId, resourceType = "image", format = "jpg") {
 }
 
 const Post = ({ post }) => {
-  const {
-    userName,
-    profilePicture,
-    textContent,
-    imagePublicId,
-    videoPublicId,
-    postId,
-  } = post;
+  const { userName, profilePicture, textContent, imagePublicId, videoPublicId, postId } = post;
 
   const [likes, setLikes] = useState(post.likes || 0);
   const [comments, setComments] = useState(0);
@@ -35,13 +28,13 @@ const Post = ({ post }) => {
       setIsLiked(user.likedPosts.includes(postId));
     }
   }, [user, postId]);
- 
+
   useEffect(() => {
     const fetchLikes = async () => {
       try {
         const res = await axios.post(`http://${address}:${port}/api/posts`, {
           command: "getPostById",
-          data: { postId }
+          data: { postId },
         });
         if (res.data && res.data.post && typeof res.data.post.likes === "number") {
           setLikes(res.data.post.likes);
@@ -53,7 +46,7 @@ const Post = ({ post }) => {
     };
     fetchLikes();
   }, [postId]);
-  
+
   const handleLike = async () => {
     try {
       const command = isLiked ? "unlikePost" : "likePost";
@@ -69,7 +62,7 @@ const Post = ({ post }) => {
         console.error("Error:", res.data.message);
       } else {
         setIsLiked((prev) => !prev);
-        
+
         // Update likes from backend response
         if (res.data && res.data.post && typeof res.data.post.likes === "number") {
           setLikes(res.data.post.likes);
@@ -79,14 +72,14 @@ const Post = ({ post }) => {
         const updatedUser = { ...user };
         if (isLiked) {
           // Remove postId from likedPosts array
-          updatedUser.likedPosts = user.likedPosts.filter(id => id !== postId);
+          updatedUser.likedPosts = user.likedPosts.filter((id) => id !== postId);
         } else {
           // Add postId to likedPosts array
           updatedUser.likedPosts = [...(user.likedPosts || []), postId];
         }
-        
+
         // Dispatch updated user to context
-        dispatch({ type: 'LOGIN', payload: updatedUser });
+        dispatch({ type: "LOGIN", payload: updatedUser });
       }
     } catch (err) {
       console.error("Network error:", err);
@@ -106,7 +99,7 @@ const Post = ({ post }) => {
       });
       setCommentText("");
       setShowCommentInput(false);
-      
+
       // Refresh comments after adding
       fetchComments();
     } catch (err) {
@@ -118,7 +111,7 @@ const Post = ({ post }) => {
     try {
       const res = await axios.post(`http://${address}:${port}/api/posts`, {
         command: "getCommentsByPostId",
-        data: { postId }
+        data: { postId },
       });
       if (res.data && Array.isArray(res.data.comments)) {
         setCommentsList(res.data.comments);
@@ -135,11 +128,6 @@ const Post = ({ post }) => {
 
   const imageUrl = getCloudinaryUrl(imagePublicId, "image", "jpg");
   const videoUrl = getCloudinaryUrl(videoPublicId, "video", "mp4");
-  console.log("Image URL:", imageUrl);
-  console.log("IMAGE PUBLIC ID DUDEEEEEEEEEEE:", imagePublicId);
-  console.log("PROFILE PUBLIC ID DUDEEEEEEEEEEE:", profilePicture);
-  const profileUrl = getCloudinaryUrl(profilePicture, "image", "jpg");
-  console.log("Profile URL dudeeeeeeeeeeeee:", profileUrl);
 
   return (
     <div
@@ -158,8 +146,8 @@ const Post = ({ post }) => {
     >
       <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
         <img
-          src={profileUrl}
-          alt="Profile"
+          src={profilePicture}
+          alt='Profile'
           style={{
             width: "50px",
             height: "50px",
@@ -170,15 +158,13 @@ const Post = ({ post }) => {
         />
         <h2 style={{ fontSize: "20px", marginBottom: "0.75rem", color: "#fff" }}>{userName}</h2>
       </div>
-      <p style={{ fontSize: "16px", marginBottom: "1rem", color: "#d1d5db" }}>
-        {textContent}
-      </p>
+      <p style={{ fontSize: "16px", marginBottom: "1rem", color: "#d1d5db" }}>{textContent}</p>
 
       {imageUrl && (
         <div style={{ marginBottom: "1rem" }}>
           <img
             src={imageUrl}
-            alt="Post media"
+            alt='Post media'
             style={{
               width: "100%",
               maxHeight: "300px",
@@ -199,7 +185,7 @@ const Post = ({ post }) => {
               borderRadius: "12px",
             }}
           >
-            <source src={videoUrl} type="video/mp4" />
+            <source src={videoUrl} type='video/mp4' />
             Your browser does not support the video tag.
           </video>
         </div>
@@ -216,17 +202,17 @@ const Post = ({ post }) => {
         <span style={{ fontSize: "14px", color: "#9ca3af" }}>{likes} Likes</span>
         <span style={{ fontSize: "14px", color: "#9ca3af", display: "flex", alignItems: "center", gap: "4px" }}>
           <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#9ca3af"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            width='18'
+            height='18'
+            viewBox='0 0 24 24'
+            fill='none'
+            stroke='#9ca3af'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
             style={{ marginRight: "4px" }}
           >
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            <path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' />
           </svg>
           {comments} comments
         </span>
@@ -239,19 +225,19 @@ const Post = ({ post }) => {
               cursor: "pointer",
               padding: 0,
             }}
-            aria-label="Like"
+            aria-label='Like'
           >
             <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
+              width='28'
+              height='28'
+              viewBox='0 0 24 24'
               fill={isLiked ? "red" : "none"}
-              stroke="red"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              stroke='red'
+              strokeWidth='2'
+              strokeLinecap='round'
+              strokeLinejoin='round'
             >
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              <path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z' />
             </svg>
           </button>
           <button
@@ -263,20 +249,20 @@ const Post = ({ post }) => {
               color: "#60a5fa",
               fontSize: "16px",
             }}
-            aria-label="Comment"
+            aria-label='Comment'
           >
             Comment
           </button>
         </div>
       </div>
-      
+
       {showCommentInput && (
         <div style={{ marginTop: "1rem" }}>
           <input
-            type="text"
+            type='text'
             value={commentText}
-            onChange={e => setCommentText(e.target.value)}
-            placeholder="Write a comment..."
+            onChange={(e) => setCommentText(e.target.value)}
+            placeholder='Write a comment...'
             style={{
               width: "80%",
               padding: "8px",
