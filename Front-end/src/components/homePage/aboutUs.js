@@ -30,7 +30,7 @@ const AboutUs = ({ onClose }) => {
         <p className="text-base text-yellow-50 mb-4">
           We are <span className="font-semibold text-yellow-200">Tamara</span> and <span className="font-semibold text-yellow-200">Chen</span>—two devoted Harry Potter fans who believe magic is best when shared.
           <br /><br />
-          Our dream is to create a cozy corner for every witch, wizard, and magical creature to share their stories, spells, and Hogwarts memories. Whether you’re a Gryffindor, Slytherin, Hufflepuff, or Ravenclaw, you’re welcome to join our enchanted blog and let your magical voice be heard!
+          Our dream is to create a cozy corner for every witch, wizard, and magical creature to share their stories, spells, . Whether you’re a Gryffindor, Slytherin, Hufflepuff, or Ravenclaw, you’re welcome to join our enchanted blog  !
         </p>
         <div className="flex justify-center gap-3 text-2xl mt-2 text-yellow-200">
        
