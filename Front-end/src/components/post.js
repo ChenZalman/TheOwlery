@@ -11,7 +11,7 @@ function getCloudinaryUrl(publicId, resourceType = "image", format = "jpg") {
 }
 
 const Post = ({ post }) => {
-  const { userName, profilePicture, textContent, imagePublicId, videoPublicId, postId } = post;
+  const { userName, profilePicture, textContent, imagePublicId, videoPublicId, postId, userId } = post;
 
   const [likes, setLikes] = useState(post.likes || 0);
   const [comments, setComments] = useState(0);
@@ -22,6 +22,26 @@ const Post = ({ post }) => {
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [commentsList, setCommentsList] = useState([]);
+  const [postUserName, setPostUserName] = useState("");
+
+  // Fetch the post user's name by userId
+  useEffect(() => {
+    const fetchUserName = async () => {
+      if (!userId) return;
+      try {
+        const res = await axios.post(`http://${address}:${port}/api/users`, {
+          command: "update", // Use update to get user by id (or create a new command for getUserById)
+          data: { userId },
+        });
+        if (res.data && res.data.user && res.data.user.name) {
+          setPostUserName(res.data.user.name);
+        }
+      } catch (err) {
+        setPostUserName("");
+      }
+    };
+    fetchUserName();
+  }, [userId, address, port]);
 
   useEffect(() => {
     if (user && Array.isArray(user.likedPosts)) {
@@ -156,7 +176,7 @@ const Post = ({ post }) => {
             background: "#4b5563",
           }}
         />
-        <h2 style={{ fontSize: "20px", marginBottom: "0.75rem", color: "#fff" }}>{userName}</h2>
+        <h2 style={{ fontSize: "20px", marginBottom: "0.75rem", fontWeight: "bold", color: "#8E7B53" }}>{postUserName || userName}</h2>
       </div>
       <p style={{ fontSize: "16px", marginBottom: "1rem", color: "#d1d5db" }}>{textContent}</p>
 

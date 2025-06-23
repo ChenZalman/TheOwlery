@@ -349,6 +349,7 @@ const GroupPage = () => {
                     videoPublicId: post.videos && post.videos.length > 0 ? post.videos[0] : null,
                     postId: post.id || post._id,
                     likes: post.likes,
+                    userId: post.userId, // Pass userId so Post can fetch and show the name
                   }}
                 />
               </div>

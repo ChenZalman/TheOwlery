@@ -36,6 +36,7 @@ export default function Feed({ posts, userId }) {
               imagePublicId: post.images && post.images.length > 0 ? post.images[0] : null,
               videoPublicId: post.videos && post.videos.length > 0 ? post.videos[0] : null,
               postId: post.id || post._id,
+              userId: post.userId,  
             }}
           />
         ))
