@@ -8,11 +8,6 @@ const address = process.env.REACT_APP_ADDRESS;
 const port = process.env.REACT_APP_PORT;
 const socket = io("http://localhost:5001");
 
-// const mockMessages = [
-//   { id: 1, sender: "Hedwig", text: "Welcome to the Owlery chat! 🦉" },
-//   { id: 2, sender: "You", text: "Hi Hedwig! Who's delivering the mail today?" },
-//   { id: 3, sender: "Hedwig", text: "All the owls are busy with Hogwarts letters!" },
-// ];
 
 const Chat = () => {
   const { user } = useAuthContext();

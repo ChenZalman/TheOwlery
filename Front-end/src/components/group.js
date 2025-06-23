@@ -34,6 +34,7 @@ const GroupPage = () => {
 
   const [postText, setPostText] = useState("");
   const [posts, setPosts] = useState([]);
+  const [userProfilePicture, setUserProfilePicture] = useState(null);
 
   useEffect(() => {
     const fetchGroup = async () => {
@@ -44,7 +45,6 @@ const GroupPage = () => {
           command: "getGroupById",
           data: { groupId },
         });
-        console.log("Group fetch response:", res.data);
         setGroup(res.data.group);
 
         // Fetch posts for this group
@@ -52,22 +52,42 @@ const GroupPage = () => {
           command: "getGroupPosts",
           data: { groupId },
         });
-        const postsWithUserPFP = await Promise.all(
+        // Fetch user names and profile pictures for each post
+        const postsWithUserData = await Promise.all(
           postsRes.data.posts.map(async (post) => {
-            const userPFP = await fetchProfileImage(post.userId);
-            return { ...post, userProfilePicture: userPFP };
+            // Fetch user name
+            let userName = "Unknown";
+            try {
+              const userRes = await axios.post(`http://${address}:${port}/api/users`, {
+                command: "getUserById",
+                data: { userId: post.userId },
+              });
+              userName = userRes.data.user?.name || "Unknown";
+            } catch (e) {}
+            // Fetch profile picture
+            const userProfilePicture = await fetchProfileImage(post.userId);
+            return { ...post, userName, userProfilePicture };
           })
         );
-
-        setPosts(postsWithUserPFP || []);
+        setPosts(postsWithUserData || []);
       } catch (err) {
-        console.log("Fetch group error:", err);
         setGroup(null);
         setPosts([]);
       }
     };
     fetchGroup();
   }, [groupId]);
+
+  useEffect(() => {
+    const fetchProfilePicture = async () => {
+      if (user && user.userId) {
+        const userProfilePicture = await fetchProfileImage(user.userId);
+        setUserProfilePicture(userProfilePicture);
+      }
+    };
+    fetchProfilePicture();
+  }, [user]);
+
   const tabs = ["Discussion", "Events", "Media", "Files", "People"];
   const handleCreatePost = async () => {
     if (!postText.trim()) return;
@@ -215,7 +235,15 @@ const GroupPage = () => {
           {/* Post Creation */}
           <div className='p-6 border-b border-gray-700'>
             <div className='flex space-x-3'>
-              <div className='w-10 h-10 bg-gray-600 rounded-full flex-shrink-0'></div>
+              {userProfilePicture ? (
+                <img
+                  src={userProfilePicture}
+                  alt='Profile'
+                  className='w-10 h-10 rounded-full object-cover flex-shrink-0 border border-gray-400'
+                />
+              ) : (
+                <div className='w-10 h-10 bg-gray-600 rounded-full flex-shrink-0'></div>
+              )}
               <div className='flex-1'>
                 <textarea
                   placeholder='Write something...'
@@ -241,7 +269,7 @@ const GroupPage = () => {
                     </button>
                     <button className='flex items-center space-x-2 text-orange-400 hover:text-orange-300'>
                       <span className='text-orange-500 bg-orange-500/20 rounded px-2 py-1 text-sm'>📊</span>
-                      <span className='text-sm'>Poll</span>
+                  
                     </button>
                   </div>
                 </div>
