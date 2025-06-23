@@ -20,11 +20,15 @@ const saveMessage = (io,socket) => {
             //console.log(msg)
             const message = new Message({userid: msg.userid, friendid: msg.friendid, content: msg.content});
             await message.save();
-            io.emit('chat message', message);
+            //io.emit('chat message', message);
         } catch (err) {
             console.error(err);
         }
     });
+
+    Message.watch().
+        on('change', data => {console.log(data.fullDocument)
+                              io.emit('chat message', data.fullDocument)});
 
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
