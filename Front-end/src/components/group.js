@@ -12,7 +12,7 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useAuthContext } from "../Hooks/UseAuthContext";
 import fetchProfileImage from "../requests/getProfileImage";
@@ -91,13 +91,8 @@ const GroupPage = () => {
     }
   };
 
-  if (!group) {
-    return <div className='min-h-screen flex items-center justify-center text-gray-400'>Loading group...</div>;
-  }
-
-  return (
-    <div className='min-h-screen text-white relative overflow-hidden' style={{ backgroundColor: "#1c1e21" }}>
-      {/* Sparkle and Particle Effects */}
+  const floatingParticles = useMemo(
+    () => (
       <div className='absolute inset-0 pointer-events-none z-0'>
         {[...Array(15)].map((_, i) => (
           <div
@@ -113,6 +108,11 @@ const GroupPage = () => {
           ></div>
         ))}
       </div>
+    ),
+    []
+  );
+  const magicalSparkles = useMemo(
+    () => (
       <div className='absolute inset-0 pointer-events-none z-0'>
         {[...Array(8)].map((_, i) => (
           <div
@@ -129,6 +129,18 @@ const GroupPage = () => {
           </div>
         ))}
       </div>
+    ),
+    []
+  );
+
+  if (!group) {
+    return <div className='min-h-screen flex items-center justify-center text-gray-400'>Loading group...</div>;
+  }
+
+  return (
+    <div className='min-h-screen text-white relative overflow-hidden' style={{ backgroundColor: "#1c1e21" }}>
+      {floatingParticles}
+      {magicalSparkles}
       {/* Header with Illustration */}
       <div className='relative h-64 bg-gradient-to-r from-orange-400 via-pink-400 to-purple-500 overflow-hidden'>
         <div className='absolute inset-0 bg-gradient-to-b from-transparent to-gray-900/20'>

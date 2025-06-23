@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import fetchProfileImage from '../../../requests/getProfileImage';
 
 export default function InviteFriendsModal({ userId, onClose , groupId }) {
   const [friends, setFriends] = useState([]);
   const [selected, setSelected] = useState([]);
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
 
   // Fetch friends from backend
   useEffect(() => {
     const fetchFriends = async () => {
+      setLoading(true);
       try {
         const address = process.env.REACT_APP_ADDRESS;
         const port = process.env.REACT_APP_PORT;
@@ -20,9 +23,18 @@ export default function InviteFriendsModal({ userId, onClose , groupId }) {
           })
         });
         const data = await res.json();
-        setFriends(data.friends || []);
+        // Fetch profile images for each friend
+        const friendsWithPFP = await Promise.all(
+          (data.friends || []).map(async (friend) => {
+            const userPFP = await fetchProfileImage(friend.userId || friend._id);
+            return { ...friend, userProfilePicture: userPFP };
+          })
+        );
+        setFriends(friendsWithPFP);
       } catch (err) {
         setFriends([]);
+      } finally {
+        setLoading(false);
       }
     };
     fetchFriends();
@@ -63,7 +75,6 @@ export default function InviteFriendsModal({ userId, onClose , groupId }) {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Left - Friend list */}
         <div className="w-1/2 p-4 overflow-y-auto border-r border-gray-700">
           <input
             type="text"
@@ -73,31 +84,38 @@ export default function InviteFriendsModal({ userId, onClose , groupId }) {
             className="w-full mb-4 px-3 py-2 bg-gray-800 text-white rounded-md outline-none"
           />
           <div className="text-sm text-gray-400 mb-2">Suggested</div>
-          <ul className="space-y-3">
-            {filteredFriends.map((friend) => (
-              <li
-                key={friend.name}
-                className="flex items-center justify-between hover:bg-gray-700 px-2 py-1 rounded"
-              >
-                <div className="flex items-center gap-2">
-                  <img
-                    src={friend.avatar}
-                    alt={friend.name}
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <span>{friend.name}</span>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={selected.includes(friend.name)}
-                  onChange={() => toggleSelection(friend.name)}
-                />
-              </li>
-            ))}
-          </ul>
+          {loading ? (
+        <div className="text-gray-400">Loading friends...</div>
+      ) : friends.length === 0 ? (
+        <div className="text-gray-400">No friends found.</div>
+      ) : (
+        <ul className="space-y-3 max-h-64 overflow-y-auto mb-4">
+          {filteredFriends.map((friend) => (
+            <li
+              key={friend.userId || friend._id}
+              className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer transition-colors ${
+                selected.includes(friend.userId || friend._id)
+                  ? "bg-blue-100"
+                  : "hover:bg-gray-700"
+              }`}
+              onClick={() => toggleSelection(friend.userId || friend._id)}
+            >
+              <img
+                src={friend.userProfilePicture || "/images/noProfile.png"}
+                alt={friend.name}
+                className="w-10 h-10 rounded-full object-cover border border-gray-300"
+              />
+              <span className="font-medium text-gray-800">{friend.name}</span>
+              {selected.includes(friend.userId || friend._id) && (
+                <span className="ml-auto text-blue-600 font-bold">✓</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
         </div>
 
-        {/* Right - Selected count */}
+         
         <div className="w-1/2 p-4">
           <div className="text-gray-400 mb-2">
             {selected.length} friend{selected.length !== 1 ? 's' : ''} selected
@@ -105,7 +123,7 @@ export default function InviteFriendsModal({ userId, onClose , groupId }) {
         </div>
       </div>
 
-      {/* Footer */}
+     
       <div className="border-t border-gray-700 p-4 text-sm flex justify-between items-center bg-gray-900">
         <div className="flex items-center gap-2">
          
