@@ -49,6 +49,7 @@ const GroupsPage = () => {
           command: "getUserInvites",
           data: { userId: user.userId }
         });
+        console.log('Invites response:', res.data); // Debug log
         setRequests(res.data.groups || []);
       } catch (err) {
         setRequests([]);
@@ -87,6 +88,24 @@ const GroupsPage = () => {
     }
   };
 
+  // Add handleReject function
+  const handleReject = async (groupId) => {
+    try {
+      await axios.post(`http://${address}:${port}/api/groups`, {
+        command: "rejectGroupInvite",
+        data: { groupId, userId: user.userId }
+      });
+      // Refresh requests after rejection
+      const resRequests = await axios.post(`http://${address}:${port}/api/groups`, {
+        command: "getUserInvites",
+        data: { userId: user.userId }
+      });
+      setRequests(resRequests.data.groups || []);
+    } catch (err) {
+      alert("Failed to reject invite.");
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg border border-gray-200">
       <h2 className="text-2xl font-bold mb-6 text-purple-900">Your Groups</h2>
@@ -96,7 +115,7 @@ const GroupsPage = () => {
         <div className="text-gray-500 mb-4">Loading requests...</div>
       ) : requests.length > 0 && (
         <div className="mb-6">
-          <h3 className="font-bold text-purple-900 mb-2">Requests</h3>
+          <h3 className="font-bold text-purple-900 mb-2">Join Groups</h3>
           <ul className="space-y-2">
             {requests.map((group) => (
               <li key={group._id || group.id} className="flex justify-between items-center bg-purple-50 p-3 rounded">
@@ -108,7 +127,12 @@ const GroupsPage = () => {
                   >
                     Approve
                   </button>
-                  {/* Optionally add Disapprove button here */}
+                  <button
+                    className="bg-red-500 text-white px-3 py-1 rounded"
+                    onClick={() => handleReject(group._id || group.id)}
+                  >
+                    Reject
+                  </button>
                 </div>
               </li>
             ))}

@@ -51,6 +51,9 @@ export default function InviteFriendsModal({ userId, onClose , groupId }) {
   );
  const handleSendInvites = async () => {
     if (selected.length === 0) return;
+    // Ensure all IDs are strings and log them
+    const selectedStr = selected.map(id => String(id));
+    console.log('Inviting userIds:', selectedStr);
     try {
       const address = process.env.REACT_APP_ADDRESS;
       const port = process.env.REACT_APP_PORT;
@@ -59,7 +62,7 @@ export default function InviteFriendsModal({ userId, onClose , groupId }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           command: "inviteToGroup",
-          data: { groupId, userIds: selected }
+          data: { groupId, userIds: selectedStr }
         })
       });
       onClose();

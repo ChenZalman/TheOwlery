@@ -8,6 +8,7 @@ const postSchema = mongoose.Schema({
     postsId: [String],    
     adminIds: [String], 
     blockedIds: [String],
+    pendingInvites: [String], // Add this line for pending invites
     coverImage: String,
     createdAt: Date,
 })

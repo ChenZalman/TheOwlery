@@ -109,22 +109,31 @@ case 'createGroupPost': {
 
   return res.status(201).json({ message: "Post created", post: postObj });
 }
-// ...existing code...
 case 'inviteToGroup': {
   // data: { groupId, userIds: [ ... ] }
   const { groupId, userIds } = data;
+  console.log('InviteToGroup called with:', { groupId, userIds }); // Log incoming data
   if (!groupId || !Array.isArray(userIds)) {
     return res.status(400).json({ message: "Missing groupId or userIds" });
   }
   // Store pending invites in group (add a new field if not exists)
   const group = await Group.findById(groupId);
   if (!group) return res.status(404).json({ message: "Group not found" });
-  group.pendingInvites = group.pendingInvites || [];
+  if (!Array.isArray(group.pendingInvites)) group.pendingInvites = [];
+  console.log('Before update, pendingInvites:', group.pendingInvites);
   userIds.forEach(uid => {
-    if (!group.pendingInvites.includes(uid) && !group.membersIds.includes(uid)) {
-      group.pendingInvites.push(uid);
+    const uidStr = String(uid);
+    const pendingStrs = group.pendingInvites.map(String);
+    const memberStrs = group.membersIds.map(String);
+    console.log('Checking uid:', uidStr, 'pending:', pendingStrs, 'members:', memberStrs);
+    if (!pendingStrs.includes(uidStr) && !memberStrs.includes(uidStr)) {
+      group.pendingInvites.push(uidStr);
+      console.log('Added to pendingInvites:', uidStr);
+    } else {
+      console.log('Skipped (already invited or member):', uidStr);
     }
   });
+  console.log('After update, pendingInvites:', group.pendingInvites); // Debug log
   await group.save();
   return res.json({ message: "Invites sent", group });
 }
@@ -146,11 +155,27 @@ case 'approveGroupInvite': {
   await group.save();
   return res.json({ message: "User added to group", group });
 }
+
+case 'rejectGroupInvite': {
+  // data: { groupId, userId }
+  const { groupId, userId } = data;
+  if (!groupId || !userId) {
+    return res.status(400).json({ message: "Missing groupId or userId" });
+  }
+  const group = await Group.findById(groupId);
+  if (!group) return res.status(404).json({ message: "Group not found" });
+  group.pendingInvites = group.pendingInvites || [];
+  group.pendingInvites = group.pendingInvites.filter(uid => uid !== userId);
+  await group.save();
+  return res.json({ message: "Invitation rejected", group });
+}
  
 case 'getUserInvites': {
   const { userId } = data;
   if (!userId) return res.status(400).json({ message: "Missing userId" });
+  console.log('Searching for pending invites for userId:', userId); // Debug log
   const groups = await Group.find({ pendingInvites: userId });
+  console.log('Found groups:', groups); // Debug log
   return res.json({ groups });
 }
  

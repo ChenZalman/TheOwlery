@@ -72,7 +72,7 @@ export default function SignInPage() {
   );
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-gold relative overflow-hidden font-serif'>
+<div className='min-h-screen text-gold relative overflow-hidden font-serif' style={{ backgroundColor: "#1D1E22" }}>
       <link
         href='https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=IM+Fell+English+SC&display=swap'
         rel='stylesheet'
