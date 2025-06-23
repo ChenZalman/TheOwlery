@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Edit2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuthContext } from "../Hooks/UseAuthContext";
 import Comment from "./comment";
@@ -16,6 +17,8 @@ const Post = ({ post }) => {
   const [likes, setLikes] = useState(post.likes || 0);
   const [comments, setComments] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(textContent || "");
   const address = process.env.REACT_APP_ADDRESS;
   const port = process.env.REACT_APP_PORT;
   const { user, dispatch } = useAuthContext(); // Add dispatch to update user context
@@ -146,8 +149,32 @@ const Post = ({ post }) => {
     fetchComments();
   }, [postId]);
 
+  const handleEdit = () => {
+    setIsEditing(true);
+    setEditText(textContent);
+  };
+
+  const handleEditSave = async () => {
+    try {
+      await axios.post(`http://${address}:${port}/api/posts`, {
+        command: "update",
+        data: {
+          postId,
+          text: editText,
+        },
+      });
+      setIsEditing(false);
+      // Optionally update UI immediately
+      window.location.reload(); // Or trigger a re-fetch of posts
+    } catch (err) {
+      alert("Failed to update post");
+    }
+  };
+
   const imageUrl = getCloudinaryUrl(imagePublicId, "image", "jpg");
   const videoUrl = getCloudinaryUrl(videoPublicId, "video", "mp4");
+
+  const isOwner = user && user.userId && userId && user.userId === userId;
 
   return (
     <div
@@ -177,8 +204,41 @@ const Post = ({ post }) => {
           }}
         />
         <h2 style={{ fontSize: "20px", marginBottom: "0.75rem", fontWeight: "bold", color: "#8E7B53" }}>{postUserName || userName}</h2>
+        {isOwner && !isEditing && (
+          <button
+            onClick={handleEdit}
+            style={{ background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}
+            aria-label="Edit Post"
+          >
+            <Edit2 color="#fff" size={20} />
+          </button>
+        )}
       </div>
-      <p style={{ fontSize: "16px", marginBottom: "1rem", color: "#d1d5db" }}>{textContent}</p>
+      {isEditing ? (
+        <div style={{ marginBottom: "1rem" }}>
+          <textarea
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+            style={{ width: "100%", minHeight: "60px", borderRadius: "8px", border: "1px solid #374151", background: "#1f2937", color: "#e5e7eb", padding: "8px" }}
+          />
+          <div style={{ marginTop: "8px", display: "flex", gap: "8px" }}>
+            <button
+              onClick={handleEditSave}
+              style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: "8px", padding: "8px 16px", cursor: "pointer" }}
+            >
+              Save
+            </button>
+            <button
+              onClick={() => setIsEditing(false)}
+              style={{ background: "#374151", color: "#fff", border: "none", borderRadius: "8px", padding: "8px 16px", cursor: "pointer" }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p style={{ fontSize: "16px", marginBottom: "1rem", color: "#d1d5db" }}>{textContent}</p>
+      )}
 
       {imageUrl && (
         <div style={{ marginBottom: "1rem" }}>

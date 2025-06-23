@@ -13,7 +13,23 @@ router.post('/',async(req,res) =>{
     try{
         switch(command){
             case 'update':{
-
+                // Update post text if user is the owner
+                const { postId, text } = data;
+                if (!postId || !text) {
+                    return res.status(400).json({ message: "Missing postId or text" });
+                }
+               
+                const post = await Post.findById(postId);
+                if (!post) {
+                    return res.status(404).json({ message: "Post not found" });
+                }
+              
+                if (data.userId && post.userId.toString() !== data.userId) {
+                    return res.status(403).json({ message: "Not authorized to edit this post" });
+                }
+                post.text = text;
+                await post.save();
+                return res.json({ message: "Post updated", post });
             }
             case 'delete':{
 
