@@ -3,7 +3,7 @@ import { useSignout } from "../Hooks/UseSignout.js"
 import { UseSignInUp } from "../Hooks/UseSignInUp.js"
 import { useNavigate, Link } from "react-router-dom";
 import PostCreator from "./postCreator.js";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 
 const ProfilePage = ({ user }) => {
@@ -37,15 +37,8 @@ const ProfilePage = ({ user }) => {
     signOut();
   };
 
-  return (
-    <div className="min-h-screen text-gold relative overflow-hidden font-serif"
-    style={{ backgroundColor: "#1D1E22" }}>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=IM+Fell+English+SC&display=swap"
-        rel="stylesheet"
-      />
-
-      {/* Floating particles */}
+  const floatingParticles = useMemo(
+    () => (
       <div className="absolute inset-0 pointer-events-none z-0">
         {[...Array(15)].map((_, i) => (
           <div
@@ -61,8 +54,12 @@ const ProfilePage = ({ user }) => {
           ></div>
         ))}
       </div>
+    ),
+    []
+  );
 
-      {/* Magical sparkles */}
+  const magicalSparkles = useMemo(
+    () => (
       <div className="absolute inset-0 pointer-events-none z-0">
         {[...Array(8)].map((_, i) => (
           <div
@@ -79,6 +76,19 @@ const ProfilePage = ({ user }) => {
           </div>
         ))}
       </div>
+    ),
+    []
+  );
+
+  return (
+    <div className="min-h-screen text-gold relative overflow-hidden font-serif"
+    style={{ backgroundColor: "#1D1E22" }}>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=IM+Fell+English+SC&display=swap"
+        rel="stylesheet"
+      />
+      {floatingParticles}
+      {magicalSparkles}
 
       {/* Main content */}
       <div

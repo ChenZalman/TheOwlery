@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { UseSignInUp } from '../Hooks/UseSignInUp';
 
 export default function SignUpPage() {
@@ -28,14 +28,8 @@ export default function SignUpPage() {
     await signInUp(formData, "signup");
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-gold relative overflow-hidden font-serif">
-      <link
-        href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=IM+Fell+English+SC&display=swap"
-        rel="stylesheet"
-      />
-
-      {/* Floating particles */}
+  const floatingParticles = useMemo(
+    () => (
       <div className="absolute inset-0 pointer-events-none z-0">
         {[...Array(15)].map((_, i) => (
           <div
@@ -51,8 +45,12 @@ export default function SignUpPage() {
           ></div>
         ))}
       </div>
+    ),
+    []
+  );
 
-      {/* Magical sparkles */}
+  const magicalSparkles = useMemo(
+    () => (
       <div className="absolute inset-0 pointer-events-none z-0">
         {[...Array(8)].map((_, i) => (
           <div
@@ -69,6 +67,18 @@ export default function SignUpPage() {
           </div>
         ))}
       </div>
+    ),
+    []
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-gold relative overflow-hidden font-serif">
+      <link
+        href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=IM+Fell+English+SC&display=swap"
+        rel="stylesheet"
+      />
+      {floatingParticles}
+      {magicalSparkles}
 
       {/* Main content */}
       <div

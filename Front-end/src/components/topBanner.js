@@ -3,6 +3,8 @@ import { useAuthContext } from "../Hooks/UseAuthContext";
 import { useSignout } from "../Hooks/UseSignout";
 import TelegramIcon from '@mui/icons-material/Telegram';
 import GroupsIcon from '@mui/icons-material/Groups';
+import { useMemo } from "react";
+
 export default function TopBanner() {
   const { user } = useAuthContext();
   const { signOut } = useSignout();
@@ -10,6 +12,28 @@ export default function TopBanner() {
   const handleClick = () => {
     signOut();
   };
+
+  const sparkleNav = useMemo(
+    () => (
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={`sparkle-nav-${i}`}
+            className="absolute text-gold text-sm opacity-50"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animation: `sparkle ${2 + Math.random() * 3}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 2}s`,
+            }}
+          >
+            ✨
+          </div>
+        ))}
+      </div>
+    ),
+    []
+  );
 
   return (
   <div className="relative z-20 w-full border-b-2 border-gold/50 shadow-lg" style={{ backgroundColor: "#1D1E22" }}>
@@ -79,23 +103,7 @@ export default function TopBanner() {
         )}
       </div>
 
-      {/* Optional Sparkle Layer (for top nav) */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        {[...Array(5)].map((_, i) => (
-          <div
-            key={`sparkle-nav-${i}`}
-            className="absolute text-gold text-sm opacity-50"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animation: `sparkle ${2 + Math.random() * 3}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 2}s`,
-            }}
-          >
-            ✨
-          </div>
-        ))}
-      </div>
+      {sparkleNav}
 
       <style jsx="true">{`
         @keyframes sparkle {
