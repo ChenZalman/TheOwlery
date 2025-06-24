@@ -105,22 +105,8 @@ const HomePage = () => {
       About Us <span className="text-2xl group-hover:animate-spin">✨</span>
     </span>
    </button>
-
-          <p className="text-gold/70 text-lg italic animate-pulse">
-            Ready your quills and parchment
-          </p>
-
-          <div className="flex justify-center gap-4 text-gold/60 text-2xl">
-            <span className="animate-bounce" style={{ animationDelay: "0s" }}>
-              🪶
-            </span>
-            <span className="animate-bounce" style={{ animationDelay: "0.2s" }}>
-              📜
-            </span>
-            <span className="animate-bounce" style={{ animationDelay: "0.4s" }}>
-              
-            </span>
-          </div>
+ 
+ 
         </div>
       </div>
 {aboutUsOpen && <AboutUs onClose={() => setAboutUsOpen(false)} />}
