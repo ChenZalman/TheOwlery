@@ -91,7 +91,7 @@ const HomePage = () => {
         {/* Description */}
         <div className="text-center mb-12 max-w-xl">
           <p className="text-lg md:text-xl font-semibold text-gold/90 px-4 py-2 rounded-lg shadow-lg">
-            Where owls gossip, quills misbehave, and your spells might accidentally turn your diary into a toad.
+             Welcome To the Owlery,The Blog where the magic of Harry Potter Happens 🪶📜
           </p>
         </div>
 
@@ -105,7 +105,8 @@ const HomePage = () => {
       About Us <span className="text-2xl group-hover:animate-spin">✨</span>
     </span>
    </button>
- 
+
+          
  
         </div>
       </div>
