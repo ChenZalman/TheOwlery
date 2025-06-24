@@ -91,7 +91,7 @@ const HomePage = () => {
         {/* Description */}
         <div className="text-center mb-12 max-w-xl">
           <p className="text-lg md:text-xl font-semibold text-gold/90 px-4 py-2 rounded-lg shadow-lg">
-            Where owls gossip, quills misbehave, and your spells might accidentally turn your diary into a toad.
+             Welcome To the Owlery,The Blog where the magic of Harry Potter Happens 🪶📜
           </p>
         </div>
 
@@ -106,21 +106,8 @@ const HomePage = () => {
     </span>
    </button>
 
-          <p className="text-gold/70 text-lg italic animate-pulse">
-            Ready your quills and parchment
-          </p>
-
-          <div className="flex justify-center gap-4 text-gold/60 text-2xl">
-            <span className="animate-bounce" style={{ animationDelay: "0s" }}>
-              🪶
-            </span>
-            <span className="animate-bounce" style={{ animationDelay: "0.2s" }}>
-              📜
-            </span>
-            <span className="animate-bounce" style={{ animationDelay: "0.4s" }}>
-              
-            </span>
-          </div>
+          
+ 
         </div>
       </div>
 {aboutUsOpen && <AboutUs onClose={() => setAboutUsOpen(false)} />}

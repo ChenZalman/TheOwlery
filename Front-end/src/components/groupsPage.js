@@ -107,8 +107,8 @@ const GroupsPage = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg border border-gray-200">
-      <h2 className="text-2xl font-bold mb-6 text-purple-900">Your Groups</h2>
+    <div className="min-h-screen text-gold relative overflow-hidden font-serif" style={{ backgroundColor: "#1D1E22" }}>
+      <h2 className="text-3xl font-bold mb-6 text-white text-center">Your Groups</h2>
 
       {/* Requests Section */}
       {loadingRequests ? (
