@@ -67,7 +67,7 @@ export default function TopBanner() {
           Main Feed
         </Link>
         <Link
-          to="/post"
+          to="/userPage"
           className="hover:text-yellow-300 transition duration-300 hover:underline"
         >
          User Page
