@@ -32,7 +32,11 @@ router.post('/',async(req,res) =>{
                 return res.json({ message: "Post updated", post });
             }
             case 'delete':{
-
+                const post=await Post.findByIdAndDelete(data.postId);
+                if(post)
+                return res.json({message:'post deleted'})
+                else
+                return res.json({message:'post not found'})
             }
          case 'get': {
     if (!data.userId) {

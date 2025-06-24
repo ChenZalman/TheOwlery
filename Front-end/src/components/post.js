@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Edit2 } from "lucide-react";
+import { Edit2, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuthContext } from "../Hooks/UseAuthContext";
 import Comment from "./comment";
@@ -171,6 +171,23 @@ const Post = ({ post }) => {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      await axios.post(`http://${address}:${port}/api/posts`, {
+        command: "delete",
+        data: {
+          postId,
+          text: editText,
+        },
+      });
+      setIsEditing(false);
+      // Optionally update UI immediately
+      window.location.reload(); // Or trigger a re-fetch of posts
+    } catch (err) {
+      alert("Failed to update post");
+    }
+  };
+
   const imageUrl = getCloudinaryUrl(imagePublicId, "image", "jpg");
   const videoUrl = getCloudinaryUrl(videoPublicId, "video", "mp4");
 
@@ -204,15 +221,24 @@ const Post = ({ post }) => {
           }}
         />
         <h2 style={{ fontSize: "20px", marginBottom: "0.75rem", fontWeight: "bold", color: "#8E7B53" }}>{postUserName || userName}</h2>
-        {isOwner && !isEditing && (
-          <button
-            onClick={handleEdit}
-            style={{ background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}
-            aria-label="Edit Post"
-          >
-            <Edit2 color="#fff" size={20} />
-          </button>
-        )}
+        <div style={{display: "flex", alignItems: "flex-right", marginLeft: "auto", gap: "10px"}}>
+          {isOwner && !isEditing && (
+            <button
+              onClick={handleEdit}
+              style={{ background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}
+              aria-label="Edit Post"
+            >
+              <Edit2 color="#fff" size={20} />
+            </button>)}
+          {isOwner && !isEditing && (
+            <button
+              onClick={handleDelete}
+              style={{ background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}
+              aria-label="Delete Post"
+            >
+              <Trash2 color="#fff" size={20} />
+            </button>)}  
+        </div>
       </div>
       {isEditing ? (
         <div style={{ marginBottom: "1rem" }}>

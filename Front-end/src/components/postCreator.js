@@ -69,7 +69,8 @@ const handleSubmit = async (e) => {
     videos,
   };
   const json = await post(postData, "create");
-  const newPostId = json?.post?.id;
+  console.log(json)
+  const newPostId = json?.id;
   if (newPostId) {
     if (user.postsId)
       Object.assign(user, { postsId: [...user.postsId, newPostId] });
