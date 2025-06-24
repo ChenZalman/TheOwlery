@@ -27,7 +27,8 @@ const ProfilePage = ({ user }) => {
         command: "get",
         data: { userId: user.userId }
       });
-      setPosts(res.data.posts || []);
+      // Filter posts to only those by the current user
+      setPosts((res.data.posts || []).filter(post => post.userId === user.userId));
     };
     fetchPosts();
   }, [user]);
