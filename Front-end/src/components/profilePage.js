@@ -1,25 +1,27 @@
 import Feed from "./feed";
-import { useSignout } from "../Hooks/UseSignout.js"
-import { UseSignInUp } from "../Hooks/UseSignInUp.js"
 import { useNavigate, Link } from "react-router-dom";
 import PostCreator from "./postCreator.js";
 import SearchBar from "./searchBar.js";
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-
+import fetchProfileImage from "../requests/getProfileImage";
 const ProfilePage = ({ user }) => {
-  const { signOut } = useSignout();
-  const { signInUp, isLoading, error } = UseSignInUp();
   const [posts, setPosts] = useState([]);
-  const [profilePicture, setProfilePicture] = useState(user.profilePicture || `https://cdn.pixabay.com/photo/2012/04/18/23/36/boy-38262_1280.png`);
+  const [fetchedProfileImage, setFetchedProfileImage] = useState("");
   const address = process.env.REACT_APP_ADDRESS;
   const port = process.env.REACT_APP_PORT;
 
-  // For fade-in animation
-  const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
-    setIsVisible(true);
-  }, []);
+    const fetchImg = async () => {
+      if (user && ( user.userId)) {
+        
+        
+          const img = await fetchProfileImage(user.userId);
+          setFetchedProfileImage(img);
+        }
+    };
+    fetchImg();
+  }, [user]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -34,10 +36,7 @@ const ProfilePage = ({ user }) => {
     fetchPosts();
   }, [user]);
 
-  const handleClick = async () => {
-    await signInUp(user, "delete");
-    signOut();
-  };
+   
 
   const floatingParticles = useMemo(
     () => (
@@ -94,9 +93,7 @@ const ProfilePage = ({ user }) => {
 
       {/* Main content */}
       <div
-        className={`relative z-10 flex flex-col items-center justify-center min-h-screen px-6 max-w-3xl mx-auto transition-all duration-1000 transform ${
-          isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-        }`}
+        
       >
       <SearchBar/>
         <div style={{
@@ -119,7 +116,7 @@ const ProfilePage = ({ user }) => {
             background: 'rgba(255,255,255,0.04)',
           }}>
             <img
-              src={profilePicture}
+              src={fetchedProfileImage || "/images/noProfile.png"}
               alt="Profile"
               style={{ width: '96px', height: '96px', borderRadius: '50%', objectFit: 'cover' }}
             />
