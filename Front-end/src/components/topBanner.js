@@ -70,7 +70,7 @@ export default function TopBanner() {
           to="/post"
           className="hover:text-yellow-300 transition duration-300 hover:underline"
         >
-          See a Post Demo
+         User Page
         </Link>
         <Link
           to="/analyticsPage"
