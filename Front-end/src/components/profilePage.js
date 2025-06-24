@@ -3,6 +3,7 @@ import { useSignout } from "../Hooks/UseSignout.js"
 import { UseSignInUp } from "../Hooks/UseSignInUp.js"
 import { useNavigate, Link } from "react-router-dom";
 import PostCreator from "./postCreator.js";
+import SearchBar from "./searchBar.js";
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 
@@ -97,6 +98,7 @@ const ProfilePage = ({ user }) => {
           isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
         }`}
       >
+      <SearchBar/>
         <div style={{
           maxWidth: '800px',
           margin: '2rem auto',
