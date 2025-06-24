@@ -1,6 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import fetchProfileImage from "../requests/getProfileImage";
 
 const Comment = ({ comment }) => {
+  const [userName, setUserName] = useState("");
+  const [profilePicture, setProfilePicture] = useState("");
+  const address = process.env.REACT_APP_ADDRESS;
+  const port = process.env.REACT_APP_PORT;
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!comment.userId) return;
+      try {
+        // Fetch user name
+        const res = await axios.post(`http://${address}:${port}/api/users`, {
+          command: "update", // Use update to get user by id (or create a new command for getUserById)
+          data: { userId: comment.userId },
+        });
+        if (res.data && res.data.user) {
+          setUserName(res.data.user.name || "User");
+        } else {
+          setUserName("User");
+        }
+        // Fetch profile image using utility
+        const img = await fetchProfileImage(comment.userId);
+        setProfilePicture(img);
+      } catch (err) {
+        setUserName("User");
+        setProfilePicture("");
+      }
+    };
+    fetchUserData();
+  }, [comment.userId, address, port]);
+
   return (
     <div
       style={{
@@ -10,7 +42,6 @@ const Comment = ({ comment }) => {
         marginBottom: "18px",
         padding: "12px 0",
         borderBottom: "1px solid #2d3238",
-        //background: "#20232a",
         borderRadius: "14px",
         boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
       }}
@@ -28,7 +59,7 @@ const Comment = ({ comment }) => {
         }}
       >
         <img
-          src={comment.profilePicture || "https://ui-avatars.com/api/?name=U&background=374151&color=fff"}
+          src={profilePicture || "https://ui-avatars.com/api/?name=U&background=374151&color=fff"}
           alt="Profile"
           style={{
             width: "100%",
@@ -52,7 +83,7 @@ const Comment = ({ comment }) => {
         }}
       >
         <span style={{ fontWeight: 600, color: "#fff", fontSize: "15px" }}>
-          {comment.userName || "User"}
+          {userName}
         </span>
         <span style={{ color: "#d1d5db", marginLeft: 6 }}>{comment.text}</span>
       </div>
