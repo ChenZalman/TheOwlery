@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const groupSchema = require('../models/groupSchema'); // Make sure this is the correct path
+const groupSchema = require('../models/groupSchema'); 
+const userSchema = require('../models/userSchema'); 
 const Group = mongoose.model('Group', groupSchema);
+const User = mongoose.model('User', userSchema);  
 
 router.post('/', async (req, res) => {
   const { command, data } = req.body;
@@ -169,7 +171,24 @@ case 'rejectGroupInvite': {
   await group.save();
   return res.json({ message: "Invitation rejected", group });
 }
- 
+case 'getGroupMembers': {
+  const { groupId } = data;
+  if (!groupId) return res.status(400).json({ message: "Missing groupId" });
+  const group=await Group.findById(groupId);
+  const membersIds = group ? group.membersIds : [];
+  const users = await User.find({ _id: { $in: membersIds } });
+  //REMOVING SENSITIVE DATA ABOUT USER
+  const usersSafe = users.map(u => {
+    const obj = u.toObject();
+    delete obj.password;
+    delete obj.__v;
+    return obj;
+  });
+
+  return res.json({ members : usersSafe });
+
+  
+}
 case 'getUserInvites': {
   const { userId } = data;
   if (!userId) return res.status(400).json({ message: "Missing userId" });

@@ -10,7 +10,7 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, use } from "react";
 import { useParams } from "react-router-dom";
 import { useAuthContext } from "../Hooks/UseAuthContext";
 import fetchProfileImage from "../requests/getProfileImage";
@@ -29,16 +29,15 @@ const GroupPage = () => {
   const [showCoverPicker, setShowCoverPicker] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const { user } = useAuthContext();
-
   const [postText, setPostText] = useState("");
   const [posts, setPosts] = useState([]);
   const [userProfilePicture, setUserProfilePicture] = useState(null);
-
+  const [members, setMembers] = useState([]);
+ const address = process.env.REACT_APP_ADDRESS;
+ const port = process.env.REACT_APP_PORT;
   useEffect(() => {
     const fetchGroup = async () => {
       try {
-        const address = process.env.REACT_APP_ADDRESS;
-        const port = process.env.REACT_APP_PORT;
         const res = await axios.post(`http://${address}:${port}/api/groups`, {
           command: "getGroupById",
           data: { groupId },
@@ -86,12 +85,36 @@ const GroupPage = () => {
     fetchProfilePicture();
   }, [user]);
 
-  const tabs = ["Discussion", "Events", "Media", "Files", "People"];
+useEffect(() => {
+    const fetchMembers = async () => {
+      if (!groupId) return;
+      try {
+   
+        const res = await axios.post(`http://${address}:${port}/api/groups`, {
+          command: "getGroupMembers",
+          data: { groupId },
+        });
+        const members = await Promise.all(
+          res.data.members.map(async (member) => {
+            const profilePicture = await fetchProfileImage(member._id);
+            //console.log("memberidddddddddd", member._id);
+            return { ...member, profilePicture };
+          })
+        );
+        setMembers(members);
+      } catch (err) {
+        setMembers([]);
+      }
+    }
+    fetchMembers();
+  }, [groupId]);
+    
+  
+     
+  const tabs = ["Discussion", "Events", "Media", "Files", "Members"];
   const handleCreatePost = async () => {
     if (!postText.trim()) return;
     try {
-      const address = process.env.REACT_APP_ADDRESS;
-      const port = process.env.REACT_APP_PORT;
       const res = await axios.post(`http://${address}:${port}/api/groups`, {
         command: "createGroupPost",
         data: {
@@ -109,26 +132,6 @@ const GroupPage = () => {
     }
   };
 
-  const floatingParticles = useMemo(
-    () => (
-      <div className='absolute inset-0 pointer-events-none z-0'>
-        {[...Array(15)].map((_, i) => (
-          <div
-            key={i}
-            className='absolute w-2 h-2 bg-yellow-300 rounded-full opacity-30'
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 2}s`,
-              boxShadow: "0 0 10px #e6c47a",
-            }}
-          ></div>
-        ))}
-      </div>
-    ),
-    []
-  );
   const magicalSparkles = useMemo(
     () => (
       <div className='absolute inset-0 pointer-events-none z-0'>
@@ -154,10 +157,10 @@ const GroupPage = () => {
   if (!group) {
     return <div className='min-h-screen flex items-center justify-center text-gray-400'>Loading group...</div>;
   }
+//console.log("meberssssssssss", members);
 
   return (
     <div className='min-h-screen text-white relative overflow-hidden' style={{ backgroundColor: "#1c1e21" }}>
-      {floatingParticles}
       {magicalSparkles}
       {/* Header with Illustration */}
       <div className='relative h-64 bg-gradient-to-r from-orange-400 via-pink-400 to-purple-500 overflow-hidden'>
@@ -226,38 +229,60 @@ const GroupPage = () => {
             </div>
           </div>
 
-          {/* Post Creation */}
-          <div className='p-6 border-b border-gray-700'>
-            <div className='flex space-x-3'>
-              {userProfilePicture ? (
-                <img
-                  src={userProfilePicture}
-                  alt='Profile'
-                  className='w-10 h-10 rounded-full object-cover flex-shrink-0 border border-gray-400'
-                />
-              ) : (
-                <div className='w-10 h-10 bg-gray-600 rounded-full flex-shrink-0'></div>
-              )}
-              <div className='flex-1'>
-                <textarea
-                  placeholder='Write something...'
-                  className='w-full bg-gray-800 rounded-lg p-3 resize-none text-gray-300 placeholder-gray-500 border border-gray-700 focus:border-blue-500 focus:outline-none'
-                  rows='3'
-                  value={postText}
-                  onChange={(e) => setPostText(e.target.value)}
-                />
-                <div className='flex justify-end mt-2'>
-                  <button
-                    className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg'
-                    onClick={handleCreatePost}
-                    disabled={!postText.trim()}
-                  >
-                    Post
-                  </button>
+          {/* Post Creation or Members List depending on tab */}
+          {activeTab === "Discussion" ? (
+            <div className='p-6 border-b border-gray-700'>
+              <div className='flex space-x-3'>
+                {userProfilePicture ? (
+                  <img
+                    src={userProfilePicture}
+                    alt='Profile'
+                    className='w-10 h-10 rounded-full object-cover flex-shrink-0 border border-gray-400'
+                  />
+                ) : (
+                  <div className='w-10 h-10 bg-gray-600 rounded-full flex-shrink-0'></div>
+                )}
+                <div className='flex-1'>
+                  <textarea
+                    placeholder='Write something...'
+                    className='w-full bg-gray-800 rounded-lg p-3 resize-none text-gray-300 placeholder-gray-500 border border-gray-700 focus:border-blue-500 focus:outline-none'
+                    rows='3'
+                    value={postText}
+                    onChange={(e) => setPostText(e.target.value)}
+                  />
+                  <div className='flex justify-end mt-2'>
+                    <button
+                      className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg'
+                      onClick={handleCreatePost}
+                      disabled={!postText.trim()}
+                    >
+                      Post
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          ) : activeTab === "Members" ? (
+            <div className="p-6 border-b border-gray-700">
+              <h3 className="font-semibold mb-4">Group Members</h3>
+              {members.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {members.map((member) => (
+                    <div key={member._id} className="flex items-center gap-4 bg-gray-800 rounded-lg p-4 border border-gray-700">
+                      <img
+                        src={member.profilePicture || "/images/noProfile.png"}
+                        alt={member.name}
+                        className="w-12 h-12 rounded-full object-cover border border-gray-600"
+                      />
+                      <span className="text-lg font-medium text-white">{member.name}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-gray-400">No members found.</div>
+              )}
+            </div>
+          ) : null}
         </div>
         {/* Group Posts */}
         <div className='p-6'>
@@ -283,7 +308,6 @@ const GroupPage = () => {
             <div className='text-gray-400'>No posts yet.</div>
           )}
         </div>
-
         {/* Setup Panel */}
         {showSetupPanel && (
           <div className='w-80 p-6 bg-gray-800 border-l border-gray-700'>
@@ -365,8 +389,6 @@ const GroupPage = () => {
             onClose={() => setShowCoverPicker(false)}
             onSave={async (url, publicId) => {
               try {
-                const address = process.env.REACT_APP_ADDRESS;
-                const port = process.env.REACT_APP_PORT;
                 await axios.post(`http://${address}:${port}/api/groups`, {
                   command: "updateCoverImage",
                   data: { groupId, coverImage: publicId },
@@ -387,8 +409,6 @@ const GroupPage = () => {
             onClose={() => setShowDescriptionModal(false)}
             onSave={async (newDescription) => {
               try {
-                const address = process.env.REACT_APP_ADDRESS;
-                const port = process.env.REACT_APP_PORT;
                 await axios.post(`http://${address}:${port}/api/groups`, {
                   command: "updateDescription",
                   data: { groupId, description: newDescription },
