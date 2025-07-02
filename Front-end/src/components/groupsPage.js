@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import CreateGroupModal from "./CreateGroupModal";
 import axios from "axios";
 import { useAuthContext } from "../Hooks/UseAuthContext";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +11,7 @@ const GroupsPage = () => {
   const [loading, setLoading] = useState(true);
   const [loadingRequests, setLoadingRequests] = useState(true);
   const navigate = useNavigate();
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const address = process.env.REACT_APP_ADDRESS;
   const port = process.env.REACT_APP_PORT;
 
@@ -108,7 +110,16 @@ const GroupsPage = () => {
 
   return (
     <div className="min-h-screen text-gold relative overflow-hidden font-serif" style={{ backgroundColor: "#1D1E22" }}>
-      <h2 className="text-3xl font-bold mb-6 text-white text-center">Your Groups</h2>
+      <div style={{ height: '60px' }}></div> {/* Spacer to push content down */}
+      <h2 className="text-5xl font-extrabold mb-10 text-white text-center drop-shadow-lg">Your Groups</h2>
+      <div className="flex justify-center mb-8">
+        <button
+          className="bg-purple-700 text-white px-6 py-2 rounded font-bold shadow hover:bg-purple-800 transition-colors"
+          onClick={() => setShowCreateModal(true)}
+        >
+          + Create Group
+        </button>
+      </div>
 
       {/* Requests Section */}
       {loadingRequests ? (
@@ -150,14 +161,45 @@ const GroupsPage = () => {
           {groups.map((group) => (
             <li
               key={group._id || group.id}
-              className="p-4 bg-purple-50 rounded-lg shadow flex flex-col gap-1 cursor-pointer hover:bg-purple-100 transition-colors duration-200"
+              className="p-4 bg-purple-50 rounded-lg shadow flex flex-col gap-1 cursor-pointer hover:bg-purple-100 transition-colors duration-200 mx-auto w-full max-w-xs"
               onClick={() => handleGroupClick(group._id || group.id)}
             >
-              <span className="font-semibold text-lg text-purple-800">{group.name}</span>
+              <div className="flex items-center gap-2 mb-1">
+                {group.privacy && group.privacy.toLowerCase().includes('private') ? (
+                  <span title="Private group" className="inline-block text-black">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c.828 0 1.5.672 1.5 1.5S12.828 14 12 14s-1.5-.672-1.5-1.5S11.172 11 12 11zm6 2V9a6 6 0 10-12 0v4M5 11h14a2 2 0 012 2v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4a2 2 0 012-2z" /></svg>
+                  </span>
+                ) : (
+                  <span title="Public group" className="inline-block text-black">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" /><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
+                  </span>
+                )}
+                <span className="font-semibold text-lg text-purple-800">{group.name}</span>
+              </div>
               <span className="text-gray-600">{group.description}</span>
             </li>
           ))}
         </ul>
+      )}
+
+      {showCreateModal && (
+        <CreateGroupModal
+          userId={user?.userId}
+          onClose={() => setShowCreateModal(false)}
+          onGroupCreated={async () => {
+            // Refresh groups after creation
+            try {
+              const res = await axios.post(`http://${address}:${port}/api/groups`, {
+                command: "getUserGroups",
+                data: { userId: user.userId }
+              });
+              setGroups(res.data.groups || []);
+            } catch (err) {
+              setGroups([]);
+            }
+            setShowCreateModal(false);
+          }}
+        />
       )}
     </div>
   );

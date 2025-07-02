@@ -23,6 +23,7 @@ router.post('/', async (req, res) => {
           adminIds: data.adminIds,
           blockedIds: data.blockedIds || [],
           createdAt: Date.now(),
+          privacy: data.isPublic === false ? "private" : "public",
         });
         const savedGroup = await group.save();
         const groupObj = savedGroup.toObject();

@@ -11,6 +11,7 @@ const postSchema = mongoose.Schema({
     pendingInvites: [String], // Add this line for pending invites
     coverImage: String,
     createdAt: Date,
+    privacy: { type: String, enum: ["public", "private"], default: "public" },
 })
 
 module.exports = postSchema
