@@ -54,18 +54,9 @@ const GroupPage = () => {
         // Fetch user names and profile pictures for each post
         const postsWithUserData = await Promise.all(
           postsRes.data.posts.map(async (post) => {
-            // Fetch user name
-            let userName = "Unknown";
-            try {
-              const userRes = await axios.post(`http://${address}:${port}/api/users`, {
-                command: "getUserById",
-                data: { userId: post.userId },
-              });
-              userName = userRes.data.user?.name || "Unknown";
-            } catch (e) {}
             // Fetch profile picture
             const userProfilePicture = await fetchProfileImage(post.userId);
-            return { ...post, userName, userProfilePicture };
+            return { ...post, userProfilePicture };
           })
         );
         setPosts(postsWithUserData || []);
@@ -114,27 +105,6 @@ useEffect(() => {
   
      
   const tabs = ["Discussion", "Events", "Media", "Members"];
-  // const handleCreatePost = async () => {
-  //   if (!postText.trim()) return;
-  //   try {
-  //     const res = await axios.post(`http://${address}:${port}/api/groups`, {
-  //       command: "createGroupPost",
-  //       data: {
-  //         text: postText,
-  //         userId: user.userId,
-  //         groupId: groupId,
-  //         images: [],
-  //         videos: [],
-  //       },
-  //     });
-  //     setPostText("");
-  //     alert("Post created!");
-  //   } catch (err) {
-  //     alert("Failed to create post.");
-  //   }
-  // };
-
-  // Refresh posts after new post is created
   const refreshPosts = async () => {
     try {
       const postsRes = await axios.post(`http://${address}:${port}/api/posts`, {

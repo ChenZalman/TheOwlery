@@ -1,4 +1,8 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
+import { useAuthContext } from "../Hooks/UseAuthContext";
+import Post from "./post";
+import fetchProfileImage from "../requests/getProfileImage";
+import axios from "axios";
 
 const MainFeed = () => {
     // Floating particles and sparkles (like home page)
@@ -44,11 +48,72 @@ const MainFeed = () => {
         []
     );
 
+    const { user } = useAuthContext();
+    const [posts, setPosts] = useState([]);
+    const [postsWithUserData, setPostsWithUserData] = useState([]);
+    const address = process.env.REACT_APP_ADDRESS;
+    const port = process.env.REACT_APP_PORT;
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            if (!user || !user.userId) return;
+            try {
+                const res = await axios.post(`http://${address}:${port}/api/posts`, {
+                    command: "get",
+                    data: { userId: user.userId },
+                });
+                setPosts(res.data.posts || []);
+            } catch (err) {
+                setPosts([]);
+            }
+        };
+        fetchPosts();
+    }, [user, address, port]);
+
+    useEffect(() => {
+        const fetchAllProfileImages = async () => {
+            const postsWithData = await Promise.all(
+                posts.map(async (post) => {
+                    let profilePicture = "/images/noProfile.png";
+                    try {
+                        profilePicture = await fetchProfileImage(post.userId);
+                    } catch (e) {}
+                    return {
+                        ...post,
+                        profilePicture,
+                    };
+                })
+            );
+            setPostsWithUserData(postsWithData);
+        };
+        if (posts.length > 0) fetchAllProfileImages();
+        else setPostsWithUserData([]);
+    }, [posts]);
+
     return (
         <div className="min-h-screen text-gold relative overflow-hidden font-serif" style={{ backgroundColor: "#1D1E22" }}>
             {magicalSparkles}
             {floatingParticles}
-            {/* Main feed content goes here */}
+            <div className="flex flex-col items-center pt-24">
+                {postsWithUserData.length > 0 ? (
+                    postsWithUserData.map((post) => (
+                        <div key={post._id || post.id} className="mb-8">
+                            <Post post={{
+                                userName: post.userName,
+                                profilePicture: post.profilePicture,
+                                textContent: post.text || post.textContent,
+                                imagePublicId: post.images && post.images.length > 0 ? post.images[0] : null,
+                                videoPublicId: post.videos && post.videos.length > 0 ? post.videos[0] : null,
+                                postId: post._id || post.id,
+                                likes: post.likes,
+                                userId: post.userId,
+                            }} />
+                        </div>
+                    ))
+                ) : (
+                    <div className="text-center text-xl text-gold/60 mt-20">No posts to show yet.</div>
+                )}
+            </div>
             <style jsx>{`
                 @keyframes float {
                     0%, 100% { transform: translateY(0px) translateX(0px); }
