@@ -18,6 +18,7 @@ import AddCoverPhotoModal from "./popups/groupPage/addCoverPhoto";
 import DescriptionModal from "./popups/groupPage/description";
 import InviteFriendsModal from "./popups/groupPage/invitePeopleToGroup";
 import Post from "./post";
+import GroupPostCreator from "./GroupPostCreator";
 
 const GroupPage = () => {
   const { groupId } = useParams();
@@ -29,7 +30,7 @@ const GroupPage = () => {
   const [showCoverPicker, setShowCoverPicker] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const { user } = useAuthContext();
-  const [postText, setPostText] = useState("");
+  // const [postText, setPostText] = useState("");
   const [posts, setPosts] = useState([]);
   const [userProfilePicture, setUserProfilePicture] = useState(null);
   const [members, setMembers] = useState([]);
@@ -112,23 +113,50 @@ useEffect(() => {
   
      
   const tabs = ["Discussion", "Events", "Media", "Files", "Members"];
-  const handleCreatePost = async () => {
-    if (!postText.trim()) return;
+  // const handleCreatePost = async () => {
+  //   if (!postText.trim()) return;
+  //   try {
+  //     const res = await axios.post(`http://${address}:${port}/api/groups`, {
+  //       command: "createGroupPost",
+  //       data: {
+  //         text: postText,
+  //         userId: user.userId,
+  //         groupId: groupId,
+  //         images: [],
+  //         videos: [],
+  //       },
+  //     });
+  //     setPostText("");
+  //     alert("Post created!");
+  //   } catch (err) {
+  //     alert("Failed to create post.");
+  //   }
+  // };
+
+  // Refresh posts after new post is created
+  const refreshPosts = async () => {
     try {
-      const res = await axios.post(`http://${address}:${port}/api/groups`, {
-        command: "createGroupPost",
-        data: {
-          text: postText,
-          userId: user.userId,
-          groupId: groupId,
-          images: [],
-          videos: [],
-        },
+      const postsRes = await axios.post(`http://${address}:${port}/api/posts`, {
+        command: "getGroupPosts",
+        data: { groupId },
       });
-      setPostText("");
-      alert("Post created!");
+      const postsWithUserData = await Promise.all(
+        postsRes.data.posts.map(async (post) => {
+          let userName = "Unknown";
+          try {
+            const userRes = await axios.post(`http://${address}:${port}/api/users`, {
+              command: "getUserById",
+              data: { userId: post.userId },
+            });
+            userName = userRes.data.user?.name || "Unknown";
+          } catch (e) {}
+          const userProfilePicture = await fetchProfileImage(post.userId);
+          return { ...post, userName, userProfilePicture };
+        })
+      );
+      setPosts(postsWithUserData || []);
     } catch (err) {
-      alert("Failed to create post.");
+      setPosts([]);
     }
   };
 
@@ -232,35 +260,8 @@ useEffect(() => {
           {/* Post Creation or Members List depending on tab */}
           {activeTab === "Discussion" ? (
             <div className='p-6 border-b border-gray-700'>
-              <div className='flex space-x-3'>
-                {userProfilePicture ? (
-                  <img
-                    src={userProfilePicture}
-                    alt='Profile'
-                    className='w-10 h-10 rounded-full object-cover flex-shrink-0 border border-gray-400'
-                  />
-                ) : (
-                  <div className='w-10 h-10 bg-gray-600 rounded-full flex-shrink-0'></div>
-                )}
-                <div className='flex-1'>
-                  <textarea
-                    placeholder='Write something...'
-                    className='w-full bg-gray-800 rounded-lg p-3 resize-none text-gray-300 placeholder-gray-500 border border-gray-700 focus:border-blue-500 focus:outline-none'
-                    rows='3'
-                    value={postText}
-                    onChange={(e) => setPostText(e.target.value)}
-                  />
-                  <div className='flex justify-end mt-2'>
-                    <button
-                      className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg'
-                      onClick={handleCreatePost}
-                      disabled={!postText.trim()}
-                    >
-                      Post
-                    </button>
-                  </div>
-                </div>
-              </div>
+              {/* Use GroupPostCreator for group posts */}
+              <GroupPostCreator groupId={groupId} onPostCreated={refreshPosts} />
             </div>
           ) : activeTab === "Members" ? (
             <div className="p-6 border-b border-gray-700">
