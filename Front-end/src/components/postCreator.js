@@ -1,11 +1,12 @@
 import { useAuthContext } from "../Hooks/UseAuthContext";
 import { UsePost } from "../Hooks/UsePost";
-import { useState, useRef } from "react";
+import  { useState, useRef, useEffect } from "react";
 import { UseSignInUp } from "../Hooks/UseSignInUp";
 import axios from "axios";
 import Picker from "@emoji-mart/react";
+import fetchProfileImage from "../requests/getProfileImage";
 const CLOUDINARY_Name = process.env.REACT_APP_CLOUDINARY_NAME;
-console.log("CLOUDINARY_Name:", CLOUDINARY_Name);
+//console.log("CLOUDINARY_Name:", CLOUDINARY_Name);
 
 
 const PostCreator = () => {
@@ -17,6 +18,7 @@ const PostCreator = () => {
   const [mediaType, setMediaType] = useState(null); // image or video
   const [uploading, setUploading] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [userProfilePicture, setUserProfilePicture] = useState("");
 const addEmoji = (emoji) => {
   setFormData((prev) => ({
     ...prev,
@@ -81,12 +83,22 @@ const handleSubmit = async (e) => {
     setMediaType(null);
   }
 };
+useEffect(() => {
+    const fetchProfilePicture = async () => {
+      if (user && user.userId) {
+        const userProfilePicture = await fetchProfileImage(user.userId);
+        setUserProfilePicture(userProfilePicture);
+      }
+    };
+    fetchProfilePicture();
+  }, [user]);
+
   return (
     <div className="w-full max-w-xl mx-auto bg-white rounded-xl shadow-md p-5 mb-6 border border-gray-200">
       <form onSubmit={handleSubmit}>
         <div className="flex items-start gap-3">
           <img
-            src={user.profilePicture || "/images/default-profile.png"}
+            src={userProfilePicture || "/images/default-profile.png"}
             alt="profile"
             className="w-12 h-12 rounded-full object-cover border border-gray-300"
           />

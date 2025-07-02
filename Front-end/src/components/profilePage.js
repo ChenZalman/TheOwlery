@@ -124,7 +124,26 @@ const ProfilePage = ({ user }) => {
               <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>{user.name || `Annonymus user`}</h1>
               <p style={{ color: 'gray', marginTop: '0.25rem' }}>{user.bio || `Bio - comming soon`}</p>
             </div>
-            <Link to={'/editprofile'}>edit user</Link>
+            <Link
+              to={'/editprofile'}
+              style={{
+                background: '#7c3aed', // purple-600
+                color: 'white',
+                padding: '0.5rem 1.25rem',
+                borderRadius: '0.5rem',
+                fontWeight: 'bold',
+                textDecoration: 'none',
+                fontSize: '1rem',
+                marginLeft: 'auto',
+                transition: 'background 0.2s',
+                boxShadow: '0 2px 8px rgba(124,58,237,0.08)',
+                display: 'inline-block',
+              }}
+              onMouseOver={e => (e.currentTarget.style.background = '#6d28d9')} // purple-700
+              onMouseOut={e => (e.currentTarget.style.background = '#7c3aed')}
+            >
+              Edit User
+            </Link>
           </div>
 
           <div style={{

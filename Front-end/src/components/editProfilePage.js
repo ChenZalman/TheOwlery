@@ -103,14 +103,16 @@ export default function EditProfilePage() {
                 onClick={handleProfileImageClick}
                 style={{
                   padding: "0.5rem 1rem",
-                  background: "#e6c47a",  
+                  background: "#7c3aed", // purple-600
                   color: "#fff",
-                  border: "1px solid #e6c47a",
+                  border: "1px solid #7c3aed",
                   borderRadius: "4px",
                   cursor: "pointer",
                   fontWeight: "bold",
                   transition: "background 0.2s, color 0.2s",
                 }}
+                onMouseOver={e => (e.currentTarget.style.background = '#6d28d9')}
+                onMouseOut={e => (e.currentTarget.style.background = '#7c3aed')}
               >
                 Change
               </button>
@@ -217,9 +219,9 @@ export default function EditProfilePage() {
             style={{
               width: "100%",
               padding: "0.75rem",
-              background: "#e6c47a",  
+              background: "#7c3aed", // purple-600
               color: "#fff",
-              border: "1px solid #e6c47a",
+              border: "1px solid #7c3aed",
               borderRadius: "4px",
               fontWeight: "bold",
               cursor: "pointer",
@@ -227,6 +229,8 @@ export default function EditProfilePage() {
               transition: "background 0.2s, color 0.2s",
               marginTop: "0.5rem"
             }}
+            onMouseOver={e => (e.currentTarget.style.background = '#6d28d9')}
+            onMouseOut={e => (e.currentTarget.style.background = '#7c3aed')}
           >
             Save Changes
           </button>
