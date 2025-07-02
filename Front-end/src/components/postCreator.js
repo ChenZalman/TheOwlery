@@ -94,7 +94,7 @@ useEffect(() => {
   }, [user]);
 
   return (
-    <div className="w-full max-w-xl mx-auto bg-white rounded-xl shadow-md p-5 mb-6 border border-gray-200">
+    <div className="w-full max-w-2xl mx-auto rounded-xl shadow-md p-5 mb-6 border border-gray-200" style={{ background: '#23272a' }}>
       <form onSubmit={handleSubmit}>
         <div className="flex items-start gap-3">
           <img
@@ -108,7 +108,8 @@ useEffect(() => {
               value={formData.text}
               onChange={handleChange}
               placeholder={`What's on your mind, ${user.userName || "wizard"}?`}
-              className="w-full min-h-[60px] resize-none border-none focus:ring-0 text-lg bg-gray-100 rounded-lg p-3 mb-2"
+              className="w-full min-h-[60px] resize-none border-none focus:ring-0 text-lg rounded-lg p-3 mb-2"
+              style={{ background: '#353945', color: '#fff' }}
               maxLength={500}
               required
             />

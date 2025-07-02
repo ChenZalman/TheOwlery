@@ -159,35 +159,7 @@ const ProfilePage = ({ user }) => {
         </div>
       </div>
 
-      {/* Styles */}
-      <style jsx>{`
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px) translateX(0px);
-          }
-          25% {
-            transform: translateY(-15px) translateX(8px);
-          }
-          50% {
-            transform: translateY(-8px) translateX(-5px);
-          }
-          75% {
-            transform: translateY(-20px) translateX(3px);
-          }
-        }
-        @keyframes sparkle {
-          0%,
-          100% {
-            opacity: 0.3;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(1.2);
-          }
-        }
-      `}</style>
+     
     </div>
   );
 };
