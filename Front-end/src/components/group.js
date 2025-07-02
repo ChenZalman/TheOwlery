@@ -4,8 +4,6 @@ import {
   Eye,
   FileText,
   Globe,
-  Heart,
-  MessageCircle,
   MoreHorizontal,
   Plus,
   Search,
@@ -196,10 +194,6 @@ const GroupPage = () => {
             </div>
           </div>
           <div className='flex space-x-3'>
-            <button className='bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors'>
-              <UserPlus className='w-4 h-4' />
-              <span>Invite</span>
-            </button>
           </div>
         </div>
       </div>
@@ -261,76 +255,7 @@ const GroupPage = () => {
                     Post
                   </button>
                 </div>
-                <div className='flex justify-between items-center mt-3'>
-                  <div className='flex space-x-4'>
-                    <button className='flex items-center space-x-2 text-blue-400 hover:text-blue-300'>
-                      <span className='text-blue-500 bg-blue-500/20 rounded px-2 py-1 text-sm'>📝</span>
-                      <span className='text-sm'>Anonymous Post</span>
-                    </button>
-                    <button className='flex items-center space-x-2 text-orange-400 hover:text-orange-300'>
-                      <span className='text-orange-500 bg-orange-500/20 rounded px-2 py-1 text-sm'>📊</span>
-                  
-                    </button>
-                  </div>
-                </div>
               </div>
-            </div>
-          </div>
-
-          {/* Featured Section */}
-          <div className='p-6 border-b border-gray-700'>
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center space-x-2'>
-                <h3 className='font-semibold'>Featured</h3>
-                <span className='bg-blue-600 text-xs px-2 py-1 rounded-full'>1 new</span>
-              </div>
-              <button className='text-blue-400 hover:text-blue-300 text-sm'>Add</button>
-            </div>
-          </div>
-
-          {/* Group Creation Post */}
-          <div className='p-6'>
-            <div className='flex space-x-3'>
-              <div className='w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex-shrink-0 flex items-center justify-center'>
-                <Users className='w-5 h-5' />
-              </div>
-              <div className='flex-1'>
-                <div className='flex items-center space-x-2 mb-2'>
-                  <span className='font-semibold'>Tami Mesengiser</span>
-                  <span className='text-xs bg-blue-600 px-2 py-1 rounded'>Admin</span>
-                  <span className='text-gray-400 text-sm'>created the group</span>
-                  <span className='font-semibold'>hh</span>
-                </div>
-                <p className='text-gray-400 text-sm mb-3'>Just now • 🌍</p>
-
-                <div className='flex items-center space-x-6'>
-                  <button
-                    onClick={() => setLiked(!liked)}
-                    className={`flex items-center space-x-2 ${
-                      liked ? "text-red-400" : "text-gray-400"
-                    } hover:text-red-300 transition-colors`}
-                  >
-                    <Heart className={`w-5 h-5 ${liked ? "fill-current" : ""}`} />
-                    <span>Like</span>
-                  </button>
-                  <button className='flex items-center space-x-2 text-gray-400 hover:text-gray-300 transition-colors'>
-                    <MessageCircle className='w-5 h-5' />
-                    <span>Comment</span>
-                  </button>
-                </div>
-
-                <div className='mt-4 flex items-center space-x-3'>
-                  <div className='w-8 h-8 bg-gray-600 rounded-full flex-shrink-0'></div>
-                  <input
-                    type='text'
-                    placeholder='Write a public comment...'
-                    className='flex-1 bg-transparent text-gray-300 placeholder-gray-500 outline-none'
-                  />
-                </div>
-              </div>
-              <button className='text-gray-400 hover:text-gray-300'>
-                <MoreHorizontal className='w-5 h-5' />
-              </button>
             </div>
           </div>
         </div>
@@ -477,35 +402,7 @@ const GroupPage = () => {
           />
         </div>
       )}
-      {/* Keyframes for sparkles */}
-      <style jsx='true'>{`
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px) translateX(0px);
-          }
-          25% {
-            transform: translateY(-15px) translateX(8px);
-          }
-          50% {
-            transform: translateY(-8px) translateX(-5px);
-          }
-          75% {
-            transform: translateY(-20px) translateX(3px);
-          }
-        }
-        @keyframes sparkle {
-          0%,
-          100% {
-            opacity: 0.3;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(1.2);
-          }
-        }
-      `}</style>
+   
     </div>
   );
 };
