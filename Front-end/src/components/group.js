@@ -34,6 +34,7 @@ const GroupPage = () => {
   const [posts, setPosts] = useState([]);
   const [userProfilePicture, setUserProfilePicture] = useState(null);
   const [members, setMembers] = useState([]);
+  const [fullScreenImage, setFullScreenImage] = useState(null);
  const address = process.env.REACT_APP_ADDRESS;
  const port = process.env.REACT_APP_PORT;
   useEffect(() => {
@@ -112,7 +113,7 @@ useEffect(() => {
     
   
      
-  const tabs = ["Discussion", "Events", "Media", "Files", "Members"];
+  const tabs = ["Discussion", "Events", "Media", "Members"];
   // const handleCreatePost = async () => {
   //   if (!postText.trim()) return;
   //   try {
@@ -260,8 +261,36 @@ useEffect(() => {
           {/* Post Creation or Members List depending on tab */}
           {activeTab === "Discussion" ? (
             <div className='p-6 border-b border-gray-700'>
-              {/* Use GroupPostCreator for group posts */}
               <GroupPostCreator groupId={groupId} onPostCreated={refreshPosts} />
+            </div>
+          ) : activeTab === "Media" ? (
+            <div className="p-6 border-b border-gray-700">
+              <h3 className="font-semibold mb-4">Group Images</h3>
+              {posts && posts.some(post => post.images && post.images.length > 0) ? (
+                <>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {posts
+                      .filter(post => post.images && post.images.length > 0)
+                      .flatMap(post => post.images.map((img, idx) => (
+                        <div key={post.id + '-' + idx} className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 flex items-center justify-center cursor-pointer" onClick={() => setFullScreenImage(`https://res.cloudinary.com/${process.env.REACT_APP_CLOUDINARY_NAME}/image/upload/${img}.jpg`)}>
+                          <img
+                            src={`https://res.cloudinary.com/${process.env.REACT_APP_CLOUDINARY_NAME}/image/upload/${img}.jpg`}
+                            alt="Group Post"
+                            className="object-cover w-full h-48"
+                          />
+                        </div>
+                      )))}
+                  </div>
+                  {fullScreenImage && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90" onClick={() => setFullScreenImage(null)}>
+                      <img src={fullScreenImage} alt="Full Screen" className="max-w-full max-h-full rounded-lg shadow-lg" />
+                      <button className="absolute top-8 right-8 text-white text-3xl font-bold bg-black bg-opacity-50 rounded-full px-4 py-2" onClick={e => { e.stopPropagation(); setFullScreenImage(null); }}>×</button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="text-gray-400">No images found in group posts.</div>
+              )}
             </div>
           ) : activeTab === "Members" ? (
             <div className="p-6 border-b border-gray-700">
