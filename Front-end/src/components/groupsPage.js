@@ -1,3 +1,4 @@
+import LockIcon from '@mui/icons-material/Lock';
 import { useEffect, useState } from "react";
 import CreateGroupModal from "./CreateGroupModal";
 import axios from "axios";
@@ -161,13 +162,13 @@ const GroupsPage = () => {
           {groups.map((group) => (
             <li
               key={group._id || group.id}
-              className="p-4 bg-purple-50 rounded-lg shadow flex flex-col gap-1 cursor-pointer hover:bg-purple-100 transition-colors duration-200 mx-auto w-full max-w-xs"
+              className="p-4 bg-purple-50 rounded-lg shadow flex flex-col gap-1 cursor-pointer hover:bg-purple-100 transition-colors duration-200 mx-auto w-full max-w-md"
               onClick={() => handleGroupClick(group._id || group.id)}
             >
               <div className="flex items-center gap-2 mb-1">
                 {group.privacy && group.privacy.toLowerCase().includes('private') ? (
-                  <span title="Private group" className="inline-block text-black">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c.828 0 1.5.672 1.5 1.5S12.828 14 12 14s-1.5-.672-1.5-1.5S11.172 11 12 11zm6 2V9a6 6 0 10-12 0v4M5 11h14a2 2 0 012 2v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4a2 2 0 012-2z" /></svg>
+                  <span title="Private group" className="inline-block text-black align-middle">
+                    <LockIcon style={{ fontSize: 22, marginRight: 4, color: 'black', verticalAlign: 'middle' }} />
                   </span>
                 ) : (
                   <span title="Public group" className="inline-block text-black">

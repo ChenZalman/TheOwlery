@@ -88,7 +88,6 @@ const HomePage = () => {
           </div>
         </div>
 
-        {/* Description */}
         <div className="text-center mb-12 max-w-xl">
           <p className="text-lg md:text-xl font-semibold text-gold/90 px-4 py-2 rounded-lg shadow-lg">
              Welcome To the Owlery,The Blog where the magic of Harry Potter Happens 🪶📜
@@ -111,49 +110,7 @@ const HomePage = () => {
         </div>
       </div>
 {aboutUsOpen && <AboutUs onClose={() => setAboutUsOpen(false)} />}
-      {/* Styles */}
-      <style jsx>{`
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px) translateX(0px);
-          }
-          25% {
-            transform: translateY(-15px) translateX(8px);
-          }
-          50% {
-            transform: translateY(-8px) translateX(-5px);
-          }
-          75% {
-            transform: translateY(-20px) translateX(3px);
-          }
-        }
-
-        @keyframes fly-loop {
-          0% {
-            transform: rotate(0deg) translateX(60px) rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg) translateX(60px) rotate(-360deg);
-          }
-        }
-
-        @keyframes sparkle {
-          0%,
-          100% {
-            opacity: 0.3;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(1.2);
-          }
-        }
-
-        .animate-fly-loop {
-          animation: fly-loop 8s linear infinite;
-        }
-      `}</style>
+     
     </div>
   );
 };

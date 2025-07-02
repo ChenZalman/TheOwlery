@@ -1,4 +1,5 @@
 import axios from "axios";
+import LockIcon from '@mui/icons-material/Lock';
 import {
   Camera,
   Eye,
@@ -186,12 +187,16 @@ useEffect(() => {
             <h1 className='text-3xl font-bold mb-2'>{group.name}</h1>
             <div className='flex items-center text-gray-400 text-sm space-x-4'>
               <span className='flex items-center'>
-                <Globe className='w-4 h-4 mr-1' />
-                {group.isPublic ? "Public group" : "Private group"}
+                {group.privacy && group.privacy.toLowerCase().includes('private') ? (
+                  <LockIcon style={{ fontSize: 18, marginRight: 4, color: 'white', verticalAlign: 'middle' }} />
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 mr-1 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" /><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
+                )}
+                {group.privacy && group.privacy.toLowerCase().includes('private') ? 'Private group' : 'Public group'}
               </span>
               <span>•</span>
               <span>
-                {group.members?.length || 1} member{(group.members?.length || 1) > 1 ? "s" : ""}
+                {Array.isArray(group.membersIds) ? (group.membersIds.filter(Boolean).length) : 0} member{Array.isArray(group.membersIds) && group.membersIds.filter(Boolean).length !== 1 ? 's' : ''}
               </span>
             </div>
           </div>

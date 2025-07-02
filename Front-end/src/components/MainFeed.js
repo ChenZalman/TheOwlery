@@ -94,38 +94,36 @@ const MainFeed = () => {
         <div className="min-h-screen text-gold relative overflow-hidden font-serif" style={{ backgroundColor: "#1D1E22" }}>
             {magicalSparkles}
             {floatingParticles}
-            <div className="flex flex-col items-center pt-24">
-                {postsWithUserData.length > 0 ? (
-                    postsWithUserData.map((post) => (
-                        <div key={post._id || post.id} className="mb-8">
-                            <Post post={{
-                                userName: post.userName,
-                                profilePicture: post.profilePicture,
-                                textContent: post.text || post.textContent,
-                                imagePublicId: post.images && post.images.length > 0 ? post.images[0] : null,
-                                videoPublicId: post.videos && post.videos.length > 0 ? post.videos[0] : null,
-                                postId: post._id || post.id,
-                                likes: post.likes,
-                                userId: post.userId,
-                            }} />
-                        </div>
-                    ))
-                ) : (
-                    <div className="text-center text-xl text-gold/60 mt-20">No posts to show yet.</div>
-                )}
+            <div className="flex flex-row items-start pt-24">
+                <div className="hidden md:flex flex-col items-center justify-start w-44 min-w-[120px] mr-2">
+                    <img
+                        src="/images/owl.png"
+                        alt="Owl"
+                        className="w-32 h-32 object-contain drop-shadow-lg mt-4 mb-2"
+                        style={{ filter: "drop-shadow(0 0 16px #e6c47a)" }}
+                    />
+                </div>
+                <div className="flex-1 flex flex-col items-center ml-0 md:ml-2">
+                    {postsWithUserData.length > 0 ? (
+                        postsWithUserData.map((post) => (
+                            <div key={post._id || post.id} className="mb-8">
+                                <Post post={{
+                                    userName: post.userName,
+                                    profilePicture: post.profilePicture,
+                                    textContent: post.text || post.textContent,
+                                    imagePublicId: post.images && post.images.length > 0 ? post.images[0] : null,
+                                    videoPublicId: post.videos && post.videos.length > 0 ? post.videos[0] : null,
+                                    postId: post._id || post.id,
+                                    likes: post.likes,
+                                    userId: post.userId,
+                                }} />
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center text-xl text-gold/60 mt-20">No posts to show yet.</div>
+                    )}
+                </div>
             </div>
-            <style jsx>{`
-                @keyframes float {
-                    0%, 100% { transform: translateY(0px) translateX(0px); }
-                    25% { transform: translateY(-15px) translateX(8px); }
-                    50% { transform: translateY(-8px) translateX(-5px); }
-                    75% { transform: translateY(-20px) translateX(3px); }
-                }
-                @keyframes sparkle {
-                    0%, 100% { opacity: 0.3; transform: scale(1); }
-                    50% { opacity: 1; transform: scale(1.2); }
-                }
-            `}</style>
         </div>
     );
 }
