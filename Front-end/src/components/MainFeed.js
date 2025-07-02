@@ -95,14 +95,6 @@ const MainFeed = () => {
             {magicalSparkles}
             {floatingParticles}
             <div className="flex flex-row items-start pt-24">
-                <div className="hidden md:flex flex-col items-center justify-start w-44 min-w-[120px] mr-2">
-                    <img
-                        src="/images/owl.png"
-                        alt="Owl"
-                        className="w-32 h-32 object-contain drop-shadow-lg mt-4 mb-2"
-                        style={{ filter: "drop-shadow(0 0 16px #e6c47a)" }}
-                    />
-                </div>
                 <div className="flex-1 flex flex-col items-center ml-0 md:ml-2">
                     {postsWithUserData.length > 0 ? (
                         postsWithUserData.map((post) => (

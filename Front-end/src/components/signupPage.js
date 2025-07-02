@@ -72,7 +72,7 @@ export default function SignUpPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 text-gold relative overflow-hidden font-serif">
+    <div className="min-h-screen text-gold relative overflow-hidden font-serif" style={{ backgroundColor: "#1D1E22" }}>
       <link
         href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=IM+Fell+English+SC&display=swap"
         rel="stylesheet"
@@ -90,7 +90,7 @@ export default function SignUpPage() {
           maxWidth: '400px',
           margin: '0 auto',
           padding: '2rem',
-          background: 'rgba(30, 22, 60, 0.85)',
+          background: 'rgba(34, 32, 40, 0.92)',
           borderRadius: '1.5rem',
           boxShadow: '0 4px 24px 0 #0008',
           border: '1.5px solid #e6c47a',
@@ -120,7 +120,7 @@ export default function SignUpPage() {
                   padding: '0.5rem',
                   border: 'solid 1px #e6c47a',
                   borderRadius: '8px',
-                  background: '#2e2150',
+                  background: '#23242a',
                   color: '#fff'
                 }}
               />
@@ -138,7 +138,7 @@ export default function SignUpPage() {
                   padding: '0.5rem',
                   border: 'solid 1px #e6c47a',
                   borderRadius: '8px',
-                  background: '#2e2150',
+                  background: '#23242a',
                   color: '#fff'
                 }}
               />
@@ -157,7 +157,7 @@ export default function SignUpPage() {
                     padding: '0.5rem',
                     border: 'solid 1px #e6c47a',
                     borderRadius: '8px',
-                    background: '#2e2150',
+                    background: '#23242a',
                     color: '#fff'
                   }}
                 />
@@ -194,7 +194,7 @@ export default function SignUpPage() {
                     padding: '0.5rem',
                     border: 'solid 1px #e6c47a',
                     borderRadius: '8px',
-                    background: '#2e2150',
+                    background: '#23242a',
                     color: '#fff'
                   }}
                 >
@@ -217,31 +217,22 @@ export default function SignUpPage() {
                     padding: '0.5rem',
                     border: 'solid 1px #e6c47a',
                     borderRadius: '8px',
-                    background: '#2e2150',
+                    background: '#23242a',
                     color: '#fff'
                   }}
                 />
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', padding: '0.5rem 1rem' }}>
-              <button
-                type="submit"
-                style={{
-                  color: "#fff",
-                  background: "linear-gradient(90deg, #a78bfa 0%, #fbbf24 100%)",
-                  fontWeight: "bold",
-                  padding: "0.75rem 2rem",
-                  borderRadius: "999px",
-                  border: "none",
-                  boxShadow: "0 2px 8px #0005",
-                  fontSize: "1.1rem",
-                  letterSpacing: "0.05em",
-                  cursor: "pointer",
-                  transition: "transform 0.2s",
-                }}
-              >
-                Become a wizard
-              </button>
+            <button
+              type="submit"
+              className="group px-12 py-5 bg-gradient-to-r from-yellow-700 to-slate-700 text-gold font-bold text-xl rounded-full border-2 border-gold/50 hover:border-gold hover:scale-110 hover:shadow-[0_0_30px_#e6c47a] transition-all duration-500 transform hover:-translate-y-1"
+              style={{ outline: 'none' }}
+            >
+              <span className="flex items-center gap-3">
+                Become a wizard <span className="text-2xl group-hover:animate-spin">✨</span>
+              </span>
+            </button>
             </div>
             {error && (
               <div style={{ color: "#ffb4b4", marginTop: "1rem", textAlign: "center" }}>
@@ -251,36 +242,6 @@ export default function SignUpPage() {
           </form>
         </div>
       </div>
-
-      {/* Styles */}
-      <style jsx>{`
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px) translateX(0px);
-          }
-          25% {
-            transform: translateY(-15px) translateX(8px);
-          }
-          50% {
-            transform: translateY(-8px) translateX(-5px);
-          }
-          75% {
-            transform: translateY(-20px) translateX(3px);
-          }
-        }
-        @keyframes sparkle {
-          0%,
-          100% {
-            opacity: 0.3;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(1.2);
-          }
-        }
-      `}</style>
     </div>
   );
 }

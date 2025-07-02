@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuthContext } from "../Hooks/UseAuthContext";
 import { useSignout } from "../Hooks/UseSignout";
 import TelegramIcon from '@mui/icons-material/Telegram';
@@ -6,6 +6,7 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import { useMemo } from "react";
 
 export default function TopBanner() {
+  const location = useLocation();
   const { user } = useAuthContext();
   const { signOut } = useSignout();
 
@@ -40,8 +41,16 @@ export default function TopBanner() {
       <div className="flex items-center justify-center gap-8 px-6 py-4 text-gold font-serif text-lg">
         <Link
           to="/"
-          className="hover:text-yellow-300 transition duration-300 hover:underline"
+          className="hover:text-yellow-300 transition duration-300 hover:underline flex items-center"
         >
+          {location.pathname !== "/" && (
+            <img
+              src="/images/owl.png"
+              alt="Owl"
+              className="w-10 h-10 object-contain drop-shadow-lg mr-2"
+              style={{ filter: "drop-shadow(0 0 8px #e6c47a)" }}
+            />
+          )}
           Back to Main Station
         </Link>
         {!user && (
@@ -104,19 +113,6 @@ export default function TopBanner() {
       </div>
 
       {sparkleNav}
-
-      <style jsx="true">{`
-        @keyframes sparkle {
-          0%, 100% {
-            opacity: 0.3;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(1.2);
-          }
-        }
-      `}</style>
     </div>
   );
 }

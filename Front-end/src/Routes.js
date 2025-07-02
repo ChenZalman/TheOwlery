@@ -18,7 +18,7 @@ const ProjectRoutes = () => {
   let element = useRoutes([
     { path: "/", element: <HomePage />  }, //This is the default page of our website to which the user is getting to.
     { path: "*", element: <NotFoundPage /> },  //This page is for wrong navigations preformed by the user
-    { path: "/signinpage", element:<> {loading ? <div>Loading...</div> : !user ? <SignInPage /> : <Navigate to="/post"/>}</>},  //In this line element gets a component that return a page to get a user info if a user isn't signed
+    { path: "/signinpage", element:<> {loading ? <div>Loading...</div> : !user ? <SignInPage /> : <Navigate to="/userPage"/>}</>},  //In this line element gets a component that return a page to get a user info if a user isn't signed
     { path: "/signuppage", element:<> {loading ? <div>Loading...</div> : !user ?  <SignUpPage />  : <Navigate to="/signinpage"/>}</>},  //In this line element gets a component that return a page to get a user info if a user isn't signed
     { path: "/userPage", element:<> {loading ? <div>Loading...</div> : user ?  <ProfilePage user = {user}/>  : <Navigate to="/signinpage"/>}</>},
     { path: "/analyticsPage", element:<> {loading ? <div>Loading...</div> : user ?  <AnalyticsPage user = {user}/>  : <Navigate to="/signinpage"/>}</>},
