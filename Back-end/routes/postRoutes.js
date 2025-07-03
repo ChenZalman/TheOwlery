@@ -8,7 +8,7 @@ const User = mongoose.model('User', userSchema);
 const commentSchema = require('../models/commentSchema');
 const Comment = mongoose.model('Comment', commentSchema);
 router.post('/',async(req,res) =>{
-    console.log('post route')
+    // console.log('post route')
     const {command,data} = req.body;
     try{
         switch(command){

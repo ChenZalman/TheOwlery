@@ -3,6 +3,7 @@ import { useAuthContext } from "../Hooks/UseAuthContext";
 import Post from "./post";
 import fetchProfileImage from "../requests/getProfileImage";
 import axios from "axios";
+import SearchBar from "./searchBar";
 
 const MainFeed = () => {
     // Floating particles and sparkles (like home page)
@@ -50,6 +51,7 @@ const MainFeed = () => {
 
     const { user } = useAuthContext();
     const [posts, setPosts] = useState([]);
+    const [searchedPost, setSearchedPost] = useState();
     const [postsWithUserData, setPostsWithUserData] = useState([]);
     const address = process.env.REACT_APP_ADDRESS;
     const port = process.env.REACT_APP_PORT;
@@ -67,8 +69,14 @@ const MainFeed = () => {
                 setPosts([]);
             }
         };
-        fetchPosts();
-    }, [user, address, port]);
+
+        if(searchedPost == undefined){
+            // console.log(searchedPost)
+            fetchPosts();}
+        else{
+            setPosts(searchedPost)
+        }
+    }, [user, address, port,searchedPost]);
 
     useEffect(() => {
         const fetchAllProfileImages = async () => {
@@ -92,6 +100,7 @@ const MainFeed = () => {
 
     return (
         <div className="min-h-screen text-gold relative overflow-hidden font-serif" style={{ backgroundColor: "#1D1E22" }}>
+            <SearchBar items = {posts.map((post) => post.text)} onClickAction = {(item) => (setSearchedPost(posts.filter((post) => post.text == item)))} onEmpty = {() => setSearchedPost()}/>
             {magicalSparkles}
             {floatingParticles}
             <div className="flex flex-row items-start pt-24">

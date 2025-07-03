@@ -13,7 +13,7 @@ const Post = mongoose.models._Post || mongoose.model("Post", postSchema);
 
 router.post("/", async (req, res) => {
   const { command, data } = req.body;
-  console.log(`command is: ${command} and data is: ${JSON.stringify(data)}`);
+  // console.log(`command is: ${command} and data is: ${JSON.stringify(data)}`);
 
   try {
     switch (command) {

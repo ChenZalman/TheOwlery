@@ -1,18 +1,10 @@
 import React,{useState} from 'react'
 
-const items = [
-  "Chen",
-  "Tami",
-  "Hogwarts Wizards",
-  "Chen Zalman",
-  "New post",
-  "Another post",
-  "FIRST GROUP POST!!!!!!!",
-];
-
-function SearchBar() {
+function SearchBar(props) {
   const [query, setQuery] = useState("");
   const [filteredItems, setFilteredItems] = useState([]);
+  const items = props.items
+  const onClickAction = props.onClickAction
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -20,6 +12,7 @@ function SearchBar() {
 
     if (value.trim() === "") {
       setFilteredItems([]);
+      props.onEmpty()
     } else {
       const results = items.filter((item) =>
         item.toLowerCase().includes(value.toLowerCase())
@@ -31,6 +24,7 @@ function SearchBar() {
   const handleSelectItem = (item) => {
     setQuery(item);
     setFilteredItems([]);
+    onClickAction(item)
   };
 
   return (

@@ -34,7 +34,7 @@ const Chat = () => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    console.log(messages)
+    // console.log(messages)
   }, [messages]);
 
   const handleSend = (e) => {

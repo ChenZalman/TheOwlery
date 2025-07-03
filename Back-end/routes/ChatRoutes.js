@@ -28,6 +28,7 @@ const saveMessage = (io,socket) => {
 
     Message.watch().
         on('change', data => {console.log(data.fullDocument)
+                              console.log(socket.id)
                               io.emit('chat message', data.fullDocument)});
 
     socket.on('disconnect', () => {
