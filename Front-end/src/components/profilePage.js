@@ -1,13 +1,81 @@
 import Feed from "./feed";
 import { useNavigate, Link } from "react-router-dom";
 import PostCreator from "./postCreator.js";
-
+import { useAuthContext } from "../Hooks/UseAuthContext";
+import React from "react";
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import fetchProfileImage from "../requests/getProfileImage";
+
+
+
+
+function FriendRequestsSection({ friendRequests, accepting, refusing, actionError, handleAcceptFriend, handleRefuseFriend, address, port }) {
+  const [names, setNames] = React.useState({});
+  React.useEffect(() => {
+    const fetchNames = async () => {
+      const newNames = {};
+      for (let i = 0; i < friendRequests.length; i++) {
+        const fromId = friendRequests[i];
+        if (!names[fromId]) {
+          try {
+            const res = await axios.post(`http://${address}:${port}/api/users`, {
+              command: "getUserName",
+              data: { userId: fromId }
+            });
+            newNames[fromId] = res.data.name || fromId;
+          } catch (e) {
+            newNames[fromId] = fromId;
+          }
+        }
+      }
+      setNames(prev => ({ ...prev, ...newNames }));
+    };
+    if (friendRequests.length > 0) fetchNames();
+    // eslint-disable-next-line
+  }, [friendRequests]);
+  if (!friendRequests.length) return null;
+  return (
+    <div style={{
+      background: '#23272a',
+      borderRadius: '1rem',
+      padding: '1rem',
+      margin: '1rem 0',
+      border: '1px solid #444',
+    }}>
+      <h2 style={{ color: '#e6c47a', fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '0.5rem' }}>Friend Requests</h2>
+      {friendRequests.map((fromId) => (
+        <div key={fromId} style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
+          <span style={{ color: '#e6c47a', fontWeight: 'bold' }}>{names[fromId] || fromId}</span>
+          <button
+            onClick={() => handleAcceptFriend(fromId)}
+            disabled={accepting === fromId}
+            style={{ background: '#22c55e', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.3rem 1rem', fontWeight: 'bold', cursor: 'pointer' }}
+          >
+            {accepting === fromId ? 'Accepting...' : 'Accept'}
+          </button>
+          <button
+            onClick={() => handleRefuseFriend(fromId)}
+            disabled={refusing === fromId}
+            style={{ background: '#ef4444', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.3rem 1rem', fontWeight: 'bold', cursor: 'pointer' }}
+          >
+            {refusing === fromId ? 'Refusing...' : 'Refuse'}
+          </button>
+        </div>
+      ))}
+      {actionError && <div style={{ color: 'red', marginTop: '0.5rem' }}>{actionError}</div>}
+    </div>
+  );
+}
+   
 const ProfilePage = ({ user }) => {
+  const { user: currentUser, dispatch } = useAuthContext();
   const [posts, setPosts] = useState([]);
   const [fetchedProfileImage, setFetchedProfileImage] = useState("");
+  const [friendRequests, setFriendRequests] = useState([]);
+  const [accepting, setAccepting] = useState("");
+  const [refusing, setRefusing] = useState("");
+  const [actionError, setActionError] = useState("");
   const address = process.env.REACT_APP_ADDRESS;
   const port = process.env.REACT_APP_PORT;
 
@@ -36,7 +104,55 @@ const ProfilePage = ({ user }) => {
     fetchPosts();
   }, [user]);
 
-   
+  // Fetch friend requests on mount
+  useEffect(() => {
+    const fetchFriendRequests = async () => {
+      if (!user?.userId) return;
+      try {
+        const res = await axios.post(`http://${address}:${port}/api/users`, {
+          command: "update",
+          data: { userId: user.userId },
+        });
+        setFriendRequests(res.data.user.friendRequests || []);
+      } catch (err) {
+        setFriendRequests([]);
+      }
+    };
+    fetchFriendRequests();
+  }, [user]);
+
+  // Accept friend request
+  const handleAcceptFriend = async (fromUserId) => {
+    setAccepting(fromUserId);
+    setActionError("");
+    try {
+      await axios.post(`http://${address}:${port}/api/users`, {
+        command: "acceptFriendRequest",
+        data: { userId: user.userId, fromUserId },
+      });
+      setFriendRequests((prev) => prev.filter((id) => id !== fromUserId));
+    } catch (err) {
+      setActionError("Failed to accept friend request.");
+    } finally {
+      setAccepting("");
+    }
+  };
+  // Refuse friend request
+  const handleRefuseFriend = async (fromUserId) => {
+    setRefusing(fromUserId);
+    setActionError("");
+    try {
+      await axios.post(`http://${address}:${port}/api/users`, {
+        command: "refuseFriendRequest",
+        data: { userId: user.userId, fromUserId },
+      });
+      setFriendRequests((prev) => prev.filter((id) => id !== fromUserId));
+    } catch (err) {
+      setActionError("Failed to refuse friend request.");
+    } finally {
+      setRefusing("");
+    }
+  };
 
   const floatingParticles = useMemo(
     () => (
@@ -145,6 +261,18 @@ const ProfilePage = ({ user }) => {
               Edit User
             </Link>
           </div>
+
+          {/* Friend Requests Section */}
+<FriendRequestsSection
+  friendRequests={friendRequests}
+  accepting={accepting}
+  refusing={refusing}
+  actionError={actionError}
+  handleAcceptFriend={handleAcceptFriend}
+  handleRefuseFriend={handleRefuseFriend}
+  address={address}
+  port={port}
+/>
 
           <div style={{
             padding: '1rem',

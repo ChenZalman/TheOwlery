@@ -12,8 +12,10 @@ const userSchema = mongoose.Schema({
     postsId:[],
     profileImage: String,
     //likedPosts:[]
-      likedPosts: { type: [String], default: [] },
-      commentsId: { type: [String], default: [] }
+    likedPosts: { type: [String], default: [] },
+    commentsId: { type: [String], default: [] },
+    friendRequests: { type: [String], default: [] }, // incoming requests
+    pendingRequests: { type: [String], default: [] } // outgoing requests
 })
 
 module.exports = userSchema

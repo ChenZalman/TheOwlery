@@ -1,3 +1,6 @@
+// Get user name by userId
+// (This case must be inside the router.post switch statement)
+
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
@@ -17,6 +20,40 @@ router.post("/", async (req, res) => {
 
   try {
     switch (command) {
+      case "sendFriendRequest": {
+        const { fromUserId, toUserId } = data;
+        if (!fromUserId || !toUserId) {
+          return res.status(400).json({ message: "Missing fromUserId or toUserId" });
+        }
+        // Add toUserId's friendRequests if not already present
+        const toUser = await User.findById(toUserId);
+        if (!toUser) return res.status(404).json({ message: "User not found" });
+        if ((toUser.friendRequests || []).includes(fromUserId)) {
+          return res.json({ message: "Request already sent" });
+        }
+        await User.findByIdAndUpdate(toUserId, { $addToSet: { friendRequests: fromUserId } });
+        return res.json({ message: "Friend request sent" });
+      }
+
+      case "acceptFriendRequest": {
+        const { userId, fromUserId } = data;
+        if (!userId || !fromUserId) {
+          return res.status(400).json({ message: "Missing userId or fromUserId" });
+        }
+        // Add each other as friends
+        await User.findByIdAndUpdate(userId, { $addToSet: { friendsId: fromUserId }, $pull: { friendRequests: fromUserId } });
+        await User.findByIdAndUpdate(fromUserId, { $addToSet: { friendsId: userId } });
+        return res.json({ message: "Friend request accepted" });
+      }
+
+      case "refuseFriendRequest": {
+        const { userId, fromUserId } = data;
+        if (!userId || !fromUserId) {
+          return res.status(400).json({ message: "Missing userId or fromUserId" });
+        }
+        await User.findByIdAndUpdate(userId, { $pull: { friendRequests: fromUserId } });
+        return res.json({ message: "Friend request refused" });
+      }
       case "update": {
         Object.assign(data, { _id: data.userId });
         delete data["userId"];
@@ -127,7 +164,28 @@ router.post("/", async (req, res) => {
         await User.findByIdAndUpdate(userId, { $pull: { likedPosts: postId } });
         return res.json({ message: "Post unliked", post });
       }
-
+      case "searchByName": {
+        const { name } = data;
+        if (!name || typeof name !== "string") {
+          return res.status(400).json({ message: "Missing or invalid name" });
+        }
+        // Case-insensitive partial match
+        const users = await User.find({ name: { $regex: name, $options: "i" } }, { name: 1, _id: 1 });
+        // Attach userId for frontend
+        const usersWithId = users.map(u => ({ ...u.toObject(), userId: u._id.toString() }));
+        return res.json({ users: usersWithId });
+      }
+      case "getUserName": {
+        const { userId } = data;
+        if (!userId) {
+          return res.status(400).json({ message: "Missing userId" });
+        }
+        const user = await User.findById(userId);
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        return res.json({ name: user.name || userId });
+      }
       case "getUserFriends": {
         const { userId } = data;
         if (!userId) {

@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import fetchProfileImage from "../requests/getProfileImage";
+import { useAuthContext } from "../Hooks/UseAuthContext";
 
 const UserInfo = ({ userId, open, onClose }) => {
+  const { user: currentUser } = useAuthContext();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sendingRequest, setSendingRequest] = useState(false);
+  const [requestSent, setRequestSent] = useState(false);
+  const [addFriendError, setAddFriendError] = useState("");
+  const [accepting, setAccepting] = useState(false);
+  const [refusing, setRefusing] = useState(false);
+  const [actionError, setActionError] = useState("");
   const address = process.env.REACT_APP_ADDRESS;
   const port = process.env.REACT_APP_PORT;
  
@@ -33,6 +41,56 @@ const UserInfo = ({ userId, open, onClose }) => {
     fetchUser();
   }, [userId, address, port, open]);
   
+  // Send friend request handler
+  const handleSendFriendRequest = async () => {
+    setSendingRequest(true);
+    setAddFriendError("");
+    try {
+      await axios.post(`http://${address}:${port}/api/users`, {
+        command: "sendFriendRequest",
+        data: { fromUserId: currentUser.userId, toUserId: userId },
+      });
+      setRequestSent(true);
+    } catch (err) {
+      setAddFriendError("Failed to send friend request.");
+    } finally {
+      setSendingRequest(false);
+    }
+  };
+
+  // Accept friend request handler
+  const handleAcceptFriend = async () => {
+    setAccepting(true);
+    setActionError("");
+    try {
+      await axios.post(`http://${address}:${port}/api/users`, {
+        command: "acceptFriendRequest",
+        data: { userId: currentUser.userId, fromUserId: userId },
+      });
+      setUser((prev) => ({ ...prev, friendsId: [...(prev.friendsId || []), userId], friendRequests: (prev.friendRequests || []).filter(id => id !== userId) }));
+    } catch (err) {
+      setActionError("Failed to accept friend request.");
+    } finally {
+      setAccepting(false);
+    }
+  };
+  // Refuse friend request handler
+  const handleRefuseFriend = async () => {
+    setRefusing(true);
+    setActionError("");
+    try {
+      await axios.post(`http://${address}:${port}/api/users`, {
+        command: "refuseFriendRequest",
+        data: { userId: currentUser.userId, fromUserId: userId },
+      });
+      setUser((prev) => ({ ...prev, friendRequests: (prev.friendRequests || []).filter(id => id !== userId) }));
+    } catch (err) {
+      setActionError("Failed to refuse friend request.");
+    } finally {
+      setRefusing(false);
+    }
+  };
+
   // Format dates
   const formatDate = (dateStr) => {
     if (!dateStr) return '-';
@@ -71,6 +129,51 @@ const UserInfo = ({ userId, open, onClose }) => {
               <div className="text-xl font-semibold mb-1">{user.name}</div>
             </div>
             <div className="space-y-3 text-lg">
+              {/* Friend request logic */}
+              {currentUser && user && currentUser.userId !== userId &&
+                !(user.friendsId || []).includes(currentUser.userId) &&
+                !((user.friendRequests || []).includes(currentUser.userId)) &&
+                !requestSent && (
+                <div className="mb-3">
+                  <button
+                    onClick={handleSendFriendRequest}
+                    disabled={sendingRequest}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-semibold"
+                  >
+                    {sendingRequest ? "Sending..." : "Send Friend Request"}
+                  </button>
+                  {addFriendError && <div className="text-red-400 mt-2">{addFriendError}</div>}
+                </div>
+              )}
+              {((user.friendRequests || []).includes(currentUser?.userId) || requestSent) && (
+                <div className="mb-3 text-blue-400">Friend request sent</div>
+              )}
+              {/* Accept/Refuse friend request if current user has a request from this user */}
+              {currentUser && user && currentUser.userId === userId && Array.isArray(currentUser.friendRequests) && currentUser.friendRequests.length > 0 && (
+                <div className="mb-3">
+                  <div className="font-semibold text-gray-300 mb-2">Friend Requests:</div>
+                  {currentUser.friendRequests.map((fromId) => (
+                    <div key={fromId} className="flex items-center gap-2 mb-2">
+                      <span className="text-gold">{fromId}</span>
+                      <button
+                        onClick={() => handleAcceptFriend(fromId)}
+                        disabled={accepting}
+                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg font-semibold"
+                      >
+                        {accepting ? "Accepting..." : "Accept"}
+                      </button>
+                      <button
+                        onClick={() => handleRefuseFriend(fromId)}
+                        disabled={refusing}
+                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg font-semibold"
+                      >
+                        {refusing ? "Refusing..." : "Refuse"}
+                      </button>
+                    </div>
+                  ))}
+                  {actionError && <div className="text-red-400 mt-2">{actionError}</div>}
+                </div>
+              )}
               <div><span className="font-semibold text-gray-300">Birthdate:</span> {formatDate(user.birthDate)}</div>
               <div><span className="font-semibold text-gray-300">Gender:</span> {user.gender || '-'}</div>
               <div><span className="font-semibold text-gray-300">Number of friends:</span> {Array.isArray(user.friendsId) ? user.friendsId.length : 0}</div>
