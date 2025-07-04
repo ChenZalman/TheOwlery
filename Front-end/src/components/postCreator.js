@@ -69,6 +69,7 @@ const handleSubmit = async (e) => {
     userId: user.userId,
     images,
     videos,
+    createdAt: new Date().toISOString(),
   };
   const json = await post(postData, "create");
   console.log(json)

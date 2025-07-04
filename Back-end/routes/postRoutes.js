@@ -8,6 +8,46 @@ const User = mongoose.model('User', userSchema);
 const commentSchema = require('../models/commentSchema');
 const Comment = mongoose.model('Comment', commentSchema);
 router.post('/',async(req,res) =>{
+router.post('/filter', async (req, res) => {
+    try {
+        const { userId, month, userName, hasImage } = req.body;
+        if (!userId) {
+            return res.status(400).json({ message: "Missing userId" });
+        }
+        const User = mongoose.model('User');
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        // Build array of user IDs: self + friends
+        const allowedUserIds = [user._id.toString(), ...(user.friendsId || [])];
+        let query = { userId: { $in: allowedUserIds } };
+        if (userName && userName.trim() !== "") {
+            // Find users whose name matches (case-insensitive)
+            const users = await User.find({ name: { $regex: userName, $options: 'i' } });
+            const userIds = users.map(u => u._id.toString());
+            query.userId = { $in: allowedUserIds.filter(id => userIds.includes(id)) };
+        }
+        if (month && !isNaN(Number(month))) {
+            // Filter by month (createdAt STRING )
+            const m = Number(month) - 1;
+            const year = new Date().getFullYear();
+            const start = new Date(year, m, 1);
+            const end = new Date(year, m + 1, 1);
+            query.createdAt = { $gte: start, $lt: end };
+        }
+        if (hasImage === "true") {
+            query.images = { $exists: true, $not: { $size: 0 } };
+        } else if (hasImage === "false") {
+            query.images = { $in: [[], null] };
+        }
+        const posts = await Post.find(query).sort({ createdAt: -1 });
+        return res.json({ posts });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: error.message });
+    }
+});
     // console.log('post route')
     const {command,data} = req.body;
     try{
@@ -38,7 +78,42 @@ router.post('/',async(req,res) =>{
                 else
                 return res.json({message:'post not found'})
             }
-         case 'get': {
+            case 'getFiltered': {
+                const { userId, month, userName, hasImage } = data;
+                if (!userId) {
+                    return res.status(400).json({ message: "Missing userId" });
+                }
+                const User = mongoose.model('User');
+                const user = await User.findById(userId);
+                if (!user) {
+                    return res.status(404).json({ message: "User not found" });
+                }
+                // Build array of user IDs: self + friends
+                const allowedUserIds = [user._id.toString(), ...(user.friendsId || [])];
+                let query = { userId: { $in: allowedUserIds } };
+                if (userName && userName.trim() !== "") {
+                    // Find users whose name matches (case-insensitive)
+                    const users = await User.find({ name: { $regex: userName, $options: 'i' } });
+                    const userIds = users.map(u => u._id.toString());
+                    query.userId = { $in: allowedUserIds.filter(id => userIds.includes(id)) };
+                }
+                if (month && !isNaN(Number(month))) {
+                    // Filter by month (IN createdAt STRING)
+                    const m = Number(month) - 1;
+                    const year = new Date().getFullYear();
+                    const start = new Date(year, m, 1);
+                    const end = new Date(year, m + 1, 1);
+                    query.createdAt = { $gte: start, $lt: end };
+                }
+                if (hasImage === "true") {
+                    query.images = { $exists: true, $not: { $size: 0 } };
+                } else if (hasImage === "false") {
+                    query.images = { $in: [[], null] };
+                }
+                const posts = await Post.find(query).sort({ createdAt: -1 });
+                return res.json({ posts });
+            }
+            case 'get': {
     if (!data.userId) {
         return res.status(400).json({ message: "Missing userId" });
     }
@@ -70,7 +145,6 @@ router.post('/',async(req,res) =>{
     Object.assign(newPostDB, { id: newPostDB._id.toString() })
     delete newPostDB['_id']
     delete newPostDB['__v']
-
     // Update the user's postsId array  after creating the post
     await mongoose.model('User').findByIdAndUpdate(
       data.userId,

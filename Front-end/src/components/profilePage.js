@@ -1,7 +1,7 @@
 import Feed from "./feed";
 import { useNavigate, Link } from "react-router-dom";
 import PostCreator from "./postCreator.js";
-import SearchBar from "./searchBar.js";
+
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import fetchProfileImage from "../requests/getProfileImage";
@@ -95,7 +95,7 @@ const ProfilePage = ({ user }) => {
       <div
         
       >
-      <SearchBar/>
+
         <div style={{
           maxWidth: '800px',
           margin: '2rem auto',

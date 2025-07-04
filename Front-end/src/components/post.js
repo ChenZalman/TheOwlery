@@ -12,7 +12,14 @@ function getCloudinaryUrl(publicId, resourceType = "image", format = "jpg") {
 }
 
 const Post = ({ post }) => {
-  const { userName, profilePicture, textContent, imagePublicId, videoPublicId, postId, userId } = post;
+  const { userName, profilePicture, textContent, imagePublicId, videoPublicId, postId, userId, date } = post;
+  // Format date if available
+  let formattedDate = "";
+  if (date) {
+    const d = new Date(date);
+    formattedDate = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+  
+  }
 
   const [likes, setLikes] = useState(post.likes || 0);
   const [comments, setComments] = useState(0);
@@ -101,7 +108,6 @@ const Post = ({ post }) => {
           updatedUser.likedPosts = [...(user.likedPosts || []), postId];
         }
 
-        // Dispatch updated user to context
         dispatch({ type: "LOGIN", payload: updatedUser });
       }
     } catch (err) {
@@ -220,7 +226,14 @@ const Post = ({ post }) => {
             background: "#4b5563",
           }}
         />
-        <h2 style={{ fontSize: "20px", marginBottom: "0.75rem", fontWeight: "bold", color: "#8E7B53" }}>{postUserName || userName}</h2>
+        <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, paddingRight: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0, flexWrap: "wrap" }}>
+            <h2 style={{ fontSize: "20px", marginBottom: 0, fontWeight: "bold", color: "#8E7B53", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 200 }}>{postUserName || userName}</h2>
+            {formattedDate && (
+              <span style={{ fontSize: "13px", color: "#fff", marginLeft: "8px", whiteSpace: "nowrap", background: "#23242a", padding: "2px 8px", borderRadius: "6px" }}>{formattedDate}</span>
+            )}
+          </div>
+        </div>
         <div style={{display: "flex", alignItems: "flex-right", marginLeft: "auto", gap: "10px"}}>
           {isOwner && !isEditing && (
             <button

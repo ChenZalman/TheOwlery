@@ -11,6 +11,7 @@ const postSchema = mongoose.Schema({
     comments:[],
     createdAt: Date,
     commentsId: [String],  
+    createdAt: { type: Date, default: Date.now }
 })
 
 module.exports = postSchema

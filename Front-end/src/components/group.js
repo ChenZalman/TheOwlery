@@ -184,7 +184,8 @@ useEffect(() => {
       <div className='px-6 py-4 border-b border-gray-700'>
         <div className='flex items-center justify-between'>
           <div>
-            <h1 className='text-3xl font-bold mb-2'>{group.name}</h1>
+            <h1 className='text-5xl font-bold mb-2' style={{ color: '#8E7B53' }}>{group.name}</h1>
+             <h2 className='text-1xl font-bold mb-1'>{group.description}</h2>
             <div className='flex items-center text-gray-400 text-sm space-x-4'>
               <span className='flex items-center'>
                 {group.privacy && group.privacy.toLowerCase().includes('private') ? (
@@ -304,7 +305,8 @@ useEffect(() => {
                     videoPublicId: post.videos && post.videos.length > 0 ? post.videos[0] : null,
                     postId: post.id || post._id,
                     likes: post.likes,
-                    userId: post.userId, 
+                    userId: post.userId,
+                    date: post.createdAt  
                   }}
                 />
               </div>

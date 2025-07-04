@@ -1,9 +1,11 @@
 import { useMemo, useEffect, useState } from "react";
+import Filters from "./Filters";
+import { useSearchParams } from "react-router-dom";
 import { useAuthContext } from "../Hooks/UseAuthContext";
 import Post from "./post";
 import fetchProfileImage from "../requests/getProfileImage";
 import axios from "axios";
-import SearchBar from "./searchBar";
+
 
 const MainFeed = () => {
     // Floating particles and sparkles (like home page)
@@ -51,32 +53,50 @@ const MainFeed = () => {
 
     const { user } = useAuthContext();
     const [posts, setPosts] = useState([]);
-    const [searchedPost, setSearchedPost] = useState();
     const [postsWithUserData, setPostsWithUserData] = useState([]);
     const address = process.env.REACT_APP_ADDRESS;
     const port = process.env.REACT_APP_PORT;
+    // Filter state managed here
+    const [month, setMonth] = useState("");
+    const [userName, setUserName] = useState("");
+    const [hasImage, setHasImage] = useState("");
 
-    useEffect(() => {
-        const fetchPosts = async () => {
-            if (!user || !user.userId) return;
-            try {
-                const res = await axios.post(`http://${address}:${port}/api/posts`, {
-                    command: "get",
-                    data: { userId: user.userId },
-                });
-                setPosts(res.data.posts || []);
-            } catch (err) {
-                setPosts([]);
-            }
-        };
+    // Only fetch posts when user presses search
+    const [pendingFilters, setPendingFilters] = useState({ month: "", userName: "", hasImage: "" });
+    const [searchTriggered, setSearchTriggered] = useState(false);
 
-        if(searchedPost == undefined){
-            // console.log(searchedPost)
-            fetchPosts();}
-        else{
-            setPosts(searchedPost)
+    const fetchPosts = async (filters) => {
+        if (!user || !user.userId) return;
+        try {
+            // Only include non-empty filters
+            const filterData = { userId: user.userId };
+            Object.entries(filters).forEach(([key, value]) => {
+                if (value !== undefined && value !== null && value !== "") {
+                    filterData[key] = value;
+                }
+            });
+            const res = await axios.post(`http://${address}:${port}/api/posts`, {
+                command: "getFiltered",
+                data: filterData
+            });
+            setPosts(res.data.posts || []);
+        } catch (err) {
+            setPosts([]);
         }
-    }, [user, address, port,searchedPost]);
+    };
+
+    // On mount, fetch all posts
+    useEffect(() => {
+        if (user && user.userId && !searchTriggered) {
+            fetchPosts({ month: "", userName: "", hasImage: "" });
+        }
+    }, [user, address, port]);
+    useEffect(() => {
+        if (searchTriggered) {
+            fetchPosts(pendingFilters);
+            setSearchTriggered(false);
+        }
+    }, [searchTriggered]);
 
     useEffect(() => {
         const fetchAllProfileImages = async () => {
@@ -100,7 +120,26 @@ const MainFeed = () => {
 
     return (
         <div className="min-h-screen text-gold relative overflow-hidden font-serif" style={{ backgroundColor: "#1D1E22" }}>
-            <SearchBar items = {posts.map((post) => post.text)} onClickAction = {(item) => (setSearchedPost(posts.filter((post) => post.text == item)))} onEmpty = {() => setSearchedPost()}/>
+            <Filters
+                month={month}
+                onMonthChange={setMonth}
+                userName={userName}
+                onUserNameChange={setUserName}
+                hasImage={hasImage}
+                onHasImageChange={setHasImage}
+            />
+            <div className="flex justify-center mb-6">
+                <button
+                    className="px-6 py-2 rounded bg-gold text-black font-bold transition"
+                    style={{ backgroundColor: '#e6c47a' }}
+                    onClick={() => {
+                        setPendingFilters({ month, userName, hasImage });
+                        setSearchTriggered(true);
+                    }}
+                >
+                    Search
+                </button>
+            </div>
             {magicalSparkles}
             {floatingParticles}
             <div className="flex flex-row items-start pt-24">
@@ -117,6 +156,7 @@ const MainFeed = () => {
                                     postId: post._id || post.id,
                                     likes: post.likes,
                                     userId: post.userId,
+                                    date: post.createdAt,
                                 }} />
                             </div>
                         ))
