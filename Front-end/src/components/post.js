@@ -3,6 +3,9 @@ import { Edit2, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuthContext } from "../Hooks/UseAuthContext";
 import Comment from "./comment";
+import { useNavigate } from 'react-router-dom';
+import UserInfo from './userInfo';
+
 const CLOUDINARY_NAME = process.env.REACT_APP_CLOUDINARY_NAME;
 
 // Helper to build Cloudinary URL from public_id
@@ -33,6 +36,8 @@ const Post = ({ post }) => {
   const [commentText, setCommentText] = useState("");
   const [commentsList, setCommentsList] = useState([]);
   const [postUserName, setPostUserName] = useState("");
+  const [showUserInfo, setShowUserInfo] = useState(false);
+  const navigate = useNavigate();
 
   // Fetch the post user's name by userId
   useEffect(() => {
@@ -200,223 +205,228 @@ const Post = ({ post }) => {
   const isOwner = user && user.userId && userId && user.userId === userId;
 
   return (
-    <div
-      style={{
-        width: "480px",
-        margin: "0 auto",
-        padding: "2rem",
-        transform: "translateY(-5px)",
-        backgroundColor: "#23272a",
-        border: "1px solid #374151",
-        borderRadius: "16px",
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-        fontFamily: "Arial, sans-serif",
-        color: "#e5e7eb",
-      }}
-    >
-      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-        <img
-          src={profilePicture}
-          alt='Profile'
-          style={{
-            width: "50px",
-            height: "50px",
-            objectFit: "cover",
-            borderRadius: "9999px",
-            background: "#4b5563",
-          }}
-        />
-        <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, paddingRight: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0, flexWrap: "wrap" }}>
-            <h2 style={{ fontSize: "20px", marginBottom: 0, fontWeight: "bold", color: "#8E7B53", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 200 }}>{postUserName || userName}</h2>
-            {formattedDate && (
-              <span style={{ fontSize: "13px", color: "#fff", marginLeft: "8px", whiteSpace: "nowrap", background: "#23242a", padding: "2px 8px", borderRadius: "6px" }}>{formattedDate}</span>
-            )}
-          </div>
-        </div>
-        <div style={{display: "flex", alignItems: "flex-right", marginLeft: "auto", gap: "10px"}}>
-          {isOwner && !isEditing && (
-            <button
-              onClick={handleEdit}
-              style={{ background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}
-              aria-label="Edit Post"
-            >
-              <Edit2 color="#fff" size={20} />
-            </button>)}
-          {isOwner && !isEditing && (
-            <button
-              onClick={handleDelete}
-              style={{ background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}
-              aria-label="Delete Post"
-            >
-              <Trash2 color="#fff" size={20} />
-            </button>)}  
-        </div>
-      </div>
-      {isEditing ? (
-        <div style={{ marginBottom: "1rem" }}>
-          <textarea
-            value={editText}
-            onChange={(e) => setEditText(e.target.value)}
-            style={{ width: "100%", minHeight: "60px", borderRadius: "8px", border: "1px solid #374151", background: "#1f2937", color: "#e5e7eb", padding: "8px" }}
-          />
-          <div style={{ marginTop: "8px", display: "flex", gap: "8px" }}>
-            <button
-              onClick={handleEditSave}
-              style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: "8px", padding: "8px 16px", cursor: "pointer" }}
-            >
-              Save
-            </button>
-            <button
-              onClick={() => setIsEditing(false)}
-              style={{ background: "#374151", color: "#fff", border: "none", borderRadius: "8px", padding: "8px 16px", cursor: "pointer" }}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      ) : (
-        <p style={{ fontSize: "16px", marginBottom: "1rem", color: "#d1d5db" }}>{textContent}</p>
-      )}
-
-      {imageUrl && (
-        <div style={{ marginBottom: "1rem" }}>
-          <img
-            src={imageUrl}
-            alt='Post media'
-            style={{
-              width: "100%",
-              maxHeight: "300px",
-              objectFit: "cover",
-              borderRadius: "12px",
-            }}
-          />
-        </div>
-      )}
-
-      {videoUrl && (
-        <div style={{ marginBottom: "1rem" }}>
-          <video
-            controls
-            style={{
-              width: "100%",
-              maxHeight: "300px",
-              borderRadius: "12px",
-            }}
-          >
-            <source src={videoUrl} type='video/mp4' />
-            Your browser does not support the video tag.
-          </video>
-        </div>
-      )}
-
+    <>
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginTop: "1rem",
+          width: "480px",
+          margin: "0 auto",
+          padding: "2rem",
+          transform: "translateY(-5px)",
+          backgroundColor: "#23272a",
+          border: "1px solid #374151",
+          borderRadius: "16px",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+          fontFamily: "Arial, sans-serif",
+          color: "#e5e7eb",
         }}
       >
-        <span style={{ fontSize: "14px", color: "#9ca3af" }}>{likes} Likes</span>
-        <span style={{ fontSize: "14px", color: "#9ca3af", display: "flex", alignItems: "center", gap: "4px" }}>
-          <svg
-            width='18'
-            height='18'
-            viewBox='0 0 24 24'
-            fill='none'
-            stroke='#9ca3af'
-            strokeWidth='2'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            style={{ marginRight: "4px" }}
-          >
-            <path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' />
-          </svg>
-          {comments} comments
-        </span>
-        <div style={{ display: "flex", gap: "8px" }}>
-          <button
-            onClick={handleLike}
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          <img
+            src={profilePicture}
+            alt='Profile'
             style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: 0,
+              width: "50px",
+              height: "50px",
+              objectFit: "cover",
+              borderRadius: "9999px",
+              background: "#4b5563",
+              cursor: "pointer"
             }}
-            aria-label='Like'
-          >
+            onClick={() => setShowUserInfo(true)}
+          />
+          <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, paddingRight: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0, flexWrap: "wrap" }}>
+              <h2 style={{ fontSize: "20px", marginBottom: 0, fontWeight: "bold", color: "#8E7B53", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 200 }}>{postUserName || userName}</h2>
+              {formattedDate && (
+                <span style={{ fontSize: "13px", color: "#fff", marginLeft: "8px", whiteSpace: "nowrap", background: "#23242a", padding: "2px 8px", borderRadius: "6px" }}>{formattedDate}</span>
+              )}
+            </div>
+          </div>
+          <div style={{display: "flex", alignItems: "flex-right", marginLeft: "auto", gap: "10px"}}>
+            {isOwner && !isEditing && (
+              <button
+                onClick={handleEdit}
+                style={{ background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}
+                aria-label="Edit Post"
+              >
+                <Edit2 color="#fff" size={20} />
+              </button>)}
+            {isOwner && !isEditing && (
+              <button
+                onClick={handleDelete}
+                style={{ background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}
+                aria-label="Delete Post"
+              >
+                <Trash2 color="#fff" size={20} />
+              </button>)}  
+          </div>
+        </div>
+        {isEditing ? (
+          <div style={{ marginBottom: "1rem" }}>
+            <textarea
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              style={{ width: "100%", minHeight: "60px", borderRadius: "8px", border: "1px solid #374151", background: "#1f2937", color: "#e5e7eb", padding: "8px" }}
+            />
+            <div style={{ marginTop: "8px", display: "flex", gap: "8px" }}>
+              <button
+                onClick={handleEditSave}
+                style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: "8px", padding: "8px 16px", cursor: "pointer" }}
+              >
+                Save
+              </button>
+              <button
+                onClick={() => setIsEditing(false)}
+                style={{ background: "#374151", color: "#fff", border: "none", borderRadius: "8px", padding: "8px 16px", cursor: "pointer" }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p style={{ fontSize: "16px", marginBottom: "1rem", color: "#d1d5db" }}>{textContent}</p>
+        )}
+
+        {imageUrl && (
+          <div style={{ marginBottom: "1rem" }}>
+            <img
+              src={imageUrl}
+              alt='Post media'
+              style={{
+                width: "100%",
+                maxHeight: "300px",
+                objectFit: "cover",
+                borderRadius: "12px",
+              }}
+            />
+          </div>
+        )}
+
+        {videoUrl && (
+          <div style={{ marginBottom: "1rem" }}>
+            <video
+              controls
+              style={{
+                width: "100%",
+                maxHeight: "300px",
+                borderRadius: "12px",
+              }}
+            >
+              <source src={videoUrl} type='video/mp4' />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        )}
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: "1rem",
+          }}
+        >
+          <span style={{ fontSize: "14px", color: "#9ca3af" }}>{likes} Likes</span>
+          <span style={{ fontSize: "14px", color: "#9ca3af", display: "flex", alignItems: "center", gap: "4px" }}>
             <svg
-              width='28'
-              height='28'
+              width='18'
+              height='18'
               viewBox='0 0 24 24'
-              fill={isLiked ? "red" : "none"}
-              stroke='red'
+              fill='none'
+              stroke='#9ca3af'
               strokeWidth='2'
               strokeLinecap='round'
               strokeLinejoin='round'
+              style={{ marginRight: "4px" }}
             >
-              <path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z' />
+              <path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' />
             </svg>
-          </button>
-          <button
-            onClick={() => setShowCommentInput((prev) => !prev)}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              color: "#60a5fa",
-              fontSize: "16px",
-            }}
-            aria-label='Comment'
-          >
-            Comment
-          </button>
+            {comments} comments
+          </span>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button
+              onClick={handleLike}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+              }}
+              aria-label='Like'
+            >
+              <svg
+                width='28'
+                height='28'
+                viewBox='0 0 24 24'
+                fill={isLiked ? "red" : "none"}
+                stroke='red'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              >
+                <path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z' />
+              </svg>
+            </button>
+            <button
+              onClick={() => setShowCommentInput((prev) => !prev)}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: "#60a5fa",
+                fontSize: "16px",
+              }}
+              aria-label='Comment'
+            >
+              Comment
+            </button>
+          </div>
         </div>
+
+        {showCommentInput && (
+          <div style={{ marginTop: "1rem" }}>
+            <input
+              type='text'
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder='Write a comment...'
+              style={{
+                width: "80%",
+                padding: "8px",
+                borderRadius: "8px",
+                border: "1px solid #374151",
+                background: "#1f2937",
+                color: "#e5e7eb",
+                marginRight: "8px",
+              }}
+            />
+            <button
+              onClick={handleComment}
+              style={{
+                background: "#2563eb",
+                color: "#fff",
+                border: "none",
+                borderRadius: "8px",
+                padding: "8px 16px",
+                cursor: "pointer",
+              }}
+            >
+              Post
+            </button>
+          </div>
+        )}
+
+        {/* Always show comments below the post */}
+        {commentsList.length > 0 && (
+          <div style={{ marginTop: "1.5rem" }}>
+            {commentsList.map((comment) => (
+              <Comment key={comment._id} comment={comment} />
+            ))}
+          </div>
+        )}
       </div>
-
-      {showCommentInput && (
-        <div style={{ marginTop: "1rem" }}>
-          <input
-            type='text'
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            placeholder='Write a comment...'
-            style={{
-              width: "80%",
-              padding: "8px",
-              borderRadius: "8px",
-              border: "1px solid #374151",
-              background: "#1f2937",
-              color: "#e5e7eb",
-              marginRight: "8px",
-            }}
-          />
-          <button
-            onClick={handleComment}
-            style={{
-              background: "#2563eb",
-              color: "#fff",
-              border: "none",
-              borderRadius: "8px",
-              padding: "8px 16px",
-              cursor: "pointer",
-            }}
-          >
-            Post
-          </button>
-        </div>
-      )}
-
-      {/* Always show comments below the post */}
-      {commentsList.length > 0 && (
-        <div style={{ marginTop: "1.5rem" }}>
-          {commentsList.map((comment) => (
-            <Comment key={comment._id} comment={comment} />
-          ))}
-        </div>
-      )}
-    </div>
+      <UserInfo userId={userId} open={showUserInfo} onClose={() => setShowUserInfo(false)} />
+    </>
   );
 };
 

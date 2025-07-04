@@ -117,7 +117,7 @@ useEffect(() => {
           let userName = "Unknown";
           try {
             const userRes = await axios.post(`http://${address}:${port}/api/users`, {
-              command: "getUserById",
+              command: "update",
               data: { userId: post.userId },
             });
             userName = userRes.data.user?.name || "Unknown";
@@ -126,11 +126,13 @@ useEffect(() => {
           return { ...post, userName, userProfilePicture };
         })
       );
+        console.log("postsWithUserData", postsWithUserData);
       setPosts(postsWithUserData || []);
     } catch (err) {
       setPosts([]);
     }
   };
+
 
   const magicalSparkles = useMemo(
     () => (
