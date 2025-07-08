@@ -2,14 +2,11 @@ import axios from "axios";
 import LockIcon from '@mui/icons-material/Lock';
 import {
   Camera,
-  Eye,
   FileText,
   Globe,
   MoreHorizontal,
-  Plus,
   Search,
   UserPlus,
-  Users,
 } from "lucide-react";
 import { useEffect, useState, useMemo, use } from "react";
 import { useParams } from "react-router-dom";
@@ -36,7 +33,7 @@ const GroupPage = () => {
   const [userProfilePicture, setUserProfilePicture] = useState(null);
   const [members, setMembers] = useState([]);
   const [fullScreenImage, setFullScreenImage] = useState(null);
-  const isAdmin = user && group.adminIds.includes(user.userId);
+  const [isAdmin, setIsAdmin] = useState(false);
  const address = process.env.REACT_APP_ADDRESS;
  const port = process.env.REACT_APP_PORT;
   useEffect(() => {
@@ -48,19 +45,18 @@ const GroupPage = () => {
         });
         setGroup(res.data.group);
 
-        // Fetch posts for this group
         const postsRes = await axios.post(`http://${address}:${port}/api/posts`, {
           command: "getGroupPosts",
           data: { groupId },
         });
-        // Fetch user names and profile pictures for each post
+
         const postsWithUserData = await Promise.all(
           postsRes.data.posts.map(async (post) => {
-            // Fetch profile picture
             const userProfilePicture = await fetchProfileImage(post.userId);
             return { ...post, userProfilePicture };
           })
         );
+
         setPosts(postsWithUserData || []);
       } catch (err) {
         setGroup(null);
@@ -69,6 +65,13 @@ const GroupPage = () => {
     };
     fetchGroup();
   }, [groupId]);
+  useEffect(() => {
+    if (group && user && Array.isArray(group.adminIds)) {
+      setIsAdmin(group.adminIds.includes(user.userId));
+    } else {
+      setIsAdmin(false);
+    }
+  }, [group, user]);
 
   useEffect(() => {
     const fetchProfilePicture = async () => {
@@ -80,11 +83,10 @@ const GroupPage = () => {
     fetchProfilePicture();
   }, [user]);
 
-useEffect(() => {
+  useEffect(() => {
     const fetchMembers = async () => {
       if (!groupId) return;
       try {
-   
         const res = await axios.post(`http://${address}:${port}/api/groups`, {
           command: "getGroupMembers",
           data: { groupId },
@@ -92,7 +94,6 @@ useEffect(() => {
         const members = await Promise.all(
           res.data.members.map(async (member) => {
             const profilePicture = await fetchProfileImage(member._id);
-            //console.log("memberidddddddddd", member._id);
             return { ...member, profilePicture };
           })
         );
@@ -100,13 +101,12 @@ useEffect(() => {
       } catch (err) {
         setMembers([]);
       }
-    }
+    };
     fetchMembers();
   }, [groupId]);
-    
-  
-     
+
   const tabs = ["Discussion", "Events", "Media", "Members"];
+
   const refreshPosts = async () => {
     try {
       const postsRes = await axios.post(`http://${address}:${port}/api/posts`, {
@@ -127,13 +127,11 @@ useEffect(() => {
           return { ...post, userName, userProfilePicture };
         })
       );
-        console.log("postsWithUserData", postsWithUserData);
       setPosts(postsWithUserData || []);
     } catch (err) {
       setPosts([]);
     }
   };
-
 
   const magicalSparkles = useMemo(
     () => (
@@ -161,14 +159,11 @@ useEffect(() => {
     return <div className='min-h-screen flex items-center justify-center text-gray-400'>Loading group...</div>;
   }
 
-  // Determine if user is a member
   const isMember = group.membersIds && Array.isArray(group.membersIds) && user && group.membersIds.includes(user.userId);
   const isPrivate = group.privacy && group.privacy.toLowerCase().includes('private');
   const isPublic = group.privacy && group.privacy.toLowerCase().includes('public');
   const isPending = group.pendingRequests && Array.isArray(group.pendingRequests) && user && group.pendingRequests.includes(user.userId);
-//console.log("meberssssssssss", members);
 
-  // Handler for join request
   const handleRequestJoin = async () => {
     try {
       await axios.post(`http://${address}:${port}/api/groups`, {
@@ -272,7 +267,7 @@ useEffect(() => {
               {isMember ? (
                 <GroupPostCreator groupId={groupId} onPostCreated={refreshPosts} />
               ) : isPublic ? (
-                <div className="text-gray-400 mb-4">Join this group to post or comment.</div>
+                <div className="text-gray-400 mb-4">You need to be a member to comment</div>
               ) : null}
             </div>
           ) : activeTab === "Media" ? (
