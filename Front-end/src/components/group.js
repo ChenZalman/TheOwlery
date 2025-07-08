@@ -36,7 +36,7 @@ const GroupPage = () => {
   const [userProfilePicture, setUserProfilePicture] = useState(null);
   const [members, setMembers] = useState([]);
   const [fullScreenImage, setFullScreenImage] = useState(null);
-  const isAdmin = group && group.admins && group.admins.includes(user?.userId);
+  const isAdmin = user && group.adminIds.includes(user.userId);
  const address = process.env.REACT_APP_ADDRESS;
  const port = process.env.REACT_APP_PORT;
   useEffect(() => {
@@ -165,7 +165,21 @@ useEffect(() => {
   const isMember = group.membersIds && Array.isArray(group.membersIds) && user && group.membersIds.includes(user.userId);
   const isPrivate = group.privacy && group.privacy.toLowerCase().includes('private');
   const isPublic = group.privacy && group.privacy.toLowerCase().includes('public');
+  const isPending = group.pendingRequests && Array.isArray(group.pendingRequests) && user && group.pendingRequests.includes(user.userId);
 //console.log("meberssssssssss", members);
+
+  // Handler for join request
+  const handleRequestJoin = async () => {
+    try {
+      await axios.post(`http://${address}:${port}/api/groups`, {
+        command: "requestJoinGroup",
+        data: { groupId, userId: user.userId }
+      });
+      setGroup((prev) => ({ ...prev, pendingRequests: [...(prev.pendingRequests || []), user.userId] }));
+    } catch (err) {
+      alert("Failed to request to join group.");
+    }
+  };
 
   return (
     <div className='min-h-screen text-white relative overflow-hidden' style={{ backgroundColor: "#1c1e21" }}>
@@ -193,7 +207,7 @@ useEffect(() => {
         <div className='flex items-center justify-between'>
           <div>
             <h1 className='text-5xl font-bold mb-2' style={{ color: '#8E7B53' }}>{group.name}</h1>
-             <h2 className='text-1xl font-bold mb-1'>{group.description}</h2>
+            <h2 className='text-1xl font-bold mb-1'>{group.description}</h2>
             <div className='flex items-center text-gray-400 text-sm space-x-4'>
               <span className='flex items-center'>
                 {group.privacy && group.privacy.toLowerCase().includes('private') ? (
@@ -208,6 +222,18 @@ useEffect(() => {
                 {Array.isArray(group.membersIds) ? (group.membersIds.filter(Boolean).length) : 0} member{Array.isArray(group.membersIds) && group.membersIds.filter(Boolean).length !== 1 ? 's' : ''}
               </span>
             </div>
+            {/* Request to Join Button */}
+            {!isMember && !isPending && user && user.userId && (
+              <button
+                className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow transition-colors"
+                onClick={handleRequestJoin}
+              >
+                Request to Join Group
+              </button>
+            )}
+            {!isMember && isPending && (
+              <div className="mt-4 text-blue-400 font-semibold">Join request pending approval.</div>
+            )}
           </div>
           <div className='flex space-x-3'>
           </div>
@@ -241,11 +267,8 @@ useEffect(() => {
               </button>
             </div>
           </div>
-
-          {/* Post Creation or Members List depending on tab */}
           {activeTab === "Discussion" ? (
             <div className='p-6 border-b border-gray-700'>
-              {/* Only show post creator if user is member */}
               {isMember ? (
                 <GroupPostCreator groupId={groupId} onPostCreated={refreshPosts} />
               ) : isPublic ? (
@@ -377,6 +400,7 @@ useEffect(() => {
                   <span>Add A description</span>
                 </button>
               </div>
+              
             </div>
 
             <div className='mt-8'>

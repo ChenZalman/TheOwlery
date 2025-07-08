@@ -1,3 +1,5 @@
+
+
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
@@ -10,6 +12,24 @@ router.post('/', async (req, res) => {
   const { command, data } = req.body;
   try {
     switch (command) {
+      case 'requestJoinGroup': {
+        // data: { groupId, userId }
+        const { groupId, userId } = data;
+        if (!groupId || !userId) {
+          return res.status(400).json({ message: "Missing groupId or userId" });
+        }
+        const group = await Group.findById(groupId);
+        if (!group) return res.status(404).json({ message: "Group not found" });
+        group.pendingRequests = group.pendingRequests || [];
+        // Only add if not already requested or member
+        if (!group.pendingRequests.includes(userId) && !group.membersIds.includes(userId)) {
+          group.pendingRequests.push(userId);
+          await group.save();
+          return res.json({ message: "Join request sent", group });
+        } else {
+          return res.status(400).json({ message: "Already requested or already a member" });
+        }
+      }
       case 'create': {
  
         if (!data.name || !Array.isArray(data.membersIds) || !Array.isArray(data.adminIds)) {
