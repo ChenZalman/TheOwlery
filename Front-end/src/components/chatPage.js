@@ -40,30 +40,50 @@ const Chat = () => {
   const handleSend = (e) => {
     e.preventDefault();
     if (input.trim() === "" || !selectedFriend) return;
-    // setMessages((prev) => [
-    //   ...prev,
-    //   { id: prev.length + 1, sender: "You", text: input },
-    // ]);
-    console.log("sent message: ",{ userid: user.id, friendid: selectedFriend._id, content: input })
+    // Prevent local echo, rely only on socket event for rendering
     socket.emit('chat message', { userid: user.userId, friendid: selectedFriend._id, content: input });
     setInput("");
   };
 
-  const changeSelectedFriend = (friend) =>{
-    setSelectedFriend(friend)
-      console.log("Sending to server: ", {userid: user.userId,
-      friendid: friend._id})
-    axios.get('http://localhost:5000/api/messages',{
-      params:{userid: user.userId,
-      friendid: friend._id}
+  useEffect(() => {
+    if (!selectedFriend) return;
+    // To avoid duplicate listeners, always clear before adding
+    socket.off('chat message');
+    const handler = (msg) => {
+      // Only add message if it is for the current chat
+      if (
+        (msg.userid === user.userId && msg.friendid === selectedFriend._id) ||
+        (msg.userid === selectedFriend._id && msg.friendid === user.userId)
+      ) {
+        setMessages(prev => {
+          // Prevent duplicate messages by checking content and sender
+          if (
+            prev.length > 0 &&
+            prev[prev.length - 1].content === msg.content &&
+            prev[prev.length - 1].userid === msg.userid &&
+            prev[prev.length - 1].friendid === msg.friendid
+          ) {
+            return prev;
+          }
+          return [...prev, msg];
+        });
+      }
+    };
+    socket.on('chat message', handler);
+    return () => {
+      socket.off('chat message', handler);
+    };
+  }, [selectedFriend, user.userId]);
+
+  const changeSelectedFriend = (friend) => {
+    setSelectedFriend(friend);
+    console.log("Sending to server: ", { userid: user.userId, friendid: friend._id });
+    axios.get('http://localhost:5000/api/messages', {
+      params: { userid: user.userId, friendid: friend._id }
     })
       .then(res => setMessages(res.data))
       .catch(console.error);
-        socket.on('chat message', msg => {
-            setMessages(prev => [...prev, msg]);
-        });
-    return () => socket.off('chat message');
-    console.log(friend)
+    console.log(friend);
   }
 
   return (
