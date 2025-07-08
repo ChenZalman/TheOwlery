@@ -28,12 +28,12 @@ const GroupPage = () => {
   const [showCoverPicker, setShowCoverPicker] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const { user } = useAuthContext();
-  // const [postText, setPostText] = useState("");
   const [posts, setPosts] = useState([]);
   const [userProfilePicture, setUserProfilePicture] = useState(null);
   const [members, setMembers] = useState([]);
   const [fullScreenImage, setFullScreenImage] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [pendingRequests, setPendingRequests] = useState([]);
  const address = process.env.REACT_APP_ADDRESS;
  const port = process.env.REACT_APP_PORT;
   useEffect(() => {
@@ -72,7 +72,47 @@ const GroupPage = () => {
       setIsAdmin(false);
     }
   }, [group, user]);
-
+useEffect(() => {
+  const fetchPendingRequests = async () => {
+    if (!group?.pendingRequests || !Array.isArray(group.pendingRequests) || group.pendingRequests.length === 0) {
+      setPendingRequests([]);
+      return;
+    }
+    try {
+      const users = [];
+      for (let userId of group.pendingRequests) {
+        // Handle MongoDB ObjectId format: { $oid: "..." }
+        if (userId && typeof userId === 'object' && userId.$oid) {
+          userId = userId.$oid;
+        }
+        // Remove accidental trailing quote if present (data bug)
+        if (typeof userId === 'string' && userId.endsWith('"')) {
+          userId = userId.slice(0, -1);
+        }
+        try {
+          const res = await axios.post(`http://${address}:${port}/api/users`, {
+            command: "getUserName",
+            data: { userId }
+          });
+          // Debug: log backend response
+          console.log('getUserName backend response:', userId, res.data);
+          let name = (res.data && typeof res.data.name === 'string') ? res.data.name : '';
+          if (!name || name.trim() === '') {
+            name = 'Unknown';
+          }
+          const profilePicture = await fetchProfileImage(userId);
+          users.push({ _id: userId, name: name.trim(), profilePicture });
+        } catch (err) {
+          users.push({ _id: userId, name: 'Unknown', profilePicture: '' });
+        }
+      }
+      setPendingRequests(users);
+    } catch (err) {
+      setPendingRequests([]);
+    }
+  };
+  fetchPendingRequests();
+}, [group?.pendingRequests]);
   useEffect(() => {
     const fetchProfilePicture = async () => {
       if (user && user.userId) {
@@ -132,7 +172,7 @@ const GroupPage = () => {
       setPosts([]);
     }
   };
-
+console.log("the besttttttttt",pendingRequests);
   const magicalSparkles = useMemo(
     () => (
       <div className='absolute inset-0 pointer-events-none z-0'>
@@ -357,13 +397,10 @@ const GroupPage = () => {
           )}
         </div>
         {/* Setup Panel */}
-        {showSetupPanel && isAdmin && (
+        {isAdmin && (
           <div className='w-80 p-6 bg-gray-800 border-l border-gray-700'>
-            <div className='flex items-center justify-between mb-4'>
-              <button onClick={() => setShowSetupPanel(false)} className='text-gray-400 hover:text-gray-300'>
-                ✕
-              </button>
-            </div>
+            {/* Removed close X button to prevent hiding the setup panel */}
+            <div className='mb-4'></div>
             <div className='text-sm text-gray-400 mb-4'></div>
 
             <div className='space-y-4'>
@@ -420,62 +457,67 @@ const GroupPage = () => {
                   </div>
                 )}
               </div>
-              {/* Pending Join Requests (Admin only, under About) */}
-              {isAdmin && group.pendingRequests && group.pendingRequests.length > 0 && (
-                <div className="mt-6">
-                  <h4 className="font-semibold mb-2 text-yellow-300">Pending Join Requests</h4>
-                  <ul className="space-y-2">
-                    {group.pendingRequests.map((userId) => {
-                      const pendingUser = members.find(m => m._id === userId);
-                      return (
-                        <li key={userId} className="flex items-center justify-between bg-gray-700 rounded-lg p-2">
-                          <div className="flex items-center gap-2">
-                            <img src={pendingUser?.profilePicture || '/images/noProfile.png'} alt="profile" className="w-8 h-8 rounded-full object-cover border border-gray-600" />
-                            <span>{pendingUser?.name || userId}</span>
-                          </div>
-                          <div className="flex gap-2">
-                            <button
-                              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
-                              onClick={async () => {
-                                try {
-                                  await axios.post(`http://${address}:${port}/api/groups`, {
-                                    command: "approveJoinRequest",
-                                    data: { groupId, userId }
-                                  });
-                                  setGroup(prev => ({
-                                    ...prev,
-                                    membersIds: [...(prev.membersIds || []), userId],
-                                    pendingRequests: prev.pendingRequests.filter(id => id !== userId)
-                                  }));
-                                } catch (err) {
-                                  alert("Failed to approve join request.");
-                                }
-                              }}
-                            >Accept</button>
-                            <button
-                              className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-                              onClick={async () => {
-                                try {
-                                  await axios.post(`http://${address}:${port}/api/groups`, {
-                                    command: "disapproveJoinRequest",
-                                    data: { groupId, userId }
-                                  });
-                                  setGroup(prev => ({
-                                    ...prev,
-                                    pendingRequests: prev.pendingRequests.filter(id => id !== userId)
-                                  }));
-                                } catch (err) {
-                                  alert("Failed to disapprove join request.");
-                                }
-                              }}
-                            >Refuse</button>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              )}
+             {isAdmin && pendingRequests.length > 0 && (
+  <div className="mt-6">
+    <h4 className="font-semibold mb-2 text-yellow-300">Pending Join Requests</h4>
+    <ul className="space-y-2">
+      {pendingRequests.map((pendingUser) => (
+        <li key={pendingUser._id} className="flex items-center justify-between bg-gray-700 rounded-lg p-2">
+          <div className="flex items-center gap-2">
+            <img src={pendingUser.profilePicture || '/images/noProfile.png'} alt="profile" className="w-8 h-8 rounded-full object-cover border border-gray-600" />
+            <span>{pendingUser.name || pendingUser._id}</span>
+          </div>
+          <div className="flex gap-2">
+            <button
+              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
+              onClick={async () => {
+                try {
+                  await axios.post(`http://${address}:${port}/api/groups`, {
+                    command: "approveJoinRequest",
+                    data: { groupId, userId: pendingUser._id }
+                  });
+                  setGroup(prev => {
+                    // Remove from pendingRequests and add to membersIds
+                    const cleanId = typeof pendingUser._id === 'string' ? pendingUser._id : (pendingUser._id && pendingUser._id.$oid ? pendingUser._id.$oid : '');
+                    return {
+                      ...prev,
+                      membersIds: [...(prev.membersIds || []), cleanId],
+                      pendingRequests: (prev.pendingRequests || []).filter(id => {
+                        let idStr = id;
+                        if (id && typeof id === 'object' && id.$oid) idStr = id.$oid;
+                        if (typeof idStr === 'string' && idStr.endsWith('"')) idStr = idStr.slice(0, -1);
+                        return idStr !== cleanId;
+                      })
+                    };
+                  });
+                } catch (err) {
+                  alert("Failed to approve join request.");
+                }
+              }}
+            >Accept</button>
+            <button
+              className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+              onClick={async () => {
+                try {
+                  await axios.post(`http://${address}:${port}/api/groups`, {
+                    command: "disapproveJoinRequest",
+                    data: { groupId, userId: pendingUser._id }
+                  });
+                  setGroup(prev => ({
+                    ...prev,
+                    pendingRequests: prev.pendingRequests.filter(id => id !== pendingUser._id)
+                  }));
+                } catch (err) {
+                  alert("Failed to disapprove join request.");
+                }
+              }}
+            >Refuse</button>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
             </div>
           </div>
         )}
