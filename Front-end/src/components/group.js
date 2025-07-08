@@ -160,6 +160,11 @@ useEffect(() => {
   if (!group) {
     return <div className='min-h-screen flex items-center justify-center text-gray-400'>Loading group...</div>;
   }
+
+  // Determine if user is a member
+  const isMember = group.membersIds && Array.isArray(group.membersIds) && user && group.membersIds.includes(user.userId);
+  const isPrivate = group.privacy && group.privacy.toLowerCase().includes('private');
+  const isPublic = group.privacy && group.privacy.toLowerCase().includes('public');
 //console.log("meberssssssssss", members);
 
   return (
@@ -240,35 +245,45 @@ useEffect(() => {
           {/* Post Creation or Members List depending on tab */}
           {activeTab === "Discussion" ? (
             <div className='p-6 border-b border-gray-700'>
-              <GroupPostCreator groupId={groupId} onPostCreated={refreshPosts} />
+              {/* Only show post creator if user is member */}
+              {isMember ? (
+                <GroupPostCreator groupId={groupId} onPostCreated={refreshPosts} />
+              ) : isPublic ? (
+                <div className="text-gray-400 mb-4">Join this group to post or comment.</div>
+              ) : null}
             </div>
           ) : activeTab === "Media" ? (
             <div className="p-6 border-b border-gray-700">
               <h3 className="font-semibold mb-4">Group Images</h3>
-              {posts && posts.some(post => post.images && post.images.length > 0) ? (
-                <>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                    {posts
-                      .filter(post => post.images && post.images.length > 0)
-                      .flatMap(post => post.images.map((img, idx) => (
-                        <div key={post.id + '-' + idx} className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 flex items-center justify-center cursor-pointer" onClick={() => setFullScreenImage(`https://res.cloudinary.com/${process.env.REACT_APP_CLOUDINARY_NAME}/image/upload/${img}.jpg`)}>
-                          <img
-                            src={`https://res.cloudinary.com/${process.env.REACT_APP_CLOUDINARY_NAME}/image/upload/${img}.jpg`}
-                            alt="Group Post"
-                            className="object-cover w-full h-48"
-                          />
-                        </div>
-                      )))}
-                  </div>
-                  {fullScreenImage && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90" onClick={() => setFullScreenImage(null)}>
-                      <img src={fullScreenImage} alt="Full Screen" className="max-w-full max-h-full rounded-lg shadow-lg" />
-                      <button className="absolute top-8 right-8 text-white text-3xl font-bold bg-black bg-opacity-50 rounded-full px-4 py-2" onClick={e => { e.stopPropagation(); setFullScreenImage(null); }}>×</button>
+              {/* Only show images if group is public or user is member */}
+              {(isMember || isPublic) ? (
+                posts && posts.some(post => post.images && post.images.length > 0) ? (
+                  <>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                      {posts
+                        .filter(post => post.images && post.images.length > 0)
+                        .flatMap(post => post.images.map((img, idx) => (
+                          <div key={post.id + '-' + idx} className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 flex items-center justify-center cursor-pointer" onClick={() => setFullScreenImage(`https://res.cloudinary.com/${process.env.REACT_APP_CLOUDINARY_NAME}/image/upload/${img}.jpg`)}>
+                            <img
+                              src={`https://res.cloudinary.com/${process.env.REACT_APP_CLOUDINARY_NAME}/image/upload/${img}.jpg`}
+                              alt="Group Post"
+                              className="object-cover w-full h-48"
+                            />
+                          </div>
+                        )))}
                     </div>
-                  )}
-                </>
+                    {fullScreenImage && (
+                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90" onClick={() => setFullScreenImage(null)}>
+                        <img src={fullScreenImage} alt="Full Screen" className="max-w-full max-h-full rounded-lg shadow-lg" />
+                        <button className="absolute top-8 right-8 text-white text-3xl font-bold bg-black bg-opacity-50 rounded-full px-4 py-2" onClick={e => { e.stopPropagation(); setFullScreenImage(null); }}>×</button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="text-gray-400">No images found in group posts.</div>
+                )
               ) : (
-                <div className="text-gray-400">No images found in group posts.</div>
+                <div className="text-gray-400">This group is private. Join to see media.</div>
               )}
             </div>
           ) : activeTab === "Members" ? (
@@ -296,26 +311,31 @@ useEffect(() => {
         {/* Group Posts */}
         <div className='p-6'>
           <h3 className='font-semibold mb-4'>Posts</h3>
-          {posts && posts.length > 0 ? (
-            posts.map((post) => (
-              <div key={post.id || post._id} className='mb-6 flex justify-center'>
-                <Post
-                  post={{
-                    userName: post.userName,
-                    profilePicture: post.userProfilePicture,
-                    textContent: post.text || post.textContent,
-                    imagePublicId: post.images && post.images.length > 0 ? post.images[0] : null,
-                    videoPublicId: post.videos && post.videos.length > 0 ? post.videos[0] : null,
-                    postId: post.id || post._id,
-                    likes: post.likes,
-                    userId: post.userId,
-                    date: post.createdAt  
-                  }}
-                />
-              </div>
-            ))
+          {/* Only show posts if user is member or group is public */}
+          {(isMember || isPublic) ? (
+            posts && posts.length > 0 ? (
+              posts.map((post) => (
+                <div key={post.id || post._id} className='mb-6 flex justify-center'>
+                  <Post
+                    post={{
+                      userName: post.userName,
+                      profilePicture: post.userProfilePicture,
+                      textContent: post.text || post.textContent,
+                      imagePublicId: post.images && post.images.length > 0 ? post.images[0] : null,
+                      videoPublicId: post.videos && post.videos.length > 0 ? post.videos[0] : null,
+                      postId: post.id || post._id,
+                      likes: post.likes,
+                      userId: post.userId,
+                      date: post.createdAt  
+                    }}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className='text-gray-400'>No posts yet.</div>
+            )
           ) : (
-            <div className='text-gray-400'>No posts yet.</div>
+            <div className='text-gray-400'>This group is private. Join to see posts.</div>
           )}
         </div>
         {/* Setup Panel */}

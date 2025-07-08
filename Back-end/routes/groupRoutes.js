@@ -80,6 +80,10 @@ case 'updateDescription': {
   }
   return res.status(200).json({ group });
 }
+case 'getAllGroups': {
+  const groups = await Group.find({});
+  return res.status(200).json({ groups });
+}
 case 'createGroupPost': {
   const { text, userId, groupId, images = [], videos = [] } = data;
   if (!text || !userId || !groupId) {

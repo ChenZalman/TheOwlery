@@ -15,6 +15,27 @@ const GroupsPage = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const address = process.env.REACT_APP_ADDRESS;
   const port = process.env.REACT_APP_PORT;
+  const [suggestedGroups, setSuggestedGroups] = useState([]);
+  const [loadingSuggested, setLoadingSuggested] = useState(true);
+  // Fetch all groups for "Other Groups" section (excluding user's groups)
+  useEffect(() => {
+    const fetchOtherGroups = async () => {
+      try {
+        const res = await axios.post(`http://${address}:${port}/api/groups`, {
+          command: "getAllGroups"
+        });
+        // Exclude groups the user is already a member of
+        const userGroupIds = new Set(groups.map(g => g._id || g.id));
+        const others = (res.data.groups || []).filter(g => !userGroupIds.has(g._id || g.id));
+        setSuggestedGroups(others);
+      } catch (err) {
+        setSuggestedGroups([]);
+      } finally {
+        setLoadingSuggested(false);
+      }
+    };
+    fetchOtherGroups();
+  }, [address, port, groups]);
 
   // Fetch user's groups
   useEffect(() => {
@@ -112,6 +133,7 @@ const GroupsPage = () => {
   return (
     <div className="min-h-screen text-gold relative overflow-hidden font-serif" style={{ backgroundColor: "#1D1E22" }}>
       <div style={{ height: '60px' }}></div> {/* Spacer to push content down */}
+
       <h2 className="text-5xl font-extrabold mb-10 text-white text-center drop-shadow-lg">Your Groups</h2>
       <div className="flex justify-center mb-8">
         <button
@@ -121,6 +143,37 @@ const GroupsPage = () => {
           + Create Group
         </button>
       </div>
+
+      {/* Groups Section */}
+      {loading ? (
+        <div className="text-gray-500">Loading groups...</div>
+      ) : groups.length === 0 ? (
+        <div className="text-gray-400">No groups found.</div>
+      ) : (
+        <ul className="space-y-4 mb-10">
+          {groups.map((group) => (
+            <li
+              key={group._id || group.id}
+              className="p-4 bg-blue-50 rounded-lg shadow flex flex-col gap-1 cursor-pointer hover:bg-blue-100 transition-colors duration-200 mx-auto w-full max-w-md"
+              onClick={() => handleGroupClick(group._id || group.id)}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                {group.privacy && group.privacy.toLowerCase().includes('private') ? (
+                  <span title="Private group" className="inline-block text-black align-middle">
+                    <LockIcon style={{ fontSize: 22, marginRight: 4, color: 'black', verticalAlign: 'middle' }} />
+                  </span>
+                ) : (
+                  <span title="Public group" className="inline-block text-black">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" /><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
+                  </span>
+                )}
+                <span className="font-semibold text-lg text-blue-800">{group.name}</span>
+              </div>
+              <span className="text-gray-600">{group.description}</span>
+            </li>
+          ))}
+        </ul>
+      )}
 
       {/* Requests Section */}
       {loadingRequests ? (
@@ -152,35 +205,40 @@ const GroupsPage = () => {
         </div>
       )}
 
-      {/* Groups Section */}
-      {loading ? (
-        <div className="text-gray-500">Loading groups...</div>
-      ) : groups.length === 0 ? (
-        <div className="text-gray-400">No groups found.</div>
+      {/* Explore Groups Section */}
+      {loadingSuggested ? (
+        <div className="text-gray-500 mb-4">Loading explore groups...</div>
       ) : (
-        <ul className="space-y-4">
-          {groups.map((group) => (
-            <li
-              key={group._id || group.id}
-              className="p-4 bg-purple-50 rounded-lg shadow flex flex-col gap-1 cursor-pointer hover:bg-purple-100 transition-colors duration-200 mx-auto w-full max-w-md"
-              onClick={() => handleGroupClick(group._id || group.id)}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                {group.privacy && group.privacy.toLowerCase().includes('private') ? (
-                  <span title="Private group" className="inline-block text-black align-middle">
-                    <LockIcon style={{ fontSize: 22, marginRight: 4, color: 'black', verticalAlign: 'middle' }} />
-                  </span>
-                ) : (
-                  <span title="Public group" className="inline-block text-black">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" /><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
-                  </span>
-                )}
-                <span className="font-semibold text-lg text-purple-800">{group.name}</span>
-              </div>
-              <span className="text-gray-600">{group.description}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="mb-6">
+      <h2 className="text-5xl font-extrabold mb-10 text-white text-center drop-shadow-lg">Explore Groups</h2>
+          {suggestedGroups.length > 0 ? (
+            <ul className="space-y-4 mb-10">
+              {suggestedGroups.map((group) => (
+                <li
+                  key={group._id || group.id}
+                  className="p-4 bg-blue-50 rounded-lg shadow flex flex-col gap-1 cursor-pointer hover:bg-blue-100 transition-colors duration-200 mx-auto w-full max-w-md"
+                  onClick={() => handleGroupClick(group._id || group.id)}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    {group.privacy && group.privacy.toLowerCase().includes('private') ? (
+                      <span title="Private group" className="inline-block text-black align-middle">
+                        <LockIcon style={{ fontSize: 22, marginRight: 4, color: 'black', verticalAlign: 'middle' }} />
+                      </span>
+                    ) : (
+                      <span title="Public group" className="inline-block text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" /><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
+                      </span>
+                    )}
+                    <span className="font-semibold text-lg text-blue-800">{group.name}</span>
+                  </div>
+                  <span className="text-gray-600">{group.description}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="text-gray-400">No groups to explore.</div>
+          )}
+        </div>
       )}
 
       {showCreateModal && (
