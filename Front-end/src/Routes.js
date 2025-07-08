@@ -25,7 +25,7 @@ const ProjectRoutes = () => {
     { path: "/editprofile", element:<> {loading ? <div>Loading...</div> : user ?  <EditProfilePage user = {user}/>  : <Navigate to="/editnotfound"/>}</>},
     { path: "/chat", element:<> {loading ? <div>Loading...</div> : user ?  <Chat user = {user}/>  : <Navigate to="/chat"/>}</>},
     { path: "/groups", element:<> {loading ? <div>Loading...</div> : user ?  <GroupsPage user = {user}/>  : <Navigate to="/chat"/>}</>},
-    { path: "/groups/:groupId", element: <GroupPage /> },
+    { path: "/groups/:groupId", element: <> {loading ? <div>Loading...</div> : user ? <GroupPage /> : <Navigate to="/signinpage"/>}</> },
     { path: "/mainFeed", element:<> {loading ? <div>Loading...</div> : user ?  <MainFeed user = {user}/>  : <Navigate to="/signinpage"/>}</>},
   ]);
 

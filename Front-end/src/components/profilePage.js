@@ -6,13 +6,15 @@ import React from "react";
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import fetchProfileImage from "../requests/getProfileImage";
-
+import Filters from "./Filters";
 
 
 
 function FriendRequestsSection({ friendRequests, accepting, refusing, actionError, handleAcceptFriend, handleRefuseFriend, address, port }) {
-  const [names, setNames] = React.useState({});
-  React.useEffect(() => {
+  const [names, setNames] = useState({});
+  const [posts, setPosts] = useState([]);
+      const { user } = useAuthContext();
+  useEffect(() => {
     const fetchNames = async () => {
       const newNames = {};
       for (let i = 0; i < friendRequests.length; i++) {
@@ -34,6 +36,25 @@ function FriendRequestsSection({ friendRequests, accepting, refusing, actionErro
     if (friendRequests.length > 0) fetchNames();
     // eslint-disable-next-line
   }, [friendRequests]);
+      const fetchPosts = async (filters) => {
+        if (!user || !user.userId) return;
+        try {
+            // Only include non-empty filters
+            const filterData = { userId: user.userId };
+            Object.entries(filters).forEach(([key, value]) => {
+                if (value !== undefined && value !== null && value !== "") {
+                    filterData[key] = value;
+                }
+            });
+            const res = await axios.post(`http://${address}:${port}/api/posts`, {
+                command: "getFiltered",
+                data: filterData
+            });
+            setPosts(res.data.posts || []);
+        } catch (err) {
+            setPosts([]);
+        }
+    };
   if (!friendRequests.length) return null;
   return (
     <div style={{
@@ -76,6 +97,15 @@ const ProfilePage = ({ user }) => {
   const [accepting, setAccepting] = useState("");
   const [refusing, setRefusing] = useState("");
   const [actionError, setActionError] = useState("");
+  // Filter states
+  const [month, setMonth] = useState("");
+  const [day, setDay] = useState("");
+  const [year, setYear] = useState("");
+  const [hasImage, setHasImage] = useState("");
+  // Only after pressing search
+  const [pendingFilters, setPendingFilters] = useState({ month: "", day: "", year: "", hasImage: "" });
+  const [searchTriggered, setSearchTriggered] = useState(false);
+  
   const address = process.env.REACT_APP_ADDRESS;
   const port = process.env.REACT_APP_PORT;
 
@@ -94,15 +124,36 @@ const ProfilePage = ({ user }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       if (!user?.userId) return;
+      const filterData = { userId: user.userId };
+      if (pendingFilters.month) filterData.month = pendingFilters.month;
+      if (pendingFilters.day) filterData.day = pendingFilters.day;
+      if (pendingFilters.year) filterData.year = pendingFilters.year ? String(pendingFilters.year) : undefined;
+      if (pendingFilters.hasImage) filterData.hasImage = pendingFilters.hasImage;
+      const useFilters = !!(pendingFilters.month || pendingFilters.day || pendingFilters.year || pendingFilters.hasImage);
       const res = await axios.post(`http://${address}:${port}/api/posts`, {
-        command: "get",
-        data: { userId: user.userId }
+        command: useFilters ? "getFiltered" : "get",
+        data: filterData
       });
-      // Filter posts to only those by the current user
-      setPosts((res.data.posts || []).filter(post => post.userId === user.userId));
+      // Fetch profile images for each post
+      const postsWithProfile = await Promise.all(
+        (res.data.posts || []).filter(post => post.userId === user.userId).map(async post => {
+          let profilePicture = "/images/noProfile.png";
+          try {
+            profilePicture = await fetchProfileImage(post.userId);
+          } catch (e) {}
+          return { ...post, profilePicture };
+        })
+      );
+      setPosts(postsWithProfile);
     };
-    fetchPosts();
-  }, [user]);
+    if (searchTriggered) {
+      fetchPosts();
+      setSearchTriggered(false);
+    } else if (user && user.userId && posts.length === 0) {
+      // Initial load
+      fetchPosts();
+    }
+  }, [user, pendingFilters, searchTriggered]);
 
   // Fetch friend requests on mount
   useEffect(() => {
@@ -260,6 +311,48 @@ const ProfilePage = ({ user }) => {
             >
               Edit User
             </Link>
+          </div>
+          {/* Filters and Search Button */}
+          <Filters
+            month={month}
+            onMonthChange={setMonth}
+            userName={undefined}
+            onUserNameChange={() => {}}
+            hasImage={hasImage}
+            onHasImageChange={setHasImage}
+          />
+          <div className="flex justify-center mb-6">
+            <select
+              value={day}
+              onChange={e => setDay(e.target.value)}
+              className="px-3 py-2 rounded border border-gold bg-[#23242a] text-gold mr-2"
+              style={{ minWidth: 120 }}
+            >
+              <option value="">All Days</option>
+              {[...Array(31)].map((_, i) => (
+                <option key={i+1} value={i+1}>{i+1}</option>
+              ))}
+            </select>
+            <input
+              type="number"
+              value={year}
+              onChange={e => setYear(e.target.value)}
+              placeholder="Year"
+              className="px-3 py-2 rounded border border-gold bg-[#23242a] text-gold mr-2"
+              style={{ minWidth: 100 }}
+              min="1900"
+              max={new Date().getFullYear()}
+            />
+            <button
+              className="px-6 py-2 rounded bg-gold text-black font-bold transition"
+              style={{ backgroundColor: '#e6c47a' }}
+              onClick={() => {
+                setPendingFilters({ month, day, year, hasImage });
+                setSearchTriggered(true);
+              }}
+            >
+              Search
+            </button>
           </div>
 
           {/* Friend Requests Section */}

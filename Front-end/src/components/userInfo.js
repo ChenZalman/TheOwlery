@@ -148,32 +148,7 @@ const UserInfo = ({ userId, open, onClose }) => {
               {((user.friendRequests || []).includes(currentUser?.userId) || requestSent) && (
                 <div className="mb-3 text-blue-400">Friend request sent</div>
               )}
-              {/* Accept/Refuse friend request if current user has a request from this user */}
-              {currentUser && user && currentUser.userId === userId && Array.isArray(currentUser.friendRequests) && currentUser.friendRequests.length > 0 && (
-                <div className="mb-3">
-                  <div className="font-semibold text-gray-300 mb-2">Friend Requests:</div>
-                  {currentUser.friendRequests.map((fromId) => (
-                    <div key={fromId} className="flex items-center gap-2 mb-2">
-                      <span className="text-gold">{fromId}</span>
-                      <button
-                        onClick={() => handleAcceptFriend(fromId)}
-                        disabled={accepting}
-                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg font-semibold"
-                      >
-                        {accepting ? "Accepting..." : "Accept"}
-                      </button>
-                      <button
-                        onClick={() => handleRefuseFriend(fromId)}
-                        disabled={refusing}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg font-semibold"
-                      >
-                        {refusing ? "Refusing..." : "Refuse"}
-                      </button>
-                    </div>
-                  ))}
-                  {actionError && <div className="text-red-400 mt-2">{actionError}</div>}
-                </div>
-              )}
+              {/* Accept/Refuse friend request UI removed as requested */}
               <div><span className="font-semibold text-gray-300">Birthdate:</span> {formatDate(user.birthDate)}</div>
               <div><span className="font-semibold text-gray-300">Gender:</span> {user.gender || '-'}</div>
               <div><span className="font-semibold text-gray-300">Number of friends:</span> {Array.isArray(user.friendsId) ? user.friendsId.length : 0}</div>

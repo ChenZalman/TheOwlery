@@ -97,12 +97,18 @@ router.post('/filter', async (req, res) => {
                     const userIds = users.map(u => u._id.toString());
                     query.userId = { $in: allowedUserIds.filter(id => userIds.includes(id)) };
                 }
-                if (month && !isNaN(Number(month))) {
-                    // Filter by month (IN createdAt STRING)
-                    const m = Number(month) - 1;
-                    const year = new Date().getFullYear();
-                    const start = new Date(year, m, 1);
-                    const end = new Date(year, m + 1, 1);
+                if ((month && !isNaN(Number(month))) || (data.year && !isNaN(Number(data.year)))) {
+                    // Filter by month and/or year
+                    const m = month && !isNaN(Number(month)) ? Number(month) - 1 : 0;
+                    const y = data.year && !isNaN(Number(data.year)) ? Number(data.year) : new Date().getFullYear();
+                    let start, end;
+                    if (month && !isNaN(Number(month))) {
+                        start = new Date(y, m, 1);
+                        end = new Date(y, m + 1, 1);
+                    } else {
+                        start = new Date(y, 0, 1);
+                        end = new Date(y + 1, 0, 1);
+                    }
                     query.createdAt = { $gte: start, $lt: end };
                 }
                 if (hasImage === "true") {

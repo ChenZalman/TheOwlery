@@ -36,6 +36,7 @@ const GroupPage = () => {
   const [userProfilePicture, setUserProfilePicture] = useState(null);
   const [members, setMembers] = useState([]);
   const [fullScreenImage, setFullScreenImage] = useState(null);
+  const isAdmin = group && group.admins && group.admins.includes(user?.userId);
  const address = process.env.REACT_APP_ADDRESS;
  const port = process.env.REACT_APP_PORT;
   useEffect(() => {
@@ -318,7 +319,7 @@ useEffect(() => {
           )}
         </div>
         {/* Setup Panel */}
-        {showSetupPanel && (
+        {showSetupPanel && isAdmin && (
           <div className='w-80 p-6 bg-gray-800 border-l border-gray-700'>
             <div className='flex items-center justify-between mb-4'>
               <button onClick={() => setShowSetupPanel(false)} className='text-gray-400 hover:text-gray-300'>
@@ -356,33 +357,30 @@ useEffect(() => {
                   <span>Add A description</span>
                 </button>
               </div>
-              <div className='flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors'>
-                <Plus className='w-5 h-5 text-gray-400' />
-                <span>Create a post</span>
-              </div>
             </div>
 
             <div className='mt-8'>
               <h4 className='font-semibold mb-4'>About</h4>
               <div className='space-y-3'>
-                <div className='flex items-start space-x-3'>
-                  <Globe className='w-5 h-5 text-gray-400 mt-1' />
-                  <div>
-                    <div className='font-medium'>Public</div>
-                    <div className='text-sm text-gray-400'>Anyone can see who's in the group and what they post.</div>
+                {/* Show only the relevant privacy section */}
+                {group.privacy && group.privacy.toLowerCase().includes('private') ? (
+                  <div className='flex items-start space-x-3'>
+                    <LockIcon className='w-5 h-5 text-gray-400 mt-1' />
+                    <div>
+                      <div className='font-medium'>Private</div>
+                      <div className='text-sm text-gray-400'>Only members can see who's in the group and what they post.</div>
+                    </div>
                   </div>
-                </div>
-                <div className='flex items-start space-x-3'>
-                  <Eye className='w-5 h-5 text-gray-400 mt-1' />
-                  <div>
-                    <div className='font-medium'>Visible</div>
-                    <div className='text-sm text-gray-400'>Anyone can find this group.</div>
+                ) : (
+                  <div className='flex items-start space-x-3'>
+                    <Globe className='w-5 h-5 text-gray-400 mt-1' />
+                    <div>
+                      <div className='font-medium'>Public</div>
+                      <div className='text-sm text-gray-400'>Anyone can see who's in the group and what they post.</div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
-              <button className='w-full mt-4 text-center py-2 text-blue-400 hover:text-blue-300 transition-colors'>
-                Learn more
-              </button>
             </div>
           </div>
         )}

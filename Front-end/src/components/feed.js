@@ -3,17 +3,6 @@ import fetchProfileImage from "../requests/getProfileImage";
 import Post from "./post";
 
 export default function Feed({ posts, userId }) {
-  const [profileImage, setProfileImage] = useState("noProfile_lswfza"); //default fron cloudinary
-
-  useEffect(() => {
-    fetchProfileImage(userId).then((img) => {
-      setProfileImage(img);
-    });
-  }, [userId]);
-  console.log("Profile Image:", profileImage);
-
-  console.log("userId:", userId);
-
   return (
     <div
       style={{
@@ -31,7 +20,7 @@ export default function Feed({ posts, userId }) {
             key={post.id || post._id}
             post={{
               userName: post.userName,
-              profilePicture: profileImage,
+              profilePicture: post.profilePicture || "/images/noProfile.png",
               textContent: post.text || post.textContent,
               imagePublicId: post.images && post.images.length > 0 ? post.images[0] : null,
               videoPublicId: post.videos && post.videos.length > 0 ? post.videos[0] : null,

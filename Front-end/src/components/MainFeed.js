@@ -2,7 +2,7 @@ import { useMemo, useEffect, useState } from "react";
 import Filters from "./Filters";
 import { useSearchParams } from "react-router-dom";
 import { useAuthContext } from "../Hooks/UseAuthContext";
-import Post from "./post";
+import Feed from "./feed";
 import fetchProfileImage from "../requests/getProfileImage";
 import axios from "axios";
 import UserInfo from "./userInfo";
@@ -60,12 +60,11 @@ const MainFeed = () => {
     const [selectedUserId, setSelectedUserId] = useState(null);
     const address = process.env.REACT_APP_ADDRESS;
     const port = process.env.REACT_APP_PORT;
-    // Filter state managed here
+    // Filter states
     const [month, setMonth] = useState("");
     const [userName, setUserName] = useState("");
     const [hasImage, setHasImage] = useState("");
-
-    // Only fetch posts when user presses search
+          //ONLY AFTER PRESSING SEARCH
     const [pendingFilters, setPendingFilters] = useState({ month: "", userName: "", hasImage: "" });
     const [searchTriggered, setSearchTriggered] = useState(false);
 
@@ -190,25 +189,7 @@ const MainFeed = () => {
             {floatingParticles}
             <div className="flex flex-row items-start pt-24">
                 <div className="flex-1 flex flex-col items-center ml-0 md:ml-2">
-                    {postsWithUserData.length > 0 ? (
-                        postsWithUserData.map((post) => (
-                            <div key={post._id || post.id} className="mb-8">
-                                <Post post={{
-                                    userName: post.userName,
-                                    profilePicture: post.profilePicture,
-                                    textContent: post.text || post.textContent,
-                                    imagePublicId: post.images && post.images.length > 0 ? post.images[0] : null,
-                                    videoPublicId: post.videos && post.videos.length > 0 ? post.videos[0] : null,
-                                    postId: post._id || post.id,
-                                    likes: post.likes,
-                                    userId: post.userId,
-                                    date: post.createdAt,
-                                }} />
-                            </div>
-                        ))
-                    ) : (
-                        <div className="text-center text-xl text-gold/60 mt-20">No posts to show yet.</div>
-                    )}
+                    <Feed posts={postsWithUserData} />
                 </div>
             </div>
             {/* User info modal */}

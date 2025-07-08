@@ -2,14 +2,15 @@
 function Filters({ month, onMonthChange, userName, onUserNameChange, hasImage, onHasImageChange }) {
   return (
     <div className="flex flex-wrap gap-4 items-center justify-center mb-6">
-      
-      <input
-        type="text"
-        value={userName}
-        onChange={e => onUserNameChange(e.target.value)}
-        placeholder="User Name"
-        className="px-3 py-2 rounded border border-gold bg-[#23242a] text-gold"
-      />
+      {userName !== undefined && (
+        <input
+          type="text"
+          value={userName}
+          onChange={e => onUserNameChange(e.target.value)}
+          placeholder="User Name"
+          className="px-3 py-2 rounded border border-gold bg-[#23242a] text-gold"
+        />
+      )}
       <select
         value={month}
         onChange={e => onMonthChange(e.target.value)}
