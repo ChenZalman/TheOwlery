@@ -420,6 +420,62 @@ const GroupPage = () => {
                   </div>
                 )}
               </div>
+              {/* Pending Join Requests (Admin only, under About) */}
+              {isAdmin && group.pendingRequests && group.pendingRequests.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="font-semibold mb-2 text-yellow-300">Pending Join Requests</h4>
+                  <ul className="space-y-2">
+                    {group.pendingRequests.map((userId) => {
+                      const pendingUser = members.find(m => m._id === userId);
+                      return (
+                        <li key={userId} className="flex items-center justify-between bg-gray-700 rounded-lg p-2">
+                          <div className="flex items-center gap-2">
+                            <img src={pendingUser?.profilePicture || '/images/noProfile.png'} alt="profile" className="w-8 h-8 rounded-full object-cover border border-gray-600" />
+                            <span>{pendingUser?.name || userId}</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
+                              onClick={async () => {
+                                try {
+                                  await axios.post(`http://${address}:${port}/api/groups`, {
+                                    command: "approveJoinRequest",
+                                    data: { groupId, userId }
+                                  });
+                                  setGroup(prev => ({
+                                    ...prev,
+                                    membersIds: [...(prev.membersIds || []), userId],
+                                    pendingRequests: prev.pendingRequests.filter(id => id !== userId)
+                                  }));
+                                } catch (err) {
+                                  alert("Failed to approve join request.");
+                                }
+                              }}
+                            >Accept</button>
+                            <button
+                              className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+                              onClick={async () => {
+                                try {
+                                  await axios.post(`http://${address}:${port}/api/groups`, {
+                                    command: "disapproveJoinRequest",
+                                    data: { groupId, userId }
+                                  });
+                                  setGroup(prev => ({
+                                    ...prev,
+                                    pendingRequests: prev.pendingRequests.filter(id => id !== userId)
+                                  }));
+                                } catch (err) {
+                                  alert("Failed to disapprove join request.");
+                                }
+                              }}
+                            >Refuse</button>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         )}

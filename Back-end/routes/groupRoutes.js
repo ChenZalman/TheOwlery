@@ -12,6 +12,36 @@ router.post('/', async (req, res) => {
   const { command, data } = req.body;
   try {
     switch (command) {
+      case 'approveJoinRequest': {
+        // data: { groupId, userId }
+        const { groupId, userId } = data;
+        if (!groupId || !userId) {
+          return res.status(400).json({ message: "Missing groupId or userId" });
+        }
+        const group = await Group.findById(groupId);
+        if (!group) return res.status(404).json({ message: "Group not found" });
+        group.membersIds = group.membersIds || [];
+        group.pendingRequests = group.pendingRequests || [];
+        if (!group.membersIds.includes(userId)) {
+          group.membersIds.push(userId);
+        }
+        group.pendingRequests = group.pendingRequests.filter(uid => uid !== userId);
+        await group.save();
+        return res.json({ message: "User added to group", group });
+      }
+      case 'disapproveJoinRequest': {
+        // data: { groupId, userId }
+        const { groupId, userId } = data;
+        if (!groupId || !userId) {
+          return res.status(400).json({ message: "Missing groupId or userId" });
+        }
+        const group = await Group.findById(groupId);
+        if (!group) return res.status(404).json({ message: "Group not found" });
+        group.pendingRequests = group.pendingRequests || [];
+        group.pendingRequests = group.pendingRequests.filter(uid => uid !== userId);
+        await group.save();
+        return res.json({ message: "Join request disapproved", group });
+      }
       case 'requestJoinGroup': {
         // data: { groupId, userId }
         const { groupId, userId } = data;
