@@ -97,8 +97,12 @@ router.post("/", async (req, res) => {
           gender: data.gender,
           birthDate: data.birthDate,
         });
+        let newUserDB = await User.findOne({ email: data.email});
+        if(newUserDB){
+          return res.status(403).json({message: "Email in use"})
+        }
         const doc = await newUser.save();
-        const newUserDB = doc.toObject();
+        newUserDB = doc.toObject();
         newUserDB.userId = newUserDB._id.toString();
         delete newUserDB._id;
         delete newUserDB.__v;

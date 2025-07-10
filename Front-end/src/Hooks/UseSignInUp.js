@@ -16,14 +16,14 @@ export const UseSignInUp = () => {
 
         try{
             console.log('Form submitted :', formData);
-            debugger;
+            // debugger;
              console.log(`address is: ${address} and the port is: ${port}`)
             const response = await axios.post(`http://${address}:${port}/api/users`,{
                 command:command,
                 data: formData
             })
 
-            const json = await response.data.user
+            const json = await response.data.user    
             console.log(`user returned` , json)
             //save the user to local storage
             localStorage.setItem("user", JSON.stringify(json))
@@ -35,9 +35,9 @@ export const UseSignInUp = () => {
         }catch(err){
             setIsLoading(false)
             if (err.response && err.response.data && err.response.data.error) {
-                setError(err.response.data.error); // Handle server-provided error message
+                setError(err.response.data.message); // Handle server-provided error message
               }
-            alert(err.message)
+            alert(err.response.data.message)
         }
     } 
     return {signInUp,isLoading,error}

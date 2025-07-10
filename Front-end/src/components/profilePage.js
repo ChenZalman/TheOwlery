@@ -149,7 +149,7 @@ const ProfilePage = ({ user }) => {
     if (searchTriggered) {
       fetchPosts();
       setSearchTriggered(false);
-    } else if (user && user.userId && posts.length === 0) {
+    } else if (user && user.userId){// && posts.length === 0) {
       // Initial load
       fetchPosts();
     }

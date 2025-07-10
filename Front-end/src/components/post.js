@@ -5,6 +5,7 @@ import { useAuthContext } from "../Hooks/UseAuthContext";
 import Comment from "./comment";
 import { useNavigate } from 'react-router-dom';
 import UserInfo from './userInfo';
+import { UseSignInUp } from "../Hooks/UseSignInUp";
 
 const CLOUDINARY_NAME = process.env.REACT_APP_CLOUDINARY_NAME;
 
@@ -37,6 +38,7 @@ const Post = ({ post }) => {
   const [commentsList, setCommentsList] = useState([]);
   const [postUserName, setPostUserName] = useState("");
   const [showUserInfo, setShowUserInfo] = useState(false);
+  const { signInUp } = UseSignInUp();
   const navigate = useNavigate();
 
   // Fetch the post user's name by userId
@@ -61,6 +63,7 @@ const Post = ({ post }) => {
   useEffect(() => {
     if (user && Array.isArray(user.likedPosts)) {
       setIsLiked(user.likedPosts.includes(postId));
+      console.log(`postId: ${postId} is in user's list: ${user.likedPosts.includes(postId)}`)
     }
   }, [user, postId]);
 
@@ -103,10 +106,9 @@ const Post = ({ post }) => {
           setLikes(res.data.post.likes);
         }
 
-        // Update user context with new likedPosts array
         const updatedUser = { ...user };
         if (isLiked) {
-          // Remove postId from likedPosts array
+          // filters postId out of likedPosts array
           updatedUser.likedPosts = user.likedPosts.filter((id) => id !== postId);
         } else {
           // Add postId to likedPosts array
@@ -114,6 +116,7 @@ const Post = ({ post }) => {
         }
 
         dispatch({ type: "LOGIN", payload: updatedUser });
+        localStorage.setItem("user", JSON.stringify(updatedUser)) //Saves the updated user to local storage in addition to the DB user
       }
     } catch (err) {
       console.error("Network error:", err);
