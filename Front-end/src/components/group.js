@@ -4,7 +4,6 @@ import {
   Camera,
   FileText,
   Globe,
-  MoreHorizontal,
   Search,
   UserPlus,
 } from "lucide-react";
@@ -145,7 +144,7 @@ useEffect(() => {
     fetchMembers();
   }, [groupId]);
 
-  const tabs = ["Discussion", "Events", "Media", "Members"];
+  const tabs = ["Discussion", "Media", "Members"];
 
   const refreshPosts = async () => {
     try {
@@ -297,9 +296,7 @@ console.log("the besttttttttt",pendingRequests);
               <button className='py-4 px-2 text-gray-400 hover:text-gray-300'>
                 <Search className='w-5 h-5' />
               </button>
-              <button className='py-4 px-2 text-gray-400 hover:text-gray-300'>
-                <MoreHorizontal className='w-5 h-5' />
-              </button>
+              {/* Removed 3 dots button */}
             </div>
           </div>
           {activeTab === "Discussion" ? (

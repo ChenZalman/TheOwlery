@@ -48,7 +48,6 @@ export default function TopBanner() {
               src="/images/owl.png"
               alt="Owl"
               className="w-10 h-10 object-contain drop-shadow-lg mr-2"
-              style={{ filter: "drop-shadow(0 0 8px #e6c47a)" }}
             />
           )}
           Back to Main Station

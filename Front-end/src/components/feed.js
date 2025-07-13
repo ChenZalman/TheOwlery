@@ -31,7 +31,9 @@ export default function Feed({ posts, userId }) {
           />
         ))
       ) : (
-        <Post post={{ textContent: "Nothing to show. Create a post to share!" }} />
+        <div style={{ color: '#e6c47a', textAlign: 'center', fontSize: '1.2rem', marginTop: '2rem' }}>
+          Nothing to show. Create a post to share!
+        </div>
       )}
     </div>
   );
