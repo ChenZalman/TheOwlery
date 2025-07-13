@@ -7,87 +7,11 @@ import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import fetchProfileImage from "../requests/getProfileImage";
 import Filters from "./Filters";
+import RequestsSection from "./RequestsSection";
 
 
 
-function FriendRequestsSection({ friendRequests, accepting, refusing, actionError, handleAcceptFriend, handleRefuseFriend, address, port }) {
-  const [names, setNames] = useState({});
-  const [posts, setPosts] = useState([]);
-      const { user } = useAuthContext();
-  useEffect(() => {
-    const fetchNames = async () => {
-      const newNames = {};
-      for (let i = 0; i < friendRequests.length; i++) {
-        const fromId = friendRequests[i];
-        if (!names[fromId]) {
-          try {
-            const res = await axios.post(`http://${address}:${port}/api/users`, {
-              command: "getUserName",
-              data: { userId: fromId }
-            });
-            newNames[fromId] = res.data.name || fromId;
-          } catch (e) {
-            newNames[fromId] = fromId;
-          }
-        }
-      }
-      setNames(prev => ({ ...prev, ...newNames }));
-    };
-    if (friendRequests.length > 0) fetchNames();
-    // eslint-disable-next-line
-  }, [friendRequests]);
-      const fetchPosts = async (filters) => {
-        if (!user || !user.userId) return;
-        try {
-            // Only include non-empty filters
-            const filterData = { userId: user.userId };
-            Object.entries(filters).forEach(([key, value]) => {
-                if (value !== undefined && value !== null && value !== "") {
-                    filterData[key] = value;
-                }
-            });
-            const res = await axios.post(`http://${address}:${port}/api/posts`, {
-                command: "getFiltered",
-                data: filterData
-            });
-            setPosts(res.data.posts || []);
-        } catch (err) {
-            setPosts([]);
-        }
-    };
-  if (!friendRequests.length) return null;
-  return (
-    <div style={{
-      background: '#23272a',
-      borderRadius: '1rem',
-      padding: '1rem',
-      margin: '1rem 0',
-      border: '1px solid #444',
-    }}>
-      <h2 style={{ color: '#e6c47a', fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '0.5rem' }}>Friend Requests</h2>
-      {friendRequests.map((fromId) => (
-        <div key={fromId} style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-          <span style={{ color: '#e6c47a', fontWeight: 'bold' }}>{names[fromId] || fromId}</span>
-          <button
-            onClick={() => handleAcceptFriend(fromId)}
-            disabled={accepting === fromId}
-            style={{ background: '#22c55e', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.3rem 1rem', fontWeight: 'bold', cursor: 'pointer' }}
-          >
-            {accepting === fromId ? 'Accepting...' : 'Accept'}
-          </button>
-          <button
-            onClick={() => handleRefuseFriend(fromId)}
-            disabled={refusing === fromId}
-            style={{ background: '#ef4444', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.3rem 1rem', fontWeight: 'bold', cursor: 'pointer' }}
-          >
-            {refusing === fromId ? 'Refusing...' : 'Refuse'}
-          </button>
-        </div>
-      ))}
-      {actionError && <div style={{ color: 'red', marginTop: '0.5rem' }}>{actionError}</div>}
-    </div>
-  );
-}
+// FriendRequestsSection removed, now using RequestsSection
    
 const ProfilePage = ({ user }) => {
   const { user: currentUser, dispatch } = useAuthContext();
@@ -356,15 +280,16 @@ const ProfilePage = ({ user }) => {
           </div>
 
           {/* Friend Requests Section */}
-<FriendRequestsSection
-  friendRequests={friendRequests}
+<RequestsSection
+  requests={friendRequests}
   accepting={accepting}
   refusing={refusing}
   actionError={actionError}
-  handleAcceptFriend={handleAcceptFriend}
-  handleRefuseFriend={handleRefuseFriend}
+  handleAccept={handleAcceptFriend}
+  handleRefuse={handleRefuseFriend}
   address={address}
   port={port}
+  title="Friend Requests"
 />
 
           <div style={{

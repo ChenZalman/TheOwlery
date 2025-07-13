@@ -1,5 +1,6 @@
 import axios from "axios";
 import LockIcon from '@mui/icons-material/Lock';
+import RequestsSection from "./RequestsSection";
 import {
   Camera,
   FileText,
@@ -393,8 +394,8 @@ console.log("the besttttttttt",pendingRequests);
         </div>
         {/* Setup Panel */}
         {isAdmin && (
-          <div className='w-80 p-6 bg-gray-800 border-l border-gray-700'>
-            {/* Removed close X button to prevent hiding the setup panel */}
+          <div className='w-[28rem] p-6 bg-gray-800 border-l border-gray-700'>
+
             <div className='mb-4'></div>
             <div className='text-sm text-gray-400 mb-4'></div>
 
@@ -453,74 +454,60 @@ console.log("the besttttttttt",pendingRequests);
                 )}
               </div>
              {isAdmin && pendingRequests.length > 0 && (
-  <div className="mt-6">
-    <h4 className="font-semibold mb-2 text-yellow-300">Pending Join Requests</h4>
-    <ul className="space-y-2">
-      {pendingRequests.map((pendingUser) => (
-        <li key={pendingUser._id} className="flex items-center justify-between bg-gray-700 rounded-lg p-2">
-          <div className="flex items-center gap-2">
-            <img src={pendingUser.profilePicture || '/images/noProfile.png'} alt="profile" className="w-8 h-8 rounded-full object-cover border border-gray-600" />
-            <span>{pendingUser.name || pendingUser._id}</span>
-          </div>
-          <div className="flex gap-2">
-            <button
-              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
-              disabled={accepting === pendingUser._id}
-              onClick={async () => {
-                setAccepting(pendingUser._id);
-                try {
-                  await axios.post(`http://${address}:${port}/api/groups`, {
-                    command: "approveJoinRequest",
-                    data: { groupId, userId: pendingUser._id }
-                  });
-                  setGroup(prev => {
-                    const cleanId = typeof pendingUser._id === 'string' ? pendingUser._id : '';
-                    return {
-                      ...prev,
-                      membersIds: [...(prev.membersIds || []), cleanId],
-                      pendingRequests: (prev.pendingRequests || []).filter(id => {
-                        let idStr = typeof id === 'string' ? id : '';
-                        if (idStr.endsWith('"')) idStr = idStr.slice(0, -1);
-                        let pendingIdStr = cleanId;
-                        if (pendingIdStr.endsWith('"')) pendingIdStr = pendingIdStr.slice(0, -1);
-                        return idStr !== pendingIdStr;
-                      })
-                    };
-                  });
-                } catch (err) {
-                  alert("Failed to approve join request.");
-                } finally {
-                  setAccepting("");
-                }
-              }}
-            >{accepting === pendingUser._id ? "Accepting..." : "Accept"}</button>
-            <button
-              className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-              disabled={refusing === pendingUser._id}
-              onClick={async () => {
-                setRefusing(pendingUser._id);
-                try {
-                  await axios.post(`http://${address}:${port}/api/groups`, {
-                    command: "disapproveJoinRequest",
-                    data: { groupId, userId: pendingUser._id }
-                  });
-                  setGroup(prev => ({
-                    ...prev,
-                    pendingRequests: prev.pendingRequests.filter(id => id !== pendingUser._id)
-                  }));
-                } catch (err) {
-                  alert("Failed to disapprove join request.");
-                } finally {
-                  setRefusing("");
-                }
-              }}
-            >{refusing === pendingUser._id ? "Refusing..." : "Refuse"}</button>
-          </div>
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
+                <RequestsSection
+                  requests={pendingRequests.map(u => u._id)}
+                  accepting={accepting}
+                  refusing={refusing}
+                  actionError={null}
+                  address={address}
+                  port={port}
+                  title="Pending Join Requests"
+                  handleAccept={async (userId) => {
+                    setAccepting(userId);
+                    try {
+                      await axios.post(`http://${address}:${port}/api/groups`, {
+                        command: "approveJoinRequest",
+                        data: { groupId, userId }
+                      });
+                      setGroup(prev => {
+                        const cleanId = typeof userId === 'string' ? userId : '';
+                        return {
+                          ...prev,
+                          membersIds: [...(prev.membersIds || []), cleanId],
+                          pendingRequests: (prev.pendingRequests || []).filter(id => {
+                            let idStr = typeof id === 'string' ? id : '';
+                            if (idStr.endsWith('"')) idStr = idStr.slice(0, -1);
+                            let pendingIdStr = cleanId;
+                            if (pendingIdStr.endsWith('"')) pendingIdStr = pendingIdStr.slice(0, -1);
+                            return idStr !== pendingIdStr;
+                          })
+                        };
+                      });
+                    } catch (err) {
+                      alert("Failed to approve join request.");
+                    } finally {
+                      setAccepting("");
+                    }
+                  }}
+                  handleRefuse={async (userId) => {
+                    setRefusing(userId);
+                    try {
+                      await axios.post(`http://${address}:${port}/api/groups`, {
+                        command: "disapproveJoinRequest",
+                        data: { groupId, userId }
+                      });
+                      setGroup(prev => ({
+                        ...prev,
+                        pendingRequests: prev.pendingRequests.filter(id => id !== userId)
+                      }));
+                    } catch (err) {
+                      alert("Failed to disapprove join request.");
+                    } finally {
+                      setRefusing("");
+                    }
+                  }}
+                />
+              )}
             </div>
           </div>
         )}
