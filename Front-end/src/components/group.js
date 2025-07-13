@@ -33,6 +33,8 @@ const GroupPage = () => {
   const [fullScreenImage, setFullScreenImage] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [pendingRequests, setPendingRequests] = useState([]);
+  const [accepting, setAccepting] = useState("");
+  const [refusing, setRefusing] = useState("");
  const address = process.env.REACT_APP_ADDRESS;
  const port = process.env.REACT_APP_PORT;
   useEffect(() => {
@@ -463,7 +465,9 @@ console.log("the besttttttttt",pendingRequests);
           <div className="flex gap-2">
             <button
               className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
+              disabled={accepting === pendingUser._id}
               onClick={async () => {
+                setAccepting(pendingUser._id);
                 try {
                   await axios.post(`http://${address}:${port}/api/groups`, {
                     command: "approveJoinRequest",
@@ -485,12 +489,16 @@ console.log("the besttttttttt",pendingRequests);
                   });
                 } catch (err) {
                   alert("Failed to approve join request.");
+                } finally {
+                  setAccepting("");
                 }
               }}
-            >Accept</button>
+            >{accepting === pendingUser._id ? "Accepting..." : "Accept"}</button>
             <button
               className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+              disabled={refusing === pendingUser._id}
               onClick={async () => {
+                setRefusing(pendingUser._id);
                 try {
                   await axios.post(`http://${address}:${port}/api/groups`, {
                     command: "disapproveJoinRequest",
@@ -502,9 +510,11 @@ console.log("the besttttttttt",pendingRequests);
                   }));
                 } catch (err) {
                   alert("Failed to disapprove join request.");
+                } finally {
+                  setRefusing("");
                 }
               }}
-            >Refuse</button>
+            >{refusing === pendingUser._id ? "Refusing..." : "Refuse"}</button>
           </div>
         </li>
       ))}
