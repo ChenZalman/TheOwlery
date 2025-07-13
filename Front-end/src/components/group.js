@@ -80,11 +80,7 @@ useEffect(() => {
     try {
       const users = [];
       for (let userId of group.pendingRequests) {
-        // Handle MongoDB ObjectId format: { $oid: "..." }
-        if (userId && typeof userId === 'object' && userId.$oid) {
-          userId = userId.$oid;
-        }
-        // Remove accidental trailing quote if present (data bug)
+        // Assume userId is always a string (no $oid)
         if (typeof userId === 'string' && userId.endsWith('"')) {
           userId = userId.slice(0, -1);
         }
@@ -474,16 +470,16 @@ console.log("the besttttttttt",pendingRequests);
                     data: { groupId, userId: pendingUser._id }
                   });
                   setGroup(prev => {
-                    // Remove from pendingRequests and add to membersIds
-                    const cleanId = typeof pendingUser._id === 'string' ? pendingUser._id : (pendingUser._id && pendingUser._id.$oid ? pendingUser._id.$oid : '');
+                    const cleanId = typeof pendingUser._id === 'string' ? pendingUser._id : '';
                     return {
                       ...prev,
                       membersIds: [...(prev.membersIds || []), cleanId],
                       pendingRequests: (prev.pendingRequests || []).filter(id => {
-                        let idStr = id;
-                        if (id && typeof id === 'object' && id.$oid) idStr = id.$oid;
-                        if (typeof idStr === 'string' && idStr.endsWith('"')) idStr = idStr.slice(0, -1);
-                        return idStr !== cleanId;
+                        let idStr = typeof id === 'string' ? id : '';
+                        if (idStr.endsWith('"')) idStr = idStr.slice(0, -1);
+                        let pendingIdStr = cleanId;
+                        if (pendingIdStr.endsWith('"')) pendingIdStr = pendingIdStr.slice(0, -1);
+                        return idStr !== pendingIdStr;
                       })
                     };
                   });

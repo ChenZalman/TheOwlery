@@ -25,7 +25,14 @@ router.post('/', async (req, res) => {
         if (!group.membersIds.includes(userId)) {
           group.membersIds.push(userId);
         }
-        group.pendingRequests = group.pendingRequests.filter(uid => uid !== userId);
+        // Sanitize both uid and userId for comparison
+        function normalizeId(id) {
+          if (id && typeof id === 'object' && id.$oid) id = id.$oid;
+          if (typeof id === 'string' && id.endsWith('"')) id = id.slice(0, -1);
+          return String(id);
+        }
+        const normalizedUserId = normalizeId(userId);
+        group.pendingRequests = group.pendingRequests.filter(uid => normalizeId(uid) !== normalizedUserId);
         await group.save();
         return res.json({ message: "User added to group", group });
       }
