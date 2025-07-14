@@ -1,4 +1,5 @@
 import axios from "axios";
+import SearchPostsModal from "./SearchPostsModal";
 import LockIcon from '@mui/icons-material/Lock';
 import RequestsSection from "./RequestsSection";
 import {
@@ -36,6 +37,9 @@ const GroupPage = () => {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [accepting, setAccepting] = useState("");
   const [refusing, setRefusing] = useState("");
+  const [showSearchModal, setShowSearchModal] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
  const address = process.env.REACT_APP_ADDRESS;
  const port = process.env.REACT_APP_PORT;
   useEffect(() => {
@@ -193,6 +197,40 @@ console.log("the besttttttttt",pendingRequests);
     []
   );
 
+  const handleSearchPosts = async () => {
+    // Debug: log current searchText and groupId before sending
+    console.log("handleSearchPosts called with:", { groupId, searchText });
+    try {
+      const res = await axios.post(`http://${address}:${port}/api/groups`, {
+        command: "searchByText",
+        data: { groupId: groupId, text: searchText }
+      });
+      
+      // Fetch user names for each post
+      const postsWithUserNames = await Promise.all((res.data.posts || []).map(async post => {
+        try {
+          const userRes = await axios.post(`http://${address}:${port}/api/users`, {
+            command: "getUserName",
+            data: { userId: post.userId }
+          });
+          return {
+            ...post,
+            userName: userRes.data.name || 'Unknown User'
+          };
+        } catch (err) {
+          return {
+            ...post,
+            userName: 'Unknown User'
+          };
+        }
+      }));
+      
+      setSearchResults(postsWithUserNames);
+    } catch (err) {
+      setSearchResults([]);
+    }
+  };
+
   if (!group) {
     return <div className='min-h-screen flex items-center justify-center text-gray-400'>Loading group...</div>;
   }
@@ -292,12 +330,22 @@ console.log("the besttttttttt",pendingRequests);
                 </button>
               ))}
               <div className='flex-1'></div>
-              <button className='py-4 px-2 text-gray-400 hover:text-gray-300'>
-                <Search className='w-5 h-5' />
-              </button>
-              {/* Removed 3 dots button */}
+              {isAdmin && (
+                <button className='py-4 px-2 text-gray-400 hover:text-gray-300' onClick={() => setShowSearchModal(true)}>
+                  <Search className='w-5 h-5' />
+                </button>
+              )}
             </div>
           </div>
+          <SearchPostsModal
+            open={showSearchModal}
+            onClose={() => { setShowSearchModal(false); setSearchText(""); setSearchResults([]); }}
+            onSearch={handleSearchPosts}
+            searchResults={searchResults}
+            loading={false}
+            searchText={searchText}
+            setSearchText={setSearchText}
+          />
           {activeTab === "Discussion" ? (
             <div className='p-6 border-b border-gray-700'>
               {isMember ? (

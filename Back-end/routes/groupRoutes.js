@@ -260,6 +260,22 @@ case 'getUserInvites': {
   return res.json({ groups });
 }
  
+      case 'searchByText': {
+        // data: { groupId, text }
+        const { groupId, text } = data;
+        if (!groupId || !text) {
+          return res.status(400).json({ message: "Missing groupId or text" });
+        }
+        const group = await Group.findById(groupId);
+        if (!group) return res.status(404).json({ message: "Group not found" });
+        const Post = mongoose.model('Post');
+        // Find posts by IDs in group.postsId and text match
+        const posts = await Post.find({
+          _id: { $in: group.postsId },
+          text: { $regex: text, $options: 'i' }
+        });
+        return res.json({ posts });
+      }
       default: {
         return res.status(400).json({ message: "No valid command was found" });
       }
