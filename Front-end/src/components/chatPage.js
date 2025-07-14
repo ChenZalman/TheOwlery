@@ -181,7 +181,7 @@ const Chat = () => {
           >
             <input
               type="text"
-              className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 text-black placeholder-gray-500"
               placeholder={selectedFriend ? "Type your message..." : "Select a friend to chat"}
               value={input}
               onChange={(e) => setInput(e.target.value)}
