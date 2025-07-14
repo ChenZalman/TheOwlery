@@ -9,9 +9,6 @@ import fetchProfileImage from "../requests/getProfileImage";
 import Filters from "./Filters";
 import RequestsSection from "./RequestsSection";
 
-
-
-// FriendRequestsSection removed, now using RequestsSection
    
 const ProfilePage = ({ user }) => {
   const { user: currentUser, dispatch } = useAuthContext();

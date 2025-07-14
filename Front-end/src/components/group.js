@@ -17,7 +17,7 @@ import DescriptionModal from "./popups/groupPage/description";
 import InviteFriendsModal from "./popups/groupPage/invitePeopleToGroup";
 import Post from "./post";
 import GroupPostCreator from "./GroupPostCreator";
-
+import Filters from "./Filters";
 const GroupPage = () => {
   const { groupId } = useParams();
   const [group, setGroup] = useState(null);
@@ -392,7 +392,7 @@ console.log("the besttttttttt",pendingRequests);
             <div className='text-gray-400'>This group is private. Join to see posts.</div>
           )}
         </div>
-        {/* Setup Panel */}
+        {/* Admin section */}
         {isAdmin && (
           <div className='w-[28rem] p-6 bg-gray-800 border-l border-gray-700'>
 
