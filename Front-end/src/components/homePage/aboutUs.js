@@ -25,7 +25,7 @@ const AboutUs = ({ onClose }) => {
           Welcome to <span className="font-bold text-yellow-300">The Owlery</span>!
         </p>
         <p className="text-base text-yellow-50 mb-4 font-sans">
-          We are <span className="font-semibold text-yellow-200">Tamara</span> and <span className="font-semibold text-yellow-200">Chen</span>—two devoted Harry Potter fans who believe magic is best when shared.
+          We are <span className="font-semibold text-yellow-200">Tamara</span> and <span className="font-semibold text-yellow-200">Chen</span> two devoted Harry Potter fans who believe magic is best when shared.
           <br /><br />
           Our dream is to create a cozy corner for every witch, wizard, and magical creature to share their stories, spells.
         </p>
