@@ -13,9 +13,7 @@ async function fetchProfileImage(userId) {
     data: { userId },
   });
   let img = res.data.profilePicture;
-  // console.log("[fetchProfileImage] profilePicture:", img);
   if (!img || img === "") return defaultProfileImage;
-  // If it's already a URL, return as is
   return img;
 
 

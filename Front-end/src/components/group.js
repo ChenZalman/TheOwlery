@@ -172,7 +172,6 @@ useEffect(() => {
       setPosts([]);
     }
   };
-console.log("the besttttttttt",pendingRequests);
   const magicalSparkles = useMemo(
     () => (
       <div className='absolute inset-0 pointer-events-none z-0'>
@@ -196,8 +195,7 @@ console.log("the besttttttttt",pendingRequests);
   );
 
   const handleSearchPosts = async () => {
-    // Debug: log current searchText and groupId before sending
-    console.log("handleSearchPosts called with:", { groupId, searchText });
+ 
     try {
       const res = await axios.post(`http://${address}:${port}/api/groups`, {
         command: "searchByText",

@@ -21,11 +21,6 @@ export default function BarPlot({
   // Map numeric weekday to string label
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  const parsedData = data.map(d => ({
-    x: daysOfWeek[new Date(d.x).getDay()],
-    y: d.y
-  }));
-
   const grouped = d3.rollups(
     data,
     v => d3.sum(v, d => d.y), // sum y values

@@ -39,23 +39,19 @@ const Chat = () => {
   const handleSend = (e) => {
     e.preventDefault();
     if (input.trim() === "" || !selectedFriend) return;
-    // Prevent local echo, rely only on socket event for rendering
     socket.emit('chat message', { userid: user.userId, friendid: selectedFriend._id, content: input });
     setInput("");
   };
 
   useEffect(() => {
     if (!selectedFriend) return;
-    // To avoid duplicate listeners, always clear before adding
     socket.off('chat message');
     const handler = (msg) => {
-      // Only add message if it is for the current chat
       if (
         (msg.userid === user.userId && msg.friendid === selectedFriend._id) ||
         (msg.userid === selectedFriend._id && msg.friendid === user.userId)
       ) {
         setMessages(prev => {
-          // Prevent duplicate messages by checking content and sender
           if (
             prev.length > 0 &&
             prev[prev.length - 1].content === msg.content &&
@@ -87,7 +83,7 @@ const Chat = () => {
 
   return (
     <div className="min-h-screen text-gold relative overflow-hidden font-serif" style={{ backgroundColor: "#1D1E22" }}>
-      {/* Floating particles and sparkles */}
+      {/* Floating stars */}
       {useMemo(() => (
         <>
           <div className="absolute inset-0 pointer-events-none z-0">

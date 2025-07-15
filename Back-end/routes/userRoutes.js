@@ -16,7 +16,7 @@ const Post = mongoose.models._Post || mongoose.model("Post", postSchema);
 
 router.post("/", async (req, res) => {
   const { command, data } = req.body;
-  // console.log(`command is: ${command} and data is: ${JSON.stringify(data)}`);
+  
 
   try {
     switch (command) {
@@ -127,7 +127,7 @@ router.post("/", async (req, res) => {
         if (user.profileImage) {
           const profileImageId = user.profileImage.trim();
           profilePictureUrl = `https://res.cloudinary.com/${CLOUDINARY_NAME}/image/upload/${profileImageId}`;
-          console.log("Profile picture URL backend:", profilePictureUrl);
+          
         }
 
         return res.json({
