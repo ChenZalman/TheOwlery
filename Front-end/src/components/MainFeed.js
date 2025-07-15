@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Filters from "./Filters";
 import { useSearchParams } from "react-router-dom";
 import { useAuthContext } from "../Hooks/UseAuthContext";
@@ -6,6 +6,7 @@ import Feed from "./feed";
 import fetchProfileImage from "../requests/getProfileImage";
 import axios from "axios";
 import UserInfo from "./userInfo";
+import Stars from "./Stars";
 
 
 const MainFeed = () => {
