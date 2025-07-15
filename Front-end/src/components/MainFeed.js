@@ -29,7 +29,7 @@ const MainFeed = () => {
         ),
         []
     );
-    const magicalSparkles = useMemo(
+    const stars = useMemo(
         () => (
             <div className="absolute inset-0 pointer-events-none z-0">
                 {[...Array(8)].map((_, i) => (
@@ -185,7 +185,7 @@ const MainFeed = () => {
                     ))}
                 </div>
             )}
-            {magicalSparkles}
+            {stars}
             {floatingParticles}
             <div className="flex flex-row items-start pt-24">
                 <div className="flex-1 flex flex-col items-center ml-0 md:ml-2">

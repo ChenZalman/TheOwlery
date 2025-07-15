@@ -49,7 +49,7 @@ export default function SignUpPage() {
     []
   );
 
-  const magicalSparkles = useMemo(
+  const stars = useMemo(
     () => (
       <div className="absolute inset-0 pointer-events-none z-0">
         {[...Array(8)].map((_, i) => (
@@ -78,7 +78,7 @@ export default function SignUpPage() {
         rel="stylesheet"
       />
       {floatingParticles}
-      {magicalSparkles}
+      {stars}
 
       {/* Main content */}
       <div

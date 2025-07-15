@@ -31,7 +31,7 @@ const AnalyticsPage = ({ user }) => {
     ),
     []
   );
-  const magicalSparkles = useMemo(
+  const stars = useMemo(
     () => (
       <div className="absolute inset-0 pointer-events-none z-0">
         {[...Array(8)].map((_, i) => (
@@ -95,7 +95,7 @@ const AnalyticsPage = ({ user }) => {
       className="min-h-screen text-gold relative overflow-hidden font-serif"
       style={{ backgroundColor: "#1D1E22" }}
     >
-      {magicalSparkles}
+      {stars}
       {floatingParticles}
       <div className="relative z-10 px-4 py-8 max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-6 text-gold text-center">

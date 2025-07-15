@@ -172,7 +172,7 @@ useEffect(() => {
       setPosts([]);
     }
   };
-  const magicalSparkles = useMemo(
+  const stars = useMemo(
     () => (
       <div className='absolute inset-0 pointer-events-none z-0'>
         {[...Array(8)].map((_, i) => (
@@ -250,7 +250,7 @@ useEffect(() => {
 
   return (
     <div className='min-h-screen text-white relative overflow-hidden' style={{ backgroundColor: "#1c1e21" }}>
-      {magicalSparkles}
+      {stars}
       {/* Header with Illustration */}
       <div className='relative h-64 bg-gradient-to-r from-orange-400 via-pink-400 to-purple-500 overflow-hidden'>
         <div className='absolute inset-0 bg-gradient-to-b from-transparent to-gray-900/20'>

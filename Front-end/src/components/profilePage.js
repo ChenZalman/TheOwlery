@@ -147,7 +147,7 @@ const ProfilePage = ({ user }) => {
     []
   );
 
-  const magicalSparkles = useMemo(
+  const stars = useMemo(
     () => (
       <div className="absolute inset-0 pointer-events-none z-0">
         {[...Array(8)].map((_, i) => (
@@ -177,7 +177,7 @@ const ProfilePage = ({ user }) => {
         rel="stylesheet"
       />
       {floatingParticles}
-      {magicalSparkles}
+      {stars}
 
       {/* Main content */}
       <div
