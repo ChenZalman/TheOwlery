@@ -108,7 +108,7 @@ export default function InviteFriendsModal({ userId, onClose , groupId }) {
                 alt={friend.name}
                 className="w-10 h-10 rounded-full object-cover border border-gray-300"
               />
-              <span className="font-medium text-gray-800">{friend.name}</span>
+              <span className="font-medium text-white">{friend.name}</span>
               {selected.includes(friend.userId || friend._id) && (
                 <span className="ml-auto text-blue-600 font-bold">✓</span>
               )}
