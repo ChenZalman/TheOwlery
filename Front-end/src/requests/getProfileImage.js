@@ -16,9 +16,9 @@ async function fetchProfileImage(userId) {
   // console.log("[fetchProfileImage] profilePicture:", img);
   if (!img || img === "") return defaultProfileImage;
   // If it's already a URL, return as is
-  if (img.startsWith("http://") || img.startsWith("https://")) return img;
-  // Otherwise, treat as Cloudinary public ID
-  return `https://res.cloudinary.com/${cloudName}/image/upload/${img}.jpg`;
+  return img;
+
+
 }
 
 export default fetchProfileImage;

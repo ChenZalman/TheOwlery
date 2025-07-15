@@ -23,8 +23,6 @@ const GroupPage = () => {
   const { groupId } = useParams();
   const [group, setGroup] = useState(null);
   const [activeTab, setActiveTab] = useState("Discussion");
-  const [showSetupPanel, setShowSetupPanel] = useState(true);
-  const [liked, setLiked] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showCoverPicker, setShowCoverPicker] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
