@@ -1,7 +1,8 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import BarPlot from "./barPlot";
 import PieChart from "./pieChart";
+import Stars from "../Stars";
 
 const AnalyticsPage = ({ user }) => {
   const [likesData, setLikesData] = useState([]);
@@ -11,47 +12,6 @@ const AnalyticsPage = ({ user }) => {
   const [posts, setPosts] = useState([]);
   const address = process.env.REACT_APP_ADDRESS;
   const port = process.env.REACT_APP_PORT;
-  const floatingParticles = useMemo(
-    () => (
-      <div className="absolute inset-0 pointer-events-none z-0">
-        {[...Array(15)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-gold rounded-full opacity-30"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 2}s`,
-              boxShadow: "0 0 10px #e6c47a",
-            }}
-          ></div>
-        ))}
-      </div>
-    ),
-    []
-  );
-  const stars = useMemo(
-    () => (
-      <div className="absolute inset-0 pointer-events-none z-0">
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={`sparkle-${i}`}
-            className="absolute text-gold text-xs opacity-60"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animation: `sparkle ${2 + Math.random() * 3}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 2}s`,
-            }}
-          >
-            ✨
-          </div>
-        ))}
-      </div>
-    ),
-    []
-  );
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -95,8 +55,7 @@ const AnalyticsPage = ({ user }) => {
       className="min-h-screen text-gold relative overflow-hidden font-serif"
       style={{ backgroundColor: "#1D1E22" }}
     >
-      {stars}
-      {floatingParticles}
+      <Stars />
       <div className="relative z-10 px-4 py-8 max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-6 text-gold text-center">
           Number of Likes for posts based on days of the week
@@ -111,9 +70,6 @@ const AnalyticsPage = ({ user }) => {
         </h1>
         {friends && <PieChart data={postsCount} />}
       </div>
-      
-        
-      
     </div>
   );
 };

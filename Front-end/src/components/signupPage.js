@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { UseSignInUp } from '../Hooks/UseSignInUp';
+import Stars from './Stars';
 
 export default function SignUpPage() {
   const [visible, setVisible] = useState(false);
@@ -28,48 +29,7 @@ export default function SignUpPage() {
     await signInUp(formData, "signup");
   };
 
-  const floatingParticles = useMemo(
-    () => (
-      <div className="absolute inset-0 pointer-events-none z-0">
-        {[...Array(15)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-gold rounded-full opacity-30"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 2}s`,
-              boxShadow: "0 0 10px #e6c47a",
-            }}
-          ></div>
-        ))}
-      </div>
-    ),
-    []
-  );
 
-  const stars = useMemo(
-    () => (
-      <div className="absolute inset-0 pointer-events-none z-0">
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={`sparkle-${i}`}
-            className="absolute text-gold text-xs opacity-60"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animation: `sparkle ${2 + Math.random() * 3}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 2}s`,
-            }}
-          >
-            ✨
-          </div>
-        ))}
-      </div>
-    ),
-    []
-  );
 
   return (
     <div className="min-h-screen text-gold relative overflow-hidden font-serif" style={{ backgroundColor: "#1D1E22" }}>
@@ -77,8 +37,7 @@ export default function SignUpPage() {
         href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=IM+Fell+English+SC&display=swap"
         rel="stylesheet"
       />
-      {floatingParticles}
-      {stars}
+      <Stars />
 
       {/* Main content */}
       <div

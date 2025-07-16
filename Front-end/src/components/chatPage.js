@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useAuthContext } from "../Hooks/UseAuthContext";
-import io from "socket.io-client"
+import io from "socket.io-client";
+import Stars from "./Stars";
 
 
 const address = process.env.REACT_APP_ADDRESS;
@@ -83,42 +84,7 @@ const Chat = () => {
 
   return (
     <div className="min-h-screen text-gold relative overflow-hidden font-serif" style={{ backgroundColor: "#1D1E22" }}>
-      {/* Floating stars */}
-      {useMemo(() => (
-        <>
-          <div className="absolute inset-0 pointer-events-none z-0">
-            {[...Array(15)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute w-2 h-2 bg-gold rounded-full opacity-30"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
-                  animationDelay: `${Math.random() * 2}s`,
-                  boxShadow: "0 0 10px #e6c47a",
-                }}
-              ></div>
-            ))}
-          </div>
-          <div className="absolute inset-0 pointer-events-none z-0">
-            {[...Array(8)].map((_, i) => (
-              <div
-                key={`sparkle-${i}`}
-                className="absolute text-gold text-xs opacity-60"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  animation: `sparkle ${2 + Math.random() * 3}s ease-in-out infinite`,
-                  animationDelay: `${Math.random() * 2}s`,
-                }}
-              >
-                ✨
-              </div>
-            ))}
-          </div>
-        </>
-      ), [])}
+      <Stars />
       <div className="flex flex-col md:flex-row h-[80vh] max-w-4xl mx-auto bg-white rounded-xl shadow-lg border border-gray-200 mt-8 relative z-10">
         {/* Friends List */}
         <div className="w-full md:w-1/3 border-r bg-gray-50 rounded-l-xl p-4 overflow-y-auto">

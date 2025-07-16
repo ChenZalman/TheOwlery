@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import Filters from "./Filters";
 import { useSearchParams } from "react-router-dom";
 import { useAuthContext } from "../Hooks/UseAuthContext";
@@ -10,47 +10,6 @@ import Stars from "./Stars";
 
 
 const MainFeed = () => {
-    const floatingParticles = useMemo(
-        () => (
-            <div className="absolute inset-0 pointer-events-none z-0">
-                {[...Array(15)].map((_, i) => (
-                    <div
-                        key={i}
-                        className="absolute w-2 h-2 bg-gold rounded-full opacity-30"
-                        style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 100}%`,
-                            animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
-                            animationDelay: `${Math.random() * 2}s`,
-                            boxShadow: "0 0 10px #e6c47a",
-                        }}
-                    ></div>
-                ))}
-            </div>
-        ),
-        []
-    );
-    const stars = useMemo(
-        () => (
-            <div className="absolute inset-0 pointer-events-none z-0">
-                {[...Array(8)].map((_, i) => (
-                    <div
-                        key={`sparkle-${i}`}
-                        className="absolute text-gold text-xs opacity-60"
-                        style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 100}%`,
-                            animation: `sparkle ${2 + Math.random() * 3}s ease-in-out infinite`,
-                            animationDelay: `${Math.random() * 2}s`,
-                        }}
-                    >
-                        ✨
-                    </div>
-                ))}
-            </div>
-        ),
-        []
-    );
 
     const { user } = useAuthContext();
     const [posts, setPosts] = useState([]);
@@ -186,8 +145,7 @@ const MainFeed = () => {
                     ))}
                 </div>
             )}
-            {stars}
-            {floatingParticles}
+            <Stars />
             <div className="flex flex-row items-start pt-24">
                 <div className="flex-1 flex flex-col items-center ml-0 md:ml-2">
                     <Feed posts={postsWithUserData} />
