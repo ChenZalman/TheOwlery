@@ -25,7 +25,6 @@ const HomePage = () => {
         }`}
       >
         <div className="flex flex-col md:flex-row items-center justify-center mb-8 relative gap-8">
-          {/* Owl with glowing circle behind */}
           <div className="relative w-[28rem] h-[28rem] flex items-center justify-center">
            
 
@@ -59,7 +58,6 @@ const HomePage = () => {
           </p>
         </div>
 
-        {/* CTA */}
         <div className="text-center space-y-6">
         <button
         className="group px-12 py-5 bg-gradient-to-r from-yellow-700 to-silver-700 text-gold font-bold text-xl rounded-full border-2 border-gold/50 hover:border-gold hover:scale-110 hover:shadow-[0_0_30px_#e6c47a] transition-all duration-500 transform hover:-translate-y-1"
