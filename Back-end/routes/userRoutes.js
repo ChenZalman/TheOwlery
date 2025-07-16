@@ -202,6 +202,27 @@ router.post("/", async (req, res) => {
         const friends = await User.find({ _id: { $in: user.friendsId } }, { name: 1, _id: 1 });
         return res.json({ friends });
       }
+      case "unfriend": {
+        const { userId, friendId } = data;
+        if (!userId || !friendId) {
+          return res.status(400).json({ message: "Missing userId or friendId" });
+        }
+        // Remove from each other's friends lists
+        await User.findByIdAndUpdate(userId, { $pull: { friendsId: friendId } });
+        await User.findByIdAndUpdate(friendId, { $pull: { friendsId: userId } });
+        
+        // Get the updated user data to send back
+        const updatedUser = await User.findById(friendId);
+        if (!updatedUser) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        const userObj = updatedUser.toObject();
+        userObj.userId = userObj._id.toString();
+        delete userObj._id;
+        delete userObj.__v;
+        
+        return res.json({ message: "Friend removed", user: userObj });
+      }
 
       default: {
         return res.status(400).json({ message: "Invalid command" });

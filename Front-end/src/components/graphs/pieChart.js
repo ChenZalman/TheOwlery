@@ -5,7 +5,7 @@ export default function PieChart({
   data,
   width = 400,
   height = 400,
-  innerRadius = 0, // >0 for donut chart
+  innerRadius = 0, 
   outerRadius = 150
 }) {
   const color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -14,7 +14,7 @@ export default function PieChart({
     const grouped = d3.rollups(
       data,
       v => ({
-        name: v[0].name, // name is assumed to be consistent for each ID
+        name: v[0].name, 
         value: d3.sum(v, d => d.y)
       }),
       d => d.x

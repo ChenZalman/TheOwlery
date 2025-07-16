@@ -18,7 +18,6 @@ export default function BarPlot({
      const gx = useRef();
   const gy = useRef();
 
-  // Map numeric weekday to string label
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   const grouped = d3.rollups(
@@ -27,7 +26,6 @@ export default function BarPlot({
     d => daysOfWeek[new Date(d.x).getDay()]
   );
 
-  // Fill in missing days with 0
   const valuesByDay = daysOfWeek.map(day => {
     const found = grouped.find(([k]) => k === day);
     return { day, value: found ? found[1] : 0 };

@@ -10,6 +10,7 @@ const UserInfo = ({ userId, open, onClose }) => {
   const [sendingRequest, setSendingRequest] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [addFriendError, setAddFriendError] = useState("");
+  const [unfriending, setUnfriending] = useState(false);
   const address = process.env.REACT_APP_ADDRESS;
   const port = process.env.REACT_APP_PORT;
  
@@ -27,6 +28,7 @@ const UserInfo = ({ userId, open, onClose }) => {
           const img = await fetchProfileImage(userData.userId);
           userData = { ...userData, profilePicture: img };
         }
+        console.log('Fetched user data:', userData);
         setUser(userData);
       } catch (err) {
         setUser(null);
@@ -55,7 +57,35 @@ const UserInfo = ({ userId, open, onClose }) => {
     }
   };
 
-
+  // Handle unfriend
+  const handleUnfriend = async () => {
+    setUnfriending(true);
+    try {
+      await axios.post(`http://${address}:${port}/api/users`, {
+        command: "unfriend",
+        data: { userId: currentUser.userId, friendId: userId },
+      });
+      // Fetch fresh user data after unfriending
+      const res = await axios.post(`http://${address}:${port}/api/users`, {
+        command: 'update',
+        data: { userId },
+      });
+      if (res.data.user) {
+        const updatedUserData = res.data.user;
+        const img = await fetchProfileImage(updatedUserData.userId);
+        console.log('Updated user data after unfriend:', updatedUserData);
+        setUser({
+          ...updatedUserData,
+          profilePicture: img
+        });
+      }
+      setRequestSent(false); // Reset request sent state
+    } catch (err) {
+      console.error("Failed to unfriend:", err);
+    } finally {
+      setUnfriending(false);
+    }
+  };
 
   // Format dates
   const formatDate = (dateStr) => {
@@ -95,24 +125,30 @@ const UserInfo = ({ userId, open, onClose }) => {
               <div className="text-xl font-semibold mb-1">{user.name}</div>
             </div>
             <div className="space-y-3 text-lg">
-              {/* Friend request logic */}
-              {currentUser && user && currentUser.userId !== userId &&
-                !(user.friendsId || []).includes(currentUser.userId) &&
-                !((user.friendRequests || []).includes(currentUser.userId)) &&
-                !requestSent && (
+              {/* Friend/Unfriend logic */}
+              {currentUser && user && currentUser.userId !== userId && (
                 <div className="mb-3">
-                  <button
-                    onClick={handleSendFriendRequest}
-                    disabled={sendingRequest}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-semibold"
-                  >
-                    {sendingRequest ? "Sending..." : "Send Friend Request"}
-                  </button>
+                  {Array.isArray(user.friendsId) && user.friendsId.includes(currentUser.userId) ? (
+                    <button
+                      onClick={handleUnfriend}
+                      disabled={unfriending}
+                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors font-semibold w-full"
+                    >
+                      {unfriending ? "Removing..." : "Unfriend"}
+                    </button>
+                  ) : Array.isArray(user.friendRequests) && user.friendRequests.includes(currentUser.userId) || requestSent ? (
+                    <div className="text-blue-400">Friend request sent</div>
+                  ) : (
+                    <button
+                      onClick={handleSendFriendRequest}
+                      disabled={sendingRequest}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-semibold w-full"
+                    >
+                      {sendingRequest ? "Sending..." : "Send Friend Request"}
+                    </button>
+                  )}
                   {addFriendError && <div className="text-red-400 mt-2">{addFriendError}</div>}
                 </div>
-              )}
-              {((user.friendRequests || []).includes(currentUser?.userId) || requestSent) && (
-                <div className="mb-3 text-blue-400">Friend request sent</div>
               )}
               <div><span className="font-semibold text-gray-300">Birthdate:</span> {formatDate(user.birthDate)}</div>
               <div><span className="font-semibold text-gray-300">Gender:</span> {user.gender || '-'}</div>
