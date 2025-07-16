@@ -10,9 +10,6 @@ const UserInfo = ({ userId, open, onClose }) => {
   const [sendingRequest, setSendingRequest] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [addFriendError, setAddFriendError] = useState("");
-  const [accepting, setAccepting] = useState(false);
-  const [refusing, setRefusing] = useState(false);
-  const [actionError, setActionError] = useState("");
   const address = process.env.REACT_APP_ADDRESS;
   const port = process.env.REACT_APP_PORT;
  
@@ -58,38 +55,7 @@ const UserInfo = ({ userId, open, onClose }) => {
     }
   };
 
-  // Accept friend request handler
-  const handleAcceptFriend = async () => {
-    setAccepting(true);
-    setActionError("");
-    try {
-      await axios.post(`http://${address}:${port}/api/users`, {
-        command: "acceptFriendRequest",
-        data: { userId: currentUser.userId, fromUserId: userId },
-      });
-      setUser((prev) => ({ ...prev, friendsId: [...(prev.friendsId || []), userId], friendRequests: (prev.friendRequests || []).filter(id => id !== userId) }));
-    } catch (err) {
-      setActionError("Failed to accept friend request.");
-    } finally {
-      setAccepting(false);
-    }
-  };
-  // Refuse friend request handler
-  const handleRefuseFriend = async () => {
-    setRefusing(true);
-    setActionError("");
-    try {
-      await axios.post(`http://${address}:${port}/api/users`, {
-        command: "refuseFriendRequest",
-        data: { userId: currentUser.userId, fromUserId: userId },
-      });
-      setUser((prev) => ({ ...prev, friendRequests: (prev.friendRequests || []).filter(id => id !== userId) }));
-    } catch (err) {
-      setActionError("Failed to refuse friend request.");
-    } finally {
-      setRefusing(false);
-    }
-  };
+
 
   // Format dates
   const formatDate = (dateStr) => {
