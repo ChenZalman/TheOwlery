@@ -129,7 +129,6 @@ useEffect(() => {
               style={{ display: "none" }}
               onChange={(e) => handleFileChange(e, "video")}
             />
-            {/* Emoji Picker */}
             {showEmojiPicker && (
   <div style={{ position: "absolute", zIndex: 10 }}>
     <Picker onEmojiSelect={addEmoji} />

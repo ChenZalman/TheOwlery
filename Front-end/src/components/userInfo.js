@@ -114,7 +114,6 @@ const UserInfo = ({ userId, open, onClose }) => {
               {((user.friendRequests || []).includes(currentUser?.userId) || requestSent) && (
                 <div className="mb-3 text-blue-400">Friend request sent</div>
               )}
-              {/* Accept/Refuse friend request UI removed as requested */}
               <div><span className="font-semibold text-gray-300">Birthdate:</span> {formatDate(user.birthDate)}</div>
               <div><span className="font-semibold text-gray-300">Gender:</span> {user.gender || '-'}</div>
               <div><span className="font-semibold text-gray-300">Number of friends:</span> {Array.isArray(user.friendsId) ? user.friendsId.length : 0}</div>
