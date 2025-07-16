@@ -103,7 +103,7 @@ export default function EditProfilePage() {
                 onClick={handleProfileImageClick}
                 style={{
                   padding: "0.5rem 1rem",
-                  background: "#7c3aed", // purple-600
+                  background: "#7c3aed", 
                   color: "#fff",
                   border: "1px solid #7c3aed",
                   borderRadius: "4px",

@@ -17,7 +17,7 @@ const GroupsPage = () => {
   const port = process.env.REACT_APP_PORT;
   const [suggestedGroups, setSuggestedGroups] = useState([]);
   const [loadingSuggested, setLoadingSuggested] = useState(true);
-  // Fetch all groups for "Other Groups" section (excluding user's groups)
+  // Fetch all groups for "Other Groups" section (excluding user's groupsss)
   useEffect(() => {
     const fetchOtherGroups = async () => {
       try {

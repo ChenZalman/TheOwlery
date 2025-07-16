@@ -17,7 +17,7 @@ function getCloudinaryUrl(publicId, resourceType = "image", format = "jpg") {
 
 const Post = ({ post }) => {
   const { userName, profilePicture, textContent, imagePublicId, videoPublicId, postId, userId, date } = post;
-  // Format date if available
+  // Format date 
   let formattedDate = "";
   if (date) {
     const d = new Date(date);
@@ -178,8 +178,7 @@ const Post = ({ post }) => {
         },
       });
       setIsEditing(false);
-      // Optionally update UI immediately
-      window.location.reload(); // Or trigger a re-fetch of posts
+      window.location.reload(); 
     } catch (err) {
       alert("Failed to update post");
     }
@@ -195,8 +194,8 @@ const Post = ({ post }) => {
         },
       });
       setIsEditing(false);
-      // Optionally update UI immediately
-      window.location.reload(); // Or trigger a re-fetch of posts
+      
+      window.location.reload(); 
     } catch (err) {
       alert("Failed to update post");
     }
@@ -419,7 +418,7 @@ const Post = ({ post }) => {
           </div>
         )}
 
-        {/* Always show comments below the post */}
+        {/* show comments below the post */}
         {commentsList.length > 0 && (
           <div style={{ marginTop: "1.5rem" }}>
             {commentsList.map((comment) => (

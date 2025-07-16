@@ -9,7 +9,7 @@ const postSchema = require("../models/postSchema");
 require("dotenv").config();
 const CLOUDINARY_NAME = process.env.CLOUDINARY_NAME;
 
-// Create models from schemas without registering names globally
+// Create models from schemas 
 const User = mongoose.models._User || mongoose.model("User", userSchema);
 const Post = mongoose.models._Post || mongoose.model("Post", postSchema);
 
