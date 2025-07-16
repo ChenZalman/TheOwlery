@@ -1,5 +1,4 @@
-// Get user name by userId
-// (This case must be inside the router.post switch statement)
+
 
 const express = require("express");
 const router = express.Router();
