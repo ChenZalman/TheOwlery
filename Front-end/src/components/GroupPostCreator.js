@@ -110,7 +110,7 @@ const GroupPostCreator = ({ groupId, onPostCreated }) => {
               maxLength={500}
               required
             />
-            {/* Hidden file inputs */}
+            {/* file inputs */}
             <input
               type="file"
               accept="image/*"
@@ -125,7 +125,6 @@ const GroupPostCreator = ({ groupId, onPostCreated }) => {
               style={{ display: "none" }}
               onChange={(e) => handleFileChange(e, "video")}
             />
-            {/* Emoji Picker */}
             {showEmojiPicker && (
               <div style={{ position: "absolute", zIndex: 10 }}>
                 <Picker onEmojiSelect={addEmoji} />
