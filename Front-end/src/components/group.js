@@ -85,7 +85,7 @@ useEffect(() => {
     try {
       const users = [];
       for (let userId of group.pendingRequests) {
-        // Assume userId is always a string (no $oid)
+       
         if (typeof userId === 'string' && userId.endsWith('"')) {
           userId = userId.slice(0, -1);
         }

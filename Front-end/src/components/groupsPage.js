@@ -73,7 +73,6 @@ const GroupsPage = () => {
           command: "getUserInvites",
           data: { userId: user.userId }
         });
-        console.log('Invites response:', res.data); // Debug log
         setRequests(res.data.groups || []);
       } catch (err) {
         setRequests([]);

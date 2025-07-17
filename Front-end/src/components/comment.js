@@ -22,7 +22,7 @@ const Comment = ({ comment }) => {
         } else {
           setUserName("User");
         }
-        // Fetch profile image using utility
+        // Fetch profile image using  function
         const img = await fetchProfileImage(comment.userId);
         setProfilePicture(img);
       } catch (err) {

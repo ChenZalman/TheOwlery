@@ -9,7 +9,7 @@ const GroupPostCreator = ({ groupId, onPostCreated }) => {
   const { user } = useAuthContext();
   const [formData, setFormData] = useState({ text: "" });
   const [media, setMedia] = useState(null);
-  const [mediaType, setMediaType] = useState(null); // image or video
+  const [mediaType, setMediaType] = useState(null); // image or video   affactes url
   const [uploading, setUploading] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [userProfilePicture, setUserProfilePicture] = useState("");

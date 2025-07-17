@@ -45,7 +45,7 @@ function RequestsSection({
       setProfilePictures(prev => ({ ...prev, ...newPics }));
     };
     if (requests.length > 0) fetchInfo();
-    // eslint-disable-next-line
+
   }, [requests]);
 
   if (!requests.length) return null;
