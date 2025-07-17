@@ -2,7 +2,7 @@ import axios from "axios";
 
 const address = process.env.REACT_APP_ADDRESS;
 const port = process.env.REACT_APP_PORT;
-const cloudName = process.env.REACT_APP_CLOUDINARY_NAME;
+///const cloudName = process.env.REACT_APP_CLOUDINARY_NAME;
 
 const defaultProfileImage = "https://res.cloudinary.com/dtdsjszuk/image/upload/noProfile_lswfza.png";
 

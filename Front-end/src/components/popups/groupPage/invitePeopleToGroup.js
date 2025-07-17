@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import fetchProfileImage from '../../../requests/getProfileImage';
+import axios from 'axios';
 
 export default function InviteFriendsModal({ userId, onClose , groupId }) {
   const [friends, setFriends] = useState([]);
@@ -14,15 +15,11 @@ export default function InviteFriendsModal({ userId, onClose , groupId }) {
       try {
         const address = process.env.REACT_APP_ADDRESS;
         const port = process.env.REACT_APP_PORT;
-        const res = await fetch(`http://${address}:${port}/api/users`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            command: "getUserFriends",
-            data: { userId }
-          })
+        const res = await axios.post(`http://${address}:${port}/api/users`, {
+          command: "getUserFriends",
+          data: { userId }
         });
-        const data = await res.json();
+        const data = res.data;
         // Fetch profile images for each friend
         const friendsWithPFP = await Promise.all(
           (data.friends || []).map(async (friend) => {
@@ -57,13 +54,9 @@ export default function InviteFriendsModal({ userId, onClose , groupId }) {
     try {
       const address = process.env.REACT_APP_ADDRESS;
       const port = process.env.REACT_APP_PORT;
-      await fetch(`http://${address}:${port}/api/groups`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          command: "inviteToGroup",
-          data: { groupId, userIds: selectedStr }
-        })
+      await axios.post(`http://${address}:${port}/api/groups`, {
+        command: "inviteToGroup",
+        data: { groupId, userIds: selectedStr }
       });
       onClose();
     } catch (err) {
