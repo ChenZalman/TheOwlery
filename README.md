@@ -2,7 +2,19 @@
 
 Full Stack social media platform with React front-end, Express.js back-end, and MongoDB database. Features real-time chat via Socket.IO and an analytics dashboard tracking daily likes, comments, and posting activity compared with friends. Delivers a smooth, responsive, and interactive user experience.
 
-### The Screens of the Webside
+### Tech Stack
+- React.js
+- Express
+- MongoDB
+- Socket.IO
+- D3.js
+- REST API
+
+### Authors
+- Chen Zalman
+- Tami Mesengiser
+
+### Screens of the Webside
 
 ##### Home Page:
 <img width="1908" height="921" alt="Home page" src="https://github.com/user-attachments/assets/53a5811d-588f-4543-83ce-c2e549eaab3f" />
@@ -18,15 +30,3 @@ Full Stack social media platform with React front-end, Express.js back-end, and 
 
 ##### Chat Page:
 <img width="1905" height="918" alt="Chat page" src="https://github.com/user-attachments/assets/414c2cab-ed80-4835-9c3d-1b85dc21a079" />
-
-### Tech Stack
-- React.js
-- Express
-- MongoDB
-- Socket.IO
-- D3.js
-- REST API
-
-### Authors
-- Chen Zalman
-- Tami Mesengiser
